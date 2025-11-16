@@ -13,6 +13,7 @@ const {
   Marks,
   Notices
 } = require('../models/CompleteModels');
+const { sendNotification } = require('./notificationController');
 
 // Teacher Login
 const teacherLogin = async (req, res) => {
@@ -89,7 +90,20 @@ const markAttendance = async (req, res) => {
       status: record.status
     }));
     
-    await Attendance.insertMany(attendanceRecords);
+    const savedRecords = await Attendance.insertMany(attendanceRecords);
+    
+    // Get teacher and subject details for notification
+    const teacher = await Teacher.findById(teacherId);
+    const subject = await Subject.findById(subjectId).populate('courseId');
+    
+    // Send notification to students
+    await sendNotification('attendance', {
+      sender: { id: teacherId, role: 'teacher', name: teacher.name },
+      subjectName: subject.subjectName,
+      courseId: subject.courseId._id,
+      subjectId,
+      entityId: savedRecords[0]._id
+    });
     
     res.json({ success: true, msg: 'Attendance marked successfully' });
   } catch (error) {
@@ -190,6 +204,18 @@ const addMarks = async (req, res) => {
     const markRecord = new Marks({ studentId, subjectId, teacherId, marks, totalMarks, examType });
     await markRecord.save();
     
+    // Get teacher and subject details for notification
+    const teacher = await Teacher.findById(teacherId);
+    const subject = await Subject.findById(subjectId);
+    
+    // Send notification to specific student
+    await sendNotification('marks', {
+      sender: { id: teacherId, role: 'teacher', name: teacher.name },
+      subjectName: subject.subjectName,
+      studentId,
+      entityId: markRecord._id
+    });
+    
     res.status(201).json({ success: true, msg: 'Marks added successfully', markRecord });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -276,6 +302,19 @@ const addStudyMaterial = async (req, res) => {
     const material = new StudyMaterial({ teacherId, subjectId, title, fileUrl, description });
     await material.save();
     
+    // Get teacher and subject details for notification
+    const teacher = await Teacher.findById(teacherId);
+    const subject = await Subject.findById(subjectId).populate('courseId');
+    
+    // Send notification to students
+    await sendNotification('material', {
+      sender: { id: teacherId, role: 'teacher', name: teacher.name },
+      title,
+      courseId: subject.courseId._id,
+      subjectId,
+      entityId: material._id
+    });
+    
     res.status(201).json({ success: true, msg: 'Study material added successfully', material });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -291,6 +330,19 @@ const addAssignment = async (req, res) => {
     const assignment = new Assignments({ teacherId, subjectId, title, description, deadline, fileUrl });
     await assignment.save();
     
+    // Get teacher and subject details for notification
+    const teacher = await Teacher.findById(teacherId);
+    const subject = await Subject.findById(subjectId).populate('courseId');
+    
+    // Send notification to students
+    await sendNotification('assignment', {
+      sender: { id: teacherId, role: 'teacher', name: teacher.name },
+      title,
+      courseId: subject.courseId._id,
+      subjectId,
+      entityId: assignment._id
+    });
+    
     res.status(201).json({ success: true, msg: 'Assignment added successfully', assignment });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -305,6 +357,17 @@ const addNotice = async (req, res) => {
     
     const notice = new Notices({ teacherId, courseId, title, description });
     await notice.save();
+    
+    // Get teacher details for notification
+    const teacher = await Teacher.findById(teacherId);
+    
+    // Send notification to students
+    await sendNotification('notice', {
+      sender: { id: teacherId, role: 'teacher', name: teacher.name },
+      title,
+      courseId,
+      entityId: notice._id
+    });
     
     res.status(201).json({ success: true, msg: 'Notice added successfully', notice });
   } catch (error) {

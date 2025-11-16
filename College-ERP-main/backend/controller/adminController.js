@@ -10,6 +10,7 @@ const {
   Marks,
   Admin
 } = require('../models/CompleteModels');
+const { sendNotification } = require('./notificationController');
 
 // Admin Login
 const adminLogin = async (req, res) => {
@@ -26,7 +27,7 @@ const adminLogin = async (req, res) => {
       return res.status(400).json({ success: false, msg: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '24h' });
     res.cookie('token', token);
     
     res.json({ success: true, token, admin: { id: admin._id, name: admin.name, role: 'admin' } });

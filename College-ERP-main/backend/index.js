@@ -57,6 +57,8 @@ app.use("/messages", require("./routes/messages"));
 app.use("/student", require("./routes/student-management"));
 // complete ERP routes
 app.use("/api", require("./routes/completeRoutes"));
+// notification routes
+app.use("/notifications", require("./routes/notifications"));
 
 app.listen(PORT, () => {
   console.log("Server Started at", PORT);

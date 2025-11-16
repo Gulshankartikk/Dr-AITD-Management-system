@@ -1,13 +1,32 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { jwtDecode } from 'jwt-decode';
+import Cookies from 'js-cookie';
+import NotificationBell from './NotificationBell';
 import './AdminHeader.css';
 
 const AdminHeader = () => {
+  const token = Cookies.get('token');
+  let userId = null;
+  
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      userId = decoded.id;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+    }
+  }
+
   return (
     <div className="admin-header">
       <div className="header-left">
         <h1>College ERP Admin Panel</h1>
       </div>
       <div className="header-right">
+        <div className="header-actions">
+          {userId && <NotificationBell userId={userId} userRole="admin" />}
+        </div>
         <div className="creation-details">
           <div className="detail-item">
             <span className="label">Created by:</span>

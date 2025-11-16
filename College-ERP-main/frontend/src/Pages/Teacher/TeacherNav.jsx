@@ -10,6 +10,8 @@ import { FaKey } from "react-icons/fa";
 import Modal from "../Common/Modal";
 import { Si1Password } from "react-icons/si";
 import { MdUpdate } from "react-icons/md";
+import NotificationBell from "../../components/NotificationBell";
+import collegeImage from "../../assets/dr-ambedkar-institute-of-technology-for-handicapped-kanpur.jpeg.jpg";
 
 const TeacherNav = () => {
   let token = Cookies.get("token");
@@ -72,33 +74,41 @@ const TeacherNav = () => {
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 lg:hidden">
           <span className="text-xl font-semibold">{name}</span>
-          <button
-            type="button"
-            className="text-gray-500 hover:text-gray-600"
-            onClick={toggleSidebar}
-            aria-label="Close sidebar"
-          >
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M6 4a1 1 0 011.707-.707L10 5.586l2.293-2.293A1 1 0 1113.707 4L11.414 6.293 13.707 8.586A1 1 0 0112.293 10L10 7.707 7.707 10A1 1 0 116 8.586L8.293 6.293 6 4z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
+          <div className="flex items-center space-x-2">
+            {id && <NotificationBell userId={id} userRole="teacher" />}
+            <button
+              type="button"
+              className="text-gray-500 hover:text-gray-600"
+              onClick={toggleSidebar}
+              aria-label="Close sidebar"
+            >
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M6 4a1 1 0 011.707-.707L10 5.586l2.293-2.293A1 1 0 1113.707 4L11.414 6.293 13.707 8.586A1 1 0 0112.293 10L10 7.707 7.707 10A1 1 0 116 8.586L8.293 6.293 6 4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
         <div className="px-6 py-4">
-          <Link
-            className="block text-xl font-semibold text-gray-900"
-            href="#"
-            aria-label="Logo"
-          >
-            <img
-              className="w-35 h-8 md:w-40 md:h-12 lg:h-10 2xl:h-full 2xl:w-full"
-              src="/src/assets/dr-ambedkar-institute-of-technology-for-handicapped-kanpur.jpeg.jpg"
-              alt="logo"
-            />
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link
+              className="block text-xl font-semibold text-gray-900"
+              href="#"
+              aria-label="Logo"
+            >
+              <img
+                className="w-35 h-8 md:w-40 md:h-12 lg:h-10"
+                src={collegeImage}
+                alt="logo"
+              />
+            </Link>
+            <div className="hidden lg:block">
+              {id && <NotificationBell userId={id} userRole="teacher" />}
+            </div>
+          </div>
         </div>
         <nav className="px-6 py-4 space-y-1 flex flex-col justify-between h-[82vh] md:h-[85vh] lg:h-[88vh] xl:h-[90vh]">
           <ul>

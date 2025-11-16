@@ -91,4 +91,14 @@ router.get('/student/:studentId/marks', studentController.getStudentMarks);
 // Notices
 router.get('/student/:studentId/notices', studentController.getNotices);
 
+// ============= NOTIFICATION ROUTES =============
+const notificationController = require('../controller/notificationController');
+
+// Get notifications for user
+router.get('/notifications/:userId', notificationController.getUserNotifications);
+// Get unread count
+router.get('/notifications/:userId/unread-count', notificationController.getUnreadCount);
+// Mark as read
+router.put('/notifications/:notificationId/read', notificationController.markAsRead);
+
 module.exports = router;
