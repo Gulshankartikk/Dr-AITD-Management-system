@@ -272,6 +272,60 @@ const deleteStudent = async (req, res) => {
   }
 };
 
+// Delete Assignment - Admin Only
+const deleteAssignment = async (req, res) => {
+  try {
+    const { assignmentId } = req.params;
+    
+    await Assignments.findByIdAndUpdate(assignmentId, { isActive: false });
+    res.json({ success: true, msg: 'Assignment deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Delete Notice - Admin Only
+const deleteNotice = async (req, res) => {
+  try {
+    const { noticeId } = req.params;
+    
+    await Notices.findByIdAndUpdate(noticeId, { isActive: false });
+    res.json({ success: true, msg: 'Notice deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Delete Material - Admin Only
+const deleteMaterial = async (req, res) => {
+  try {
+    const { materialId } = req.params;
+    
+    await StudyMaterial.findByIdAndUpdate(materialId, { isActive: false });
+    res.json({ success: true, msg: 'Material deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Update Teacher - Admin Only
+const updateTeacher = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const { name, email, phone } = req.body;
+    
+    const teacher = await Teacher.findByIdAndUpdate(
+      teacherId,
+      { name, email, phone },
+      { new: true }
+    );
+    
+    res.json({ success: true, msg: 'Teacher updated successfully', teacher });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
 // Get Comprehensive Attendance Report
 const getComprehensiveAttendanceReport = async (req, res) => {
   try {
@@ -442,5 +496,9 @@ module.exports = {
   deleteSubject,
   deleteTeacher,
   deleteStudent,
+  deleteAssignment,
+  deleteNotice,
+  deleteMaterial,
+  updateTeacher,
   getComprehensiveAttendanceReport
 };

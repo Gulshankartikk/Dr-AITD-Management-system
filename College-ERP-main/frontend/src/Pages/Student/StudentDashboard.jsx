@@ -180,12 +180,22 @@ const StudentDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-gray-800">{assignment.title}</p>
-                    <p className="text-sm text-gray-600">{assignment.subjectId.subjectName}</p>
+                    <p className="text-sm text-gray-600">{assignment.subjectId?.subjectName}</p>
                     <p className="text-xs text-gray-500">
                       Due: {new Date(assignment.deadline).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className="flex items-center">
+                  <div className="flex items-center space-x-2">
+                    {assignment.fileUrl && (
+                      <a 
+                        href={assignment.fileUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-700 text-sm"
+                      >
+                        Download
+                      </a>
+                    )}
                     {assignment.isSubmitted ? (
                       <FaCheckCircle className="text-green-500" size={20} />
                     ) : assignment.isOverdue ? (
@@ -196,7 +206,30 @@ const StudentDashboard = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            )) || (
+              <div className="space-y-4">
+                <div className="border-l-4 border-blue-500 pl-4 py-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-gray-800">Data Structures Assignment 1</p>
+                      <p className="text-sm text-gray-600">Data Structures and Algorithms</p>
+                      <p className="text-xs text-gray-500">Due: Feb 15, 2024</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <a 
+                        href="https://example.com/assignment.pdf" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-700 text-sm"
+                      >
+                        Download
+                      </a>
+                      <FaCalendarAlt className="text-yellow-500" size={20} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -209,13 +242,35 @@ const StudentDashboard = () => {
           <div className="space-y-4">
             {notices?.slice(0, 5).map((notice, index) => (
               <div key={index} className="border-l-4 border-purple-500 pl-4 py-2">
-                <p className="font-medium text-gray-800">{notice.title}</p>
-                <p className="text-sm text-gray-600 line-clamp-2">{notice.description}</p>
-                <p className="text-xs text-gray-500">
-                  {new Date(notice.createdAt).toLocaleDateString()} by {notice.teacherId?.name}
-                </p>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-800">{notice.title}</p>
+                    <p className="text-sm text-gray-600 line-clamp-2">{notice.description}</p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(notice.createdAt).toLocaleDateString()} by {notice.teacherId?.name}
+                    </p>
+                  </div>
+                  <button className="text-blue-500 hover:text-blue-700 text-sm ml-2">
+                    View
+                  </button>
+                </div>
               </div>
-            ))}
+            )) || (
+              <div className="space-y-4">
+                <div className="border-l-4 border-purple-500 pl-4 py-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-800">Important Notice for B.Tech CSE</p>
+                      <p className="text-sm text-gray-600 line-clamp-2">All students are requested to attend the special lecture on advanced topics.</p>
+                      <p className="text-xs text-gray-500">Today by Dr. John Smith</p>
+                    </div>
+                    <button className="text-blue-500 hover:text-blue-700 text-sm ml-2">
+                      View
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

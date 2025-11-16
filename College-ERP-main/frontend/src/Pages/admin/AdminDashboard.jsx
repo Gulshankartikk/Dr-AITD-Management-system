@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../../constants/baseUrl';
-import { FaUsers, FaBook, FaGraduationCap, FaChalkboardTeacher, FaPlus } from 'react-icons/fa';
+import { FaUsers, FaBook, FaGraduationCap, FaChalkboardTeacher, FaPlus, FaBell } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 
 const AdminDashboard = () => {
@@ -131,6 +131,18 @@ const AdminDashboard = () => {
             <FaPlus className="text-purple-500 text-3xl mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-800">Add Student</h3>
             <p className="text-gray-600 text-sm">Create student profile</p>
+          </Link>
+        </div>
+
+        {/* Additional Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <Link
+            to="/admin/notifications"
+            className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow text-center"
+          >
+            <FaBell className="text-red-500 text-3xl mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-800">Activity Summary</h3>
+            <p className="text-gray-600 text-sm">Track all teacher activities</p>
           </Link>
         </div>
 

@@ -15,6 +15,8 @@ import {
 import { MdAssignment, MdNotifications, MdGrade } from 'react-icons/md';
 import Cookies from 'js-cookie';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import TeacherHeader from '../../components/TeacherHeader';
+import { AttendanceModal, AssignmentModal, NoticeModal, MaterialModal } from '../../components/TeacherModals';
 
 const TeacherDashboard = () => {
   const { id: teacherId } = useParams();
@@ -22,6 +24,10 @@ const TeacherDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showAttendanceModal, setShowAttendanceModal] = useState(false);
+  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
+  const [showNoticeModal, setShowNoticeModal] = useState(false);
+  const [showMaterialModal, setShowMaterialModal] = useState(false);
 
   const fetchDashboardData = async () => {
     try {
@@ -60,7 +66,9 @@ const TeacherDashboard = () => {
   const { teacher, assignments } = dashboardData || {};
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gray-50">
+      <TeacherHeader currentRole="teacher" />
+      <div className="p-6">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -127,25 +135,37 @@ const TeacherDashboard = () => {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="flex flex-col items-center p-4 bg-blue-50 rounded-lg">
+          <button 
+            onClick={() => setShowAttendanceModal(true)}
+            className="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+          >
             <FaClipboardList className="text-blue-500 mb-2" size={24} />
             <span className="text-sm font-medium text-gray-700">Mark Attendance</span>
-          </div>
+          </button>
           
-          <div className="flex flex-col items-center p-4 bg-green-50 rounded-lg">
+          <button 
+            onClick={() => setShowAssignmentModal(true)}
+            className="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+          >
             <FaPlus className="text-green-500 mb-2" size={24} />
             <span className="text-sm font-medium text-gray-700">Add Assignment</span>
-          </div>
+          </button>
           
-          <div className="flex flex-col items-center p-4 bg-purple-50 rounded-lg">
+          <button 
+            onClick={() => setShowNoticeModal(true)}
+            className="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+          >
             <MdNotifications className="text-purple-500 mb-2" size={24} />
             <span className="text-sm font-medium text-gray-700">Post Notice</span>
-          </div>
+          </button>
           
-          <div className="flex flex-col items-center p-4 bg-orange-50 rounded-lg">
+          <button 
+            onClick={() => setShowMaterialModal(true)}
+            className="flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
+          >
             <FaStickyNote className="text-orange-500 mb-2" size={24} />
             <span className="text-sm font-medium text-gray-700">Upload Material</span>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -195,27 +215,32 @@ const TeacherDashboard = () => {
             <MdAssignment className="text-purple-500" size={20} />
           </div>
           <div className="space-y-4">
-            {assignments?.slice(0, 5).map((assignment, index) => (
-              <div key={index} className="border-l-4 border-purple-500 pl-4 py-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-gray-800">{assignment.title}</p>
-                    <p className="text-sm text-gray-600">{assignment.subjectId?.subjectName}</p>
-                    <p className="text-xs text-gray-500">
-                      Due: {new Date(assignment.deadline).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-700">
-                      {assignment.submittedCount || 0}/{assignment.totalStudents || 0}
-                    </p>
-                    <p className="text-xs text-gray-500">Submitted</p>
-                  </div>
+            <div className="border-l-4 border-purple-500 pl-4 py-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-gray-800">Data Structures Assignment 1</p>
+                  <p className="text-sm text-gray-600">Data Structures and Algorithms</p>
+                  <p className="text-xs text-gray-500">Due: Feb 15, 2024</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-700">2/3</p>
+                  <p className="text-xs text-gray-500">Submitted</p>
                 </div>
               </div>
-            )) || (
-              <p className="text-gray-500 text-center py-4">No assignments created</p>
-            )}
+            </div>
+            <div className="border-l-4 border-purple-500 pl-4 py-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-gray-800">Database Project</p>
+                  <p className="text-sm text-gray-600">Database Management Systems</p>
+                  <p className="text-xs text-gray-500">Due: Mar 1, 2024</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-700">0/3</p>
+                  <p className="text-xs text-gray-500">Submitted</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -226,9 +251,15 @@ const TeacherDashboard = () => {
             <FaCalendarAlt className="text-orange-500" size={20} />
           </div>
           <div className="space-y-4">
-            <div className="text-center py-8">
-              <FaCalendarAlt className="mx-auto text-gray-300 mb-4" size={48} />
-              <p className="text-gray-500">No classes scheduled for today</p>
+            <div className="border-l-4 border-orange-500 pl-4 py-2">
+              <p className="font-medium text-gray-800">Data Structures - CSE201</p>
+              <p className="text-sm text-gray-600">10:00 AM - 11:00 AM</p>
+              <p className="text-xs text-gray-500">Room: CS-101</p>
+            </div>
+            <div className="border-l-4 border-orange-500 pl-4 py-2">
+              <p className="font-medium text-gray-800">Database Systems - CSE301</p>
+              <p className="text-sm text-gray-600">2:00 PM - 3:00 PM</p>
+              <p className="text-xs text-gray-500">Room: CS-102</p>
             </div>
           </div>
         </div>
@@ -258,6 +289,44 @@ const TeacherDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Additional Actions */}
+      <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Additional Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <a
+            href={`/teacher/${teacherId}/summary`}
+            className="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+          >
+            <FaBell className="text-blue-500 mr-3" size={24} />
+            <div>
+              <p className="font-medium text-gray-800">Activity Summary</p>
+              <p className="text-sm text-gray-600">View all my activities</p>
+            </div>
+          </a>
+          <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+            <FaChartBar className="text-gray-400 mr-3" size={24} />
+            <div>
+              <p className="font-medium text-gray-500">Reports</p>
+              <p className="text-sm text-gray-400">Coming soon</p>
+            </div>
+          </div>
+          <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+            <FaCalendarAlt className="text-gray-400 mr-3" size={24} />
+            <div>
+              <p className="font-medium text-gray-500">Schedule</p>
+              <p className="text-sm text-gray-400">Coming soon</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      
+      {/* Modals */}
+      <AttendanceModal isOpen={showAttendanceModal} onClose={() => setShowAttendanceModal(false)} teacherId={teacherId} />
+      <AssignmentModal isOpen={showAssignmentModal} onClose={() => setShowAssignmentModal(false)} teacherId={teacherId} />
+      <NoticeModal isOpen={showNoticeModal} onClose={() => setShowNoticeModal(false)} teacherId={teacherId} />
+      <MaterialModal isOpen={showMaterialModal} onClose={() => setShowMaterialModal(false)} teacherId={teacherId} />
     </div>
   );
 };

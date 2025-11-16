@@ -19,6 +19,8 @@ import AddCourse from "./Pages/admin/AddCourse";
 import CreateTeacher from "./Pages/admin/CreateTeacher";
 import CreateStudent from "./Pages/admin/CreateStudent";
 import AdminDashboard from "./Pages/admin/AdminDashboard";
+import NotificationSummary from "./Pages/admin/NotificationSummary";
+import TeacherSummary from "./Pages/Teacher/TeacherSummary";
 import StudentDashboard from "./Pages/Student/StudentDashboard";
 import TeacherDashboard from "./Pages/Teacher/TeacherDashboard";
 import UpdatePass from "./Pages/Common/UpdatePass";
@@ -40,6 +42,7 @@ const router = createBrowserRouter(
       {/* teacher routes */}
       <Route path="teacher/:id">
         <Route path="dashboard" element={<TeacherDashboard />} />
+        <Route path="summary" element={<TeacherSummary />} />
         <Route path="updatePassword" element={<UpdatePass />} />
         <Route path="forgetPassword" element={<ForgetPass />} />
         <Route path="forgetPassword/verifyotp" element={<VerifyOtp />} />
@@ -51,6 +54,7 @@ const router = createBrowserRouter(
         <Route path="create-teacher" element={<CreateTeacher />} />
         <Route path="create-student" element={<CreateStudent />} />
         <Route path="add-subject" element={<AddSubject />} />
+        <Route path="notifications" element={<NotificationSummary />} />
       </Route>
     </Route>
   )
