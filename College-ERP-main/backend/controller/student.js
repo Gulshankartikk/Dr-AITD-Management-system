@@ -138,7 +138,8 @@ const loginStudent = async (req, res) => {
         name: `${student.first_name} ${student.last_name}`,
         role: student.role,
       },
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
     );
 
     res.cookie("token", token);

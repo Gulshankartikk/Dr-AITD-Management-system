@@ -38,6 +38,40 @@ router.put(
 );
 // get student attendance
 router.get("/getAttendance/:id", getStudentAttendance);
+// get student dashboard - simple version
+router.get("/:studentId/dashboard", verifyToken, async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const Student = require('../models/Student');
+    const Course = require('../models/Course');
+    
+    const student = await Student.findById(studentId).populate('course');
+    if (!student) {
+      return res.status(404).json({ success: false, msg: 'Student not found' });
+    }
+    
+    res.json({
+      success: true,
+      dashboard: {
+        student,
+        subjectAttendance: [],
+        assignments: [],
+        notices: [],
+        notes: [],
+        studyMaterials: [],
+        overallStats: {
+          totalSubjects: 0,
+          totalAssignments: 0,
+          submittedAssignments: 0,
+          overdueAssignments: 0,
+          totalNotices: 0
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+});
 // forget password
 router.post("/forgetPassword", forgetPassword);
 // verify password

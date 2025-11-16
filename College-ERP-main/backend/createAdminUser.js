@@ -1,40 +1,45 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const { Admin } = require('./models/CompleteModels');
 require('dotenv').config();
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/college-erp');
+// Import Admin model
+const { Admin } = require('./models/CompleteModels');
 
-async function createAdmin() {
+const createAdminUser = async () => {
   try {
-    const existingAdmin = await Admin.findOne({ email: 'admin@college.edu' });
+    // Connect to MongoDB
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('Connected to MongoDB');
+
+    // Check if admin already exists
+    const existingAdmin = await Admin.findOne({ email: process.env.ADMIN_EMAIL });
     
     if (existingAdmin) {
-      console.log('Admin already exists');
-      console.log('Email: admin@college.edu');
-      console.log('Password: admin123');
+      console.log('Admin user already exists');
       process.exit(0);
     }
 
-    const hashedPassword = await bcrypt.hash('admin123', 10);
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
 
+    // Create admin user
     const admin = new Admin({
       name: 'System Administrator',
-      email: 'admin@college.edu',
-      password: hashedPassword
+      email: process.env.ADMIN_EMAIL,
+      password: hashedPassword,
+      role: 'admin'
     });
 
     await admin.save();
-    console.log('Admin created successfully!');
-    console.log('Login credentials:');
-    console.log('Email: admin@college.edu');
-    console.log('Password: admin123');
+    console.log('Admin user created successfully');
+    console.log(`Email: ${process.env.ADMIN_EMAIL}`);
+    console.log(`Password: ${process.env.ADMIN_PASSWORD}`);
     
   } catch (error) {
-    console.error('Error creating admin:', error);
+    console.error('Error creating admin user:', error);
   } finally {
     mongoose.connection.close();
   }
-}
+};
 
-createAdmin();
+createAdminUser();

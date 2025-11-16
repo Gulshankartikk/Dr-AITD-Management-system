@@ -64,8 +64,26 @@ router.post("/forgetPassword/verifyotp", verifyOtp);
 router.put("/:teacherId/profile", updateTeacherProfile);
 router.put("/:teacherId/profile-photo", uploadProfilePhoto);
 
-// Dashboard
-router.get("/:teacherId/dashboard", getDashboardData);
+// Dashboard - simple version
+router.get("/:teacherId/dashboard", async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const Teacher = require('../models/Teacher');
+    
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) {
+      return res.status(404).json({ success: false, msg: 'Teacher not found' });
+    }
+    
+    res.json({
+      success: true,
+      teacher,
+      assignments: []
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+});
 
 // Student Management
 router.get("/:teacherId/students", getMyStudents);

@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fa';
 import { MdAssignment, MdNotifications, MdGrade } from 'react-icons/md';
 import Cookies from 'js-cookie';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const TeacherDashboard = () => {
   const { teacherId } = useParams();
@@ -45,11 +46,7 @@ const TeacherDashboard = () => {
   }, [teacherId]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading teacher dashboard..." />;
   }
 
   if (error) {

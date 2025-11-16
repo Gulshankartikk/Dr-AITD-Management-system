@@ -10,21 +10,42 @@ const studentController = require('../controller/studentController');
 router.post('/admin/login', adminController.adminLogin);
 router.get('/admin/dashboard', adminController.getDashboardData);
 
+// Get all courses and subjects
+router.get('/courses', async (req, res) => {
+  try {
+    const Course = require('../models/Course');
+    const courses = await Course.find({ isActive: true });
+    res.json({ success: true, courses });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+});
+
+router.get('/subjects', async (req, res) => {
+  try {
+    const Subject = require('../models/Subject');
+    const subjects = await Subject.find({}).populate('courseId', 'courseName courseCode');
+    res.json({ success: true, subjects });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+});
+
 // Course Management
 router.post('/admin/courses', adminController.addCourse);
-router.delete('/admin/courses/:courseId', adminController.deleteCourse);
+router.delete('/admin/courses/:courseId', require('../middleware/Auth').isAdmin, adminController.deleteCourse);
 
 // Subject Management
 router.post('/admin/subjects', adminController.addSubject);
-router.delete('/admin/subjects/:subjectId', adminController.deleteSubject);
+router.delete('/admin/subjects/:subjectId', require('../middleware/Auth').isAdmin, adminController.deleteSubject);
 
 // Teacher Management
 router.post('/admin/teachers', adminController.addTeacher);
-router.delete('/admin/teachers/:teacherId', adminController.deleteTeacher);
+router.delete('/admin/teachers/:teacherId', require('../middleware/Auth').isAdmin, adminController.deleteTeacher);
 
 // Student Management
 router.post('/admin/students', adminController.addStudent);
-router.delete('/admin/students/:studentId', adminController.deleteStudent);
+router.delete('/admin/students/:studentId', require('../middleware/Auth').isAdmin, adminController.deleteStudent);
 
 // Assignment Management
 router.post('/admin/assign-teacher', adminController.assignTeacherToSubject);

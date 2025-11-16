@@ -170,44 +170,108 @@ const getDashboardData = async (req, res) => {
   }
 };
 
-// Delete Course
+// Delete Course - Admin Only
 const deleteCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
+    
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, msg: 'Access denied. Admin only.' });
+    }
+    
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ success: false, msg: 'Course not found' });
+    }
+    
     await Course.findByIdAndUpdate(courseId, { isActive: false });
+    
+    // Send notification to all teachers
+    await sendNotification('general', {
+      sender: { id: req.user.id, role: 'admin', name: 'Administrator' },
+      title: 'Course Deleted',
+      message: `Course ${course.courseName} has been deleted by administrator`,
+      recipients: { type: 'teachers' }
+    });
+    
     res.json({ success: true, msg: 'Course deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Delete Subject
+// Delete Subject - Admin Only
 const deleteSubject = async (req, res) => {
   try {
     const { subjectId } = req.params;
+    
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, msg: 'Access denied. Admin only.' });
+    }
+    
+    const subject = await Subject.findById(subjectId);
+    if (!subject) {
+      return res.status(404).json({ success: false, msg: 'Subject not found' });
+    }
+    
     await Subject.findByIdAndUpdate(subjectId, { isActive: false });
+    
+    // Send notification to teachers
+    await sendNotification('general', {
+      sender: { id: req.user.id, role: 'admin', name: 'Administrator' },
+      title: 'Subject Deleted',
+      message: `Subject ${subject.subjectName} has been deleted by administrator`,
+      recipients: { type: 'teachers' }
+    });
+    
     res.json({ success: true, msg: 'Subject deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Delete Teacher
+// Delete Teacher - Admin Only
 const deleteTeacher = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, msg: 'Access denied. Admin only.' });
+    }
+    
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) {
+      return res.status(404).json({ success: false, msg: 'Teacher not found' });
+    }
+    
     await Teacher.findByIdAndUpdate(teacherId, { isActive: false });
+    
     res.json({ success: true, msg: 'Teacher deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Delete Student
+// Delete Student - Admin Only
 const deleteStudent = async (req, res) => {
   try {
     const { studentId } = req.params;
+    
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, msg: 'Access denied. Admin only.' });
+    }
+    
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ success: false, msg: 'Student not found' });
+    }
+    
     await Student.findByIdAndUpdate(studentId, { isActive: false });
+    
     res.json({ success: true, msg: 'Student deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });

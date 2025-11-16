@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fa';
 import { MdAssignment, MdNotifications } from 'react-icons/md';
 import Cookies from 'js-cookie';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const StudentDashboard = () => {
   const { studentId } = useParams();
@@ -44,11 +45,7 @@ const StudentDashboard = () => {
   }, [studentId]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading your dashboard..." />;
   }
 
   if (error) {

@@ -96,7 +96,8 @@ const loginTeacher = async (req, res) => {
         name: teacher.name,
         role: teacher.role,
       },
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
     );
 
     res.cookie("token", token);
