@@ -93,16 +93,16 @@ async function setupCompleteERP() {
     // Create Teachers
     const teachers = [
       {
-        name: 'Dr. John Smith',
-        email: 'john.smith@college.edu',
+        name: 'Ankita Maurya',
+        email: 'ankita.maurya@college.edu',
         phone: '+91-9876543210',
         password: await bcrypt.hash('teacher123', 10),
         assignedCourse: [createdCourses[0]._id],
         assignedSubjects: [createdSubjects[0]._id, createdSubjects[1]._id]
       },
       {
-        name: 'Prof. Sarah Johnson',
-        email: 'sarah.johnson@college.edu',
+        name: 'Kartik',
+        email: 'kartik@college.edu',
         phone: '+91-9876543211',
         password: await bcrypt.hash('teacher123', 10),
         assignedCourse: [createdCourses[1]._id],
@@ -124,8 +124,8 @@ async function setupCompleteERP() {
     // Create Students
     const students = [
       {
-        name: 'Alice Johnson',
-        email: 'alice@student.edu',
+        name: 'Gulshan Kartik',
+        email: 'gulshan@student.edu',
         phone: '+91-9876543220',
         rollNo: 'CSE2021001',
         password: await bcrypt.hash('student123', 10),
@@ -133,8 +133,8 @@ async function setupCompleteERP() {
         semester: 3
       },
       {
-        name: 'Bob Wilson',
-        email: 'bob@student.edu',
+        name: 'Aditya Sharma',
+        email: 'aditya@student.edu',
         phone: '+91-9876543221',
         rollNo: 'CSE2021002',
         password: await bcrypt.hash('student123', 10),
@@ -142,8 +142,8 @@ async function setupCompleteERP() {
         semester: 3
       },
       {
-        name: 'Carol Davis',
-        email: 'carol@student.edu',
+        name: 'Abhishek Gond',
+        email: 'abhishek@student.edu',
         phone: '+91-9876543222',
         rollNo: 'MCA2022001',
         password: await bcrypt.hash('student123', 10),
@@ -195,11 +195,11 @@ async function setupCompleteERP() {
     console.log('\n🎉 Complete College ERP System Setup Successfully!');
     console.log('\n📋 Login Credentials:');
     console.log('👨‍💼 Admin: admin@college.edu / admin123');
-    console.log('👨‍🏫 Teacher 1: john.smith@college.edu / teacher123');
-    console.log('👨‍🏫 Teacher 2: sarah.johnson@college.edu / teacher123');
-    console.log('👨‍🎓 Student 1: alice@student.edu / student123');
-    console.log('👨‍🎓 Student 2: bob@student.edu / student123');
-    console.log('👨‍🎓 Student 3: carol@student.edu / student123');
+    console.log('👨‍🏫 Teacher 1: ankita.maurya@college.edu / teacher123');
+    console.log('👨‍🏫 Teacher 2: kartik@college.edu / teacher123');
+    console.log('👨‍🎓 Student 1: gulshan@student.edu / student123');
+    console.log('👨‍🎓 Student 2: aditya@student.edu / student123');
+    console.log('👨‍🎓 Student 3: abhishek@student.edu / student123');
 
   } catch (error) {
     console.error('❌ Error setting up ERP:', error);

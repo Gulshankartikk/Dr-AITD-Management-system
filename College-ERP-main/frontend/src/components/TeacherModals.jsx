@@ -8,9 +8,9 @@ import { toast } from 'react-toastify';
 export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [students, setStudents] = useState([
-    { _id: '6919d9552d2366a7429b1181', name: 'Alice Johnson', rollNo: 'CSE2021001', status: 'Present' },
-    { _id: '6919d9552d2366a7429b1182', name: 'Bob Wilson', rollNo: 'CSE2021002', status: 'Present' },
-    { _id: '6919d9552d2366a7429b1183', name: 'Carol Davis', rollNo: 'MCA2022001', status: 'Absent' }
+    { _id: '6919d9552d2366a7429b1181', name: 'Gulshan Kartik', rollNo: 'CSE2021001', status: 'Present' },
+    { _id: '6919d9552d2366a7429b1182', name: 'Aditya Sharma', rollNo: 'CSE2021002', status: 'Present' },
+    { _id: '6919d9552d2366a7429b1183', name: 'Abhishek Gond', rollNo: 'MCA2022001', status: 'Absent' }
   ]);
   const [loading, setLoading] = useState(false);
 
