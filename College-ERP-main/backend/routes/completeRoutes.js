@@ -106,16 +106,19 @@ router.get('/teacher/:teacherId/attendance', teacherController.getAttendanceRepo
 router.post('/teacher/:teacherId/marks', teacherController.addMarks);
 router.get('/teacher/:teacherId/marks/all-students', teacherController.getAllStudentsMarks);
 
+// File upload middleware
+const upload = require('../middleware/upload');
+
 // Notes Management
-router.post('/teacher/:teacherId/notes', teacherController.addNotes);
+router.post('/teacher/:teacherId/notes', upload.single('file'), teacherController.addNotes);
 router.get('/teacher/:teacherId/notes', teacherController.getTeacherNotes);
 
 // Study Materials
-router.post('/teacher/:teacherId/materials', teacherController.addStudyMaterial);
+router.post('/teacher/:teacherId/materials', upload.single('file'), teacherController.addStudyMaterial);
 router.get('/teacher/:teacherId/materials', teacherController.getTeacherMaterials);
 
 // Assignments
-router.post('/teacher/:teacherId/assignments', teacherController.addAssignment);
+router.post('/teacher/:teacherId/assignments', upload.single('file'), teacherController.addAssignment);
 router.get('/teacher/:teacherId/assignments', teacherController.getTeacherAssignments);
 
 // Notices

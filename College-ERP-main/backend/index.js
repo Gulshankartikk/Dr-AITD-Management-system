@@ -23,6 +23,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// Serve static files
+app.use('/uploads', express.static('uploads'));
+
 app.get("/", (req, res) => {
   res.send("Welcome to the server");
 });

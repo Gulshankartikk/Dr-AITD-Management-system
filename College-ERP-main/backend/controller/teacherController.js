@@ -339,7 +339,12 @@ const getAllStudentsMarks = async (req, res) => {
 const addNotes = async (req, res) => {
   try {
     const { teacherId } = req.params;
-    const { subjectId, title, fileUrl, description } = req.body;
+    const { subjectId, title, description } = req.body;
+    
+    let fileUrl = null;
+    if (req.file) {
+      fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    }
     
     const note = new Notes({ teacherId, subjectId, title, fileUrl, description });
     await note.save();
@@ -354,7 +359,12 @@ const addNotes = async (req, res) => {
 const addStudyMaterial = async (req, res) => {
   try {
     const { teacherId } = req.params;
-    const { subjectId, title, fileUrl, description } = req.body;
+    const { subjectId, title, description } = req.body;
+    
+    let fileUrl = null;
+    if (req.file) {
+      fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    }
     
     const material = new StudyMaterial({ teacherId, subjectId, title, fileUrl, description });
     await material.save();
@@ -382,7 +392,12 @@ const addStudyMaterial = async (req, res) => {
 const addAssignment = async (req, res) => {
   try {
     const { teacherId } = req.params;
-    const { subjectId, title, description, deadline, fileUrl } = req.body;
+    const { subjectId, title, description, deadline } = req.body;
+    
+    let fileUrl = null;
+    if (req.file) {
+      fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    }
     
     const assignment = new Assignments({ teacherId, subjectId, title, description, deadline, fileUrl });
     await assignment.save();
