@@ -20,6 +20,25 @@ const teacherLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
     
+    // Check for simple teacher login
+    if (username === 'teacher' && password === 'teacher123') {
+      const token = jwt.sign({ id: 'teacher', role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      res.cookie('token', token);
+      
+      return res.json({ 
+        success: true, 
+        token, 
+        teacher: { 
+          id: 'teacher', 
+          name: 'Demo Teacher', 
+          email: 'teacher@college.edu',
+          assignedCourse: [],
+          assignedSubjects: [],
+          role: 'teacher' 
+        } 
+      });
+    }
+    
     // Check if admin is trying to access teacher view
     if (username === 'admin' && password === 'admin123') {
       const token = jwt.sign({ id: 'admin', role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
@@ -80,6 +99,26 @@ const teacherLogin = async (req, res) => {
 const getTeacherDashboard = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    
+    // Handle demo teacher access
+    if (teacherId === 'teacher') {
+      const courses = await Course.find({ isActive: true }).limit(2);
+      const subjects = await Subject.find({ isActive: true }).limit(3);
+      
+      return res.json({ 
+        success: true, 
+        teacher: {
+          _id: 'teacher',
+          name: 'Demo Teacher',
+          email: 'teacher@college.edu',
+          assignedCourse: courses,
+          assignedSubjects: subjects,
+          department: 'Computer Science',
+          designation: 'Assistant Professor'
+        }, 
+        assignments: [] 
+      });
+    }
     
     // Handle admin access
     if (teacherId === 'admin') {

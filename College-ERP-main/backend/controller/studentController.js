@@ -17,6 +17,25 @@ const studentLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
     
+    // Check for simple student login
+    if (username === 'student' && password === 'student123') {
+      const token = jwt.sign({ id: 'student', role: 'student' }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      res.cookie('token', token);
+      
+      return res.json({ 
+        success: true, 
+        token, 
+        student: { 
+          id: 'student', 
+          name: 'Demo Student', 
+          email: 'student@college.edu',
+          rollNo: 'STU001',
+          course: { courseName: 'Computer Science', courseCode: 'CSE' },
+          role: 'student' 
+        } 
+      });
+    }
+    
     // Check if admin is trying to access student view
     if (username === 'admin' && password === 'admin123') {
       const token = jwt.sign({ id: 'admin', role: 'student' }, process.env.JWT_SECRET, { expiresIn: '24h' });
