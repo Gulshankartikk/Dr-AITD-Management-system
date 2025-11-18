@@ -19,8 +19,7 @@ const { Course, Subject, Teacher, Student } = require('../models/CompleteModels'
 //                     ADMIN ROUTES
 // ======================================================
 
-// Registration and Login
-router.post('/admin/register', adminController.adminRegister);
+// Login only - admin accounts cannot be created
 router.post('/admin/login', adminController.adminLogin);
 
 // ======================================================

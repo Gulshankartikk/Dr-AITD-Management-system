@@ -32,7 +32,7 @@ const StudentDashboard = () => {
 
   const fetchStudentData = async () => {
     try {
-      const token = Cookies.get('token');
+      const token = Cookies.get('token') || localStorage.getItem('token');
       const response = await axios.get(
         `${BASE_URL}/api/student/${studentId}/dashboard`,
         {

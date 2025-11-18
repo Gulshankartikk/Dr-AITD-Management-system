@@ -142,7 +142,7 @@ const initializeSystem = async () => {
     console.log('👑 Creating default admin...');
     const adminPassword = await bcrypt.hash('admin', 10);
     await Admin.create({
-      name: 'GulshankarTikk',
+      name: 'Gulshankartikk',
       email: 'admin@college.edu',
       username: 'admin',
       password: adminPassword,
@@ -179,7 +179,7 @@ const initializeSystem = async () => {
     console.log('Admin: admin / admin');
     console.log('Teachers: gulshan, ankita, aditya, abhishek / teacher123');
     console.log('Students: student1, student2 / student123');
-    console.log('\n🏢 Project Owner: GulshankarTikk');
+    console.log('\n🏢 Project Owner: Gulshankartikk');
     
     process.exit(0);
     

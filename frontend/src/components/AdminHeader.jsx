@@ -72,7 +72,7 @@ const AdminHeader = ({ currentRole = 'admin' }) => {
 
             <div className="flex items-center space-x-2">
               <FaUserShield className="text-red-500" />
-              <span className="text-sm font-medium text-gray-700">GulshankarTikk</span>
+              <span className="text-sm font-medium text-gray-700">Gulshankartikk</span>
             </div>
 
             <button

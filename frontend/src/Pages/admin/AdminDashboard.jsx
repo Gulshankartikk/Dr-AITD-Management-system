@@ -4,6 +4,7 @@ import axios from 'axios';
 import { BASE_URL } from '../../constants/baseUrl';
 import { FaUsers, FaBook, FaGraduationCap, FaChalkboardTeacher, FaPlus, FaBell } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
+import Cookies from 'js-cookie';
 
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -15,7 +16,7 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = Cookies.get('token') || localStorage.getItem('token');
 
       const response = await axios.get(`${BASE_URL}/api/admin/dashboard`, {
         headers: {

@@ -403,144 +403,37 @@ const getStudentDashboard = async (req, res) => {
       
       return res.json({
         success: true,
-        dashboard: {
-          student: {
-            _id: 'admin',
-            name: 'Administrator (Student View)',
-            email: 'admin@college.edu',
-            rollNo: 'ADMIN001',
-            courseId: courses[0] || { courseName: 'System Administration', courseCode: 'ADMIN' }
-          },
-          subjects: subjects,
-          subjectAttendance: subjects.map(subject => ({
-            subject,
-            total: 10,
-            present: 9,
-            absent: 1,
-            percentage: 90
-          })),
-          assignments: [],
-          subjectMarks: [],
-          notices: [],
-          notes: [],
-          studyMaterials: [],
-          overallStats: {
-            totalSubjects: subjects.length,
-            totalAssignments: 0,
-            submittedAssignments: 0,
-            overdueAssignments: 0,
-            totalNotices: 0
-          }
+        student: {
+          _id: 'admin',
+          name: 'Administrator (Student View)',
+          email: 'admin@college.edu',
+          rollNo: 'ADMIN001',
+          courseId: courses[0] || { courseName: 'System Administration', courseCode: 'ADMIN' }
+        }
+      });
+    }
+    
+    // Handle demo student access
+    if (studentId === 'student') {
+      const courses = await Course.find({ isActive: true }).limit(1);
+      
+      return res.json({
+        success: true,
+        student: {
+          _id: 'student',
+          name: 'Demo Student',
+          email: 'student@college.edu',
+          rollNo: 'STU001',
+          courseId: courses[0] || { courseName: 'Computer Science', courseCode: 'CSE' }
         }
       });
     }
     
     const student = await Student.findById(studentId).populate('courseId');
     
-    // Get all subjects for the student's course
-    const subjects = await Subject.find({ courseId: student.courseId, isActive: true });
-    const subjectIds = subjects.map(s => s._id);
-    
-    // Get attendance with subject-wise breakdown
-    const attendance = await Attendance.find({ studentId })
-      .populate('subjectId', 'subjectName subjectCode')
-      .populate('teacherId', 'name')
-      .sort({ date: -1 });
-    
-    // Calculate subject-wise attendance
-    const subjectAttendance = {};
-    subjects.forEach(subject => {
-      subjectAttendance[subject._id] = {
-        subject,
-        total: 0,
-        present: 0,
-        absent: 0,
-        percentage: 0
-      };
-    });
-    
-    attendance.forEach(record => {
-      const subjectId = record.subjectId._id.toString();
-      if (subjectAttendance[subjectId]) {
-        subjectAttendance[subjectId].total++;
-        if (record.status === 'Present') {
-          subjectAttendance[subjectId].present++;
-        } else {
-          subjectAttendance[subjectId].absent++;
-        }
-      }
-    });
-    
-    // Calculate percentages
-    Object.keys(subjectAttendance).forEach(subjectId => {
-      const data = subjectAttendance[subjectId];
-      data.percentage = data.total > 0 ? ((data.present / data.total) * 100).toFixed(2) : 0;
-    });
-    
-    // Get all assignments with submission status
-    const assignments = await Assignments.find({ subjectId: { $in: subjectIds } })
-      .populate('subjectId', 'subjectName subjectCode')
-      .populate('teacherId', 'name')
-      .sort({ deadline: 1 });
-    
-    const assignmentsWithStatus = assignments.map(assignment => {
-      const submission = assignment.submissions.find(sub => 
-        sub.studentId.toString() === studentId
-      );
-      return {
-        ...assignment.toObject(),
-        isSubmitted: !!submission,
-        submissionDate: submission ? submission.submittedAt : null,
-        isOverdue: new Date() > assignment.deadline && !submission
-      };
-    });
-    
-    // Get all marks subject-wise
-    const marks = await Marks.find({ studentId })
-      .populate('subjectId', 'subjectName subjectCode')
-      .populate('teacherId', 'name')
-      .sort({ createdAt: -1 });
-    
-    // Group marks by subject
-    const subjectMarks = {};
-    marks.forEach(mark => {
-      const subjectId = mark.subjectId._id.toString();
-      if (!subjectMarks[subjectId]) {
-        subjectMarks[subjectId] = {
-          subject: mark.subjectId,
-          marks: [],
-          totalMarks: 0,
-          totalPossible: 0,
-          percentage: 0
-        };
-      }
-      subjectMarks[subjectId].marks.push(mark);
-      subjectMarks[subjectId].totalMarks += mark.marks;
-      subjectMarks[subjectId].totalPossible += mark.totalMarks;
-    });
-    
-    // Calculate subject-wise percentages
-    Object.keys(subjectMarks).forEach(subjectId => {
-      const data = subjectMarks[subjectId];
-      data.percentage = data.totalPossible > 0 ? 
-        ((data.totalMarks / data.totalPossible) * 100).toFixed(2) : 0;
-    });
-    
-    // Get all notices
-    const notices = await Notices.find({ courseId: student.courseId, isActive: true })
-      .populate('teacherId', 'name')
-      .sort({ createdAt: -1 });
-    
-    // Get all notes and study materials
-    const notes = await Notes.find({ subjectId: { $in: subjectIds } })
-      .populate('subjectId', 'subjectName subjectCode')
-      .populate('teacherId', 'name')
-      .sort({ createdAt: -1 });
-    
-    const studyMaterials = await StudyMaterial.find({ subjectId: { $in: subjectIds } })
-      .populate('subjectId', 'subjectName subjectCode')
-      .populate('teacherId', 'name')
-      .sort({ createdAt: -1 });
+    if (!student) {
+      return res.status(404).json({ success: false, msg: 'Student not found' });
+    }
     
     res.json({
       success: true,

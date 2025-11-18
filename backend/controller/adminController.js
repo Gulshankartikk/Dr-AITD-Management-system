@@ -15,45 +15,6 @@ const {
 } = require('../models/CompleteModels');
 const { sendNotification } = require('./notificationController');
 
-// Admin Registration
-const adminRegister = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    
-    // Check if admin already exists
-    const existingAdmin = await Admin.findOne({ email });
-    if (existingAdmin) {
-      return res.status(400).json({ success: false, msg: 'Admin already exists with this email' });
-    }
-    
-    // Generate username from email
-    const username = email.split('@')[0];
-    
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const admin = new Admin({
-      name,
-      email,
-      username,
-      password: hashedPassword
-    });
-    
-    await admin.save();
-    
-    res.status(201).json({ 
-      success: true, 
-      msg: 'Admin registered successfully',
-      admin: {
-        id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        username: admin.username
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, msg: error.message });
-  }
-};
-
 // Admin Login
 const adminLogin = async (req, res) => {
   try {
@@ -630,7 +591,6 @@ const getComprehensiveAttendanceReport = async (req, res) => {
 };
 
 module.exports = {
-  adminRegister,
   adminLogin,
   addCourse,
   addSubject,

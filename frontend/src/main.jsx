@@ -44,7 +44,6 @@ const router = createBrowserRouter(
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
       <Route path="teacher-register" element={<TeacherRegister />} />
-      <Route path="admin-register" element={<AdminRegister />} />
       {/* student routes */}
       <Route path="student/:studentId">
         <Route path="dashboard" element={<StudentDashboard />} />

@@ -48,6 +48,7 @@ const Login = () => {
       const { token } = response.data;
 
       Cookies.set("token", token);
+      localStorage.setItem("token", token);
 
       dispatch(addUserDetails({ token: token }));
 
@@ -140,7 +141,7 @@ const Login = () => {
                   className="block text-gray-700 font-bold mb-2"
                   htmlFor="username"
                 >
-                  Username
+                  {role === "student" ? "Email/Username/Phone/Roll No" : role === "teacher" ? "Email/Username" : "Username"}
                 </label>
                 <input
                   type="text"
@@ -148,7 +149,7 @@ const Login = () => {
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter username"
+                  placeholder={role === "student" ? "Enter email, username, phone or roll number" : role === "teacher" ? "Enter email or username" : "Enter username"}
                   required
                 />
               </div>
@@ -188,11 +189,6 @@ const Login = () => {
               {role === "teacher" && (
                 <Link to="/teacher-register">
                   <u className="cursor-pointer text-blue-500">Create Account</u>
-                </Link>
-              )}
-              {role === "admin" && (
-                <Link to="/admin-register">
-                  <u className="cursor-pointer text-red-500">Create Admin Account</u>
                 </Link>
               )}
             </div>
