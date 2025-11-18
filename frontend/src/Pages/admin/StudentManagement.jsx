@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaEdit, FaTrash, FaEye, FaPlus } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
+import BackButton from '../../components/BackButton';
 import Cookies from 'js-cookie';
 
 const StudentManagement = () => {
@@ -131,6 +132,7 @@ const StudentManagement = () => {
       <AdminHeader />
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4">
+          <BackButton className="mb-4" />
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">Student Management</h1>

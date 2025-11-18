@@ -627,6 +627,34 @@ const getTeacherAssignments = async (req, res) => {
   }
 };
 
+// Add Course - Teacher
+const addCourse = async (req, res) => {
+  try {
+    const { courseName, courseCode, courseDuration } = req.body;
+    
+    const course = new Course({ courseName, courseCode, courseDuration });
+    await course.save();
+    
+    res.status(201).json({ success: true, msg: 'Course added successfully', course });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Add Subject - Teacher
+const addSubject = async (req, res) => {
+  try {
+    const { subjectName, subjectCode, courseId } = req.body;
+    
+    const subject = new Subject({ subjectName, subjectCode, courseId });
+    await subject.save();
+    
+    res.status(201).json({ success: true, msg: 'Subject added successfully', subject });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
 // Get All Notices for Teacher's Courses
 const getTeacherNotices = async (req, res) => {
   try {
@@ -672,6 +700,8 @@ module.exports = {
   addStudyMaterial,
   addAssignment,
   addNotice,
+  addCourse,
+  addSubject,
   getTeacherNotes,
   getTeacherMaterials,
   getTeacherAssignments,

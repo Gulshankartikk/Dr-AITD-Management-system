@@ -3,6 +3,7 @@ import { BASE_URL } from "../../constants/baseUrl";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import BackButton from "../../components/BackButton";
 import collegeImage from "../../assets/dr-ambedkar-institute-of-technology-for-handicapped-kanpur.jpeg.jpg";
 import logo from "../../assets/logo.jpeg";
 
@@ -81,6 +82,7 @@ const TeacherRegister = () => {
             className="flex flex-col justify-between gap-2 border-2 border-black rounded-lg px-3 py-3"
           >
             <div className="text-center mb-4">
+              <BackButton className="mb-4" />
               <h2 className="text-2xl font-bold text-blue-500">Teacher Registration</h2>
             </div>
             <hr className="border-t-2 border-black" />

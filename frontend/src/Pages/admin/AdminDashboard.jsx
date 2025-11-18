@@ -4,6 +4,9 @@ import axios from 'axios';
 import { BASE_URL } from '../../constants/baseUrl';
 import { FaUsers, FaBook, FaGraduationCap, FaChalkboardTeacher, FaPlus, FaBell } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
+import CourseForm from '../../components/CourseForm';
+import SubjectForm from '../../components/SubjectForm';
+import BackButton from '../../components/BackButton';
 import Cookies from 'js-cookie';
 
 const AdminDashboard = () => {
@@ -14,14 +17,19 @@ const AdminDashboard = () => {
     fetchDashboardData();
   }, []);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (retryCount = 0) => {
     try {
       const token = Cookies.get('token') || localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
 
       const response = await axios.get(`${BASE_URL}/api/admin/dashboard`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        timeout: 10000
       });
 
       if (response.data.success) {
@@ -29,6 +37,14 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
+      
+      // Retry logic
+      if (retryCount < 2 && error.code !== 'ECONNREFUSED') {
+        setTimeout(() => fetchDashboardData(retryCount + 1), 1000);
+        return;
+      }
+      
+      setDashboardData(null);
     } finally {
       setLoading(false);
     }
@@ -48,6 +64,7 @@ const AdminDashboard = () => {
       <div className="py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8">
+          <BackButton className="mb-4" />
           <h1 className="text-4xl font-bold text-gray-800">Admin Dashboard</h1>
           <p className="text-gray-600 mt-2">Manage your college ERP system</p>
         </div>
@@ -152,6 +169,16 @@ const AdminDashboard = () => {
             <h3 className="text-lg font-semibold text-gray-800">Activity Summary</h3>
             <p className="text-gray-600 text-sm">Track all teacher activities</p>
           </Link>
+          
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Add Course</h3>
+            <CourseForm userRole="admin" onSuccess={fetchDashboardData} />
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Add Subject</h3>
+            <SubjectForm userRole="admin" onSuccess={fetchDashboardData} />
+          </div>
         </div>
 
         {/* Recent Data */}

@@ -16,6 +16,9 @@ import { MdAssignment, MdNotifications, MdGrade } from 'react-icons/md';
 import Cookies from 'js-cookie';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TeacherHeader from '../../components/TeacherHeader';
+import CourseForm from '../../components/CourseForm';
+import SubjectForm from '../../components/SubjectForm';
+import BackButton from '../../components/BackButton';
 import { AttendanceModal, AssignmentModal, NoticeModal, MaterialModal } from '../../components/TeacherModals';
 
 const TeacherDashboard = () => {
@@ -29,17 +32,33 @@ const TeacherDashboard = () => {
   const [showNoticeModal, setShowNoticeModal] = useState(false);
   const [showMaterialModal, setShowMaterialModal] = useState(false);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (retryCount = 0) => {
     try {
-      const token = Cookies.get('token');
+      const token = Cookies.get('token') || localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      
       const response = await axios.get(
         `${BASE_URL}/api/teacher/${teacherId}/dashboard`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { 
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: 10000
+        }
       );
       setDashboardData(response.data);
+      setError('');
     } catch (error) {
-      setError('Failed to load dashboard data');
       console.error('Dashboard error:', error);
+      
+      // Retry logic
+      if (retryCount < 2 && error.code !== 'ECONNREFUSED') {
+        setTimeout(() => fetchDashboardData(retryCount + 1), 1000);
+        return;
+      }
+      
+      setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
@@ -71,6 +90,7 @@ const TeacherDashboard = () => {
       <div className="p-6">
       {/* Header */}
       <div className="mb-8">
+        <BackButton className="mb-4" />
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
           Welcome,gulshan {teacher?.name}!
         </h1>
@@ -287,6 +307,19 @@ const TeacherDashboard = () => {
             </div>
             <p className="text-gray-600">Students Taught</p>
           </div>
+        </div>
+      </div>
+
+      {/* Course and Subject Creation */}
+      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Course</h2>
+          <CourseForm userRole="teacher" userId={teacherId} onSuccess={fetchDashboardData} />
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Subject</h2>
+          <SubjectForm userRole="teacher" userId={teacherId} onSuccess={fetchDashboardData} />
         </div>
       </div>
 

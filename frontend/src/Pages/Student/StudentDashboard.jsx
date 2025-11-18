@@ -20,6 +20,7 @@ import { MdAssignment, MdNotifications } from 'react-icons/md';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import StudentHeader from '../../components/StudentHeader';
+import BackButton from '../../components/BackButton';
 
 const StudentDashboard = () => {
   const { studentId } = useParams();
@@ -30,18 +31,31 @@ const StudentDashboard = () => {
     fetchStudentData();
   }, [studentId]);
 
-  const fetchStudentData = async () => {
+  const fetchStudentData = async (retryCount = 0) => {
     try {
       const token = Cookies.get('token') || localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      
       const response = await axios.get(
         `${BASE_URL}/api/student/${studentId}/dashboard`,
         {
           headers: { Authorization: `Bearer ${token}` },
+          timeout: 10000
         }
       );
       setStudent(response.data.student);
     } catch (error) {
       console.error('Error fetching student data:', error);
+      
+      // Retry logic
+      if (retryCount < 2 && error.code !== 'ECONNREFUSED') {
+        setTimeout(() => fetchStudentData(retryCount + 1), 1000);
+        return;
+      }
+      
       toast.error('Failed to load student data');
     } finally {
       setLoading(false);
@@ -98,6 +112,7 @@ const StudentDashboard = () => {
         <div className="max-w-7xl mx-auto px-4">
           {/* Welcome Section */}
           <div className="bg-white rounded-lg shadow-md p-8 mb-8">
+            <BackButton className="mb-4" />
             <div className="flex items-center space-x-4 mb-6">
               <div className="bg-blue-100 p-3 rounded-full">
                 <FaGraduationCap className="text-3xl text-blue-600" />

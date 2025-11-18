@@ -48,10 +48,26 @@ app.get("/", (req, res) => {
   });
 });
 
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('❌ Server Error:', err.stack);
   res.status(500).json({ success: false, msg: 'Internal Server Error' });
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('❌ Unhandled Promise Rejection:', err);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err);
 });
 
 // routes

@@ -44,6 +44,8 @@ router.get('/teacher/:teacherId/marks/:subjectId', verifyToken, teacherControlle
 router.post('/teacher/:teacherId/notes', verifyToken, upload.single('file'), teacherController.addNotes);
 router.post('/teacher/:teacherId/materials', verifyToken, upload.single('file'), teacherController.addStudyMaterial);
 router.post('/teacher/:teacherId/notices', verifyToken, teacherController.addNotice);
+router.post('/teacher/:teacherId/courses', verifyToken, teacherController.addCourse);
+router.post('/teacher/:teacherId/subjects', verifyToken, teacherController.addSubject);
 router.get('/teacher/:teacherId/notes', verifyToken, teacherController.getTeacherNotes);
 router.get('/teacher/:teacherId/materials', verifyToken, teacherController.getTeacherMaterials);
 router.get('/teacher/:teacherId/notices', verifyToken, teacherController.getTeacherNotices);
