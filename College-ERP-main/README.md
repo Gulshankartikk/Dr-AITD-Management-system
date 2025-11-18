@@ -75,7 +75,7 @@ npm run dev
 ## 🔑 Default Login Credentials
 
 **Admin:**
-- Email: admin@college.edu
+- Email: admin
 - Password: admin123
 
 **Test Teacher:**
