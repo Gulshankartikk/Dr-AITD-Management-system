@@ -14,6 +14,10 @@ import Store from "./app/Store";
 import Layout from "./Layout";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Login from "./Pages/Common/Login";
+import Register from "./Pages/Common/Register";
+import TeacherRegister from "./Pages/Common/TeacherRegister";
+import AdminRegister from "./Pages/Common/AdminRegister";
+import StudentManagement from "./Pages/admin/StudentManagement";
 import AddSubject from "./Pages/admin/AddSubject";
 import AddCourse from "./Pages/admin/AddCourse";
 import CreateTeacher from "./Pages/admin/CreateTeacher";
@@ -37,6 +41,10 @@ const router = createBrowserRouter(
     <Route path="/" element={<Layout />}>
       {/* home route */}
       <Route index element={<Login />} />
+      <Route path="login" element={<Login />} />
+      <Route path="register" element={<Register />} />
+      <Route path="teacher-register" element={<TeacherRegister />} />
+      <Route path="admin-register" element={<AdminRegister />} />
       {/* student routes */}
       <Route path="student/:studentId">
         <Route path="dashboard" element={<StudentDashboard />} />
@@ -63,6 +71,7 @@ const router = createBrowserRouter(
         <Route path="create-teacher" element={<CreateTeacher />} />
         <Route path="create-student" element={<CreateStudent />} />
         <Route path="add-subject" element={<AddSubject />} />
+        <Route path="students" element={<StudentManagement />} />
         <Route path="notifications" element={<NotificationSummary />} />
       </Route>
       {/* 404 route */}

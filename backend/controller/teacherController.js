@@ -15,10 +15,79 @@ const {
 } = require('../models/CompleteModels');
 const { sendNotification } = require('./notificationController');
 
+// Teacher Registration
+const teacherRegister = async (req, res) => {
+  try {
+    const { name, email, phone, password, department, designation } = req.body;
+    
+    // Check if teacher already exists
+    const existingTeacher = await Teacher.findOne({ email });
+    if (existingTeacher) {
+      return res.status(400).json({ success: false, msg: 'Teacher already exists with this email' });
+    }
+    
+    // Generate username from email
+    const username = email.split('@')[0];
+    
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const teacher = new Teacher({
+      name,
+      email,
+      username,
+      phone,
+      password: hashedPassword,
+      department,
+      designation
+    });
+    
+    await teacher.save();
+    
+    res.status(201).json({ 
+      success: true, 
+      msg: 'Teacher registered successfully',
+      teacher: {
+        id: teacher._id,
+        name: teacher.name,
+        email: teacher.email,
+        username: teacher.username
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
 // Teacher Login
 const teacherLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
+    
+    // Predefined teachers
+    const predefinedTeachers = {
+      'gulshan': { name: 'Gulshan Kartik', email: 'gulshan@college.edu' },
+      'ankita': { name: 'Ankita Maurya', email: 'ankita@college.edu' },
+      'aditya': { name: 'Aditya Kumar Sharma', email: 'aditya@college.edu' },
+      'abhishek': { name: 'Abhishek Gond', email: 'abhishek@college.edu' }
+    };
+    
+    if (predefinedTeachers[username.toLowerCase()] && password === 'teacher123') {
+      const teacherData = predefinedTeachers[username.toLowerCase()];
+      const token = jwt.sign({ id: username, role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      res.cookie('token', token);
+      
+      return res.json({ 
+        success: true, 
+        token, 
+        teacher: { 
+          id: username, 
+          name: teacherData.name, 
+          email: teacherData.email,
+          assignedCourse: [],
+          assignedSubjects: [],
+          role: 'teacher' 
+        } 
+      });
+    }
     
     // Check for simple teacher login
     if (username === 'teacher' && password === 'teacher123') {
@@ -58,9 +127,9 @@ const teacherLogin = async (req, res) => {
       });
     }
     
-    // Find teacher by email
+    // Find teacher by email or username
     const teacher = await Teacher.findOne({
-      email: username,
+      $or: [{ email: username }, { username: username }],
       isActive: true
     }).populate('assignedCourse', 'courseName courseCode')
       .populate('assignedSubjects', 'subjectName subjectCode');
@@ -99,6 +168,22 @@ const teacherLogin = async (req, res) => {
 const getTeacherDashboard = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    
+    // Handle predefined teachers
+    const predefinedTeachers = ['gulshan', 'ankita', 'aditya', 'abhishek'];
+    if (predefinedTeachers.includes(teacherId)) {
+      const teacher = await Teacher.findOne({ username: teacherId })
+        .populate('assignedCourse', 'courseName courseCode')
+        .populate('assignedSubjects', 'subjectName subjectCode');
+      
+      if (teacher) {
+        const assignments = await TeacherSubjectAssignment.find({ teacherId: teacher._id, isActive: true })
+          .populate('subjectId', 'subjectName subjectCode')
+          .populate('courseId', 'courseName courseCode');
+        
+        return res.json({ success: true, teacher, assignments });
+      }
+    }
     
     // Handle demo teacher access
     if (teacherId === 'teacher') {
@@ -143,6 +228,10 @@ const getTeacherDashboard = async (req, res) => {
     const teacher = await Teacher.findById(teacherId)
       .populate('assignedCourse', 'courseName courseCode')
       .populate('assignedSubjects', 'subjectName subjectCode');
+    
+    if (!teacher) {
+      return res.status(404).json({ success: false, msg: 'Teacher not found' });
+    }
     
     const assignments = await TeacherSubjectAssignment.find({ teacherId, isActive: true })
       .populate('subjectId', 'subjectName subjectCode')
@@ -571,6 +660,7 @@ const getTeacherNotices = async (req, res) => {
 };
 
 module.exports = {
+  teacherRegister,
   teacherLogin,
   getTeacherDashboard,
   getStudentsBySubject,

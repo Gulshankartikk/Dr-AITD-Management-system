@@ -7,7 +7,7 @@ const fs = require("fs");
 const db = require("./database/db");
 
 // variables
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4001;
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');

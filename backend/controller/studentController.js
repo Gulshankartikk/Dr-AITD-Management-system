@@ -12,6 +12,53 @@ const {
   Notices
 } = require('../models/CompleteModels');
 
+// Student Registration
+const studentRegister = async (req, res) => {
+  try {
+    const { name, email, phone, password, courseId } = req.body;
+    
+    // Check if student already exists
+    const existingStudent = await Student.findOne({ email });
+    if (existingStudent) {
+      return res.status(400).json({ success: false, msg: 'Student already exists with this email' });
+    }
+    
+    // Generate roll number
+    const studentCount = await Student.countDocuments();
+    const rollNo = `STU${String(studentCount + 1).padStart(4, '0')}`;
+    
+    // Generate username from email
+    const username = email.split('@')[0];
+    
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const student = new Student({
+      name,
+      email,
+      username,
+      phone,
+      password: hashedPassword,
+      rollNo,
+      courseId
+    });
+    
+    await student.save();
+    
+    res.status(201).json({ 
+      success: true, 
+      msg: 'Student registered successfully',
+      student: {
+        id: student._id,
+        name: student.name,
+        email: student.email,
+        username: student.username,
+        rollNo: student.rollNo
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
 // Student Login
 const studentLogin = async (req, res) => {
   try {
@@ -55,9 +102,14 @@ const studentLogin = async (req, res) => {
       });
     }
     
-    // Find student by email or roll number
+    // Find student by email, username, phone, or roll number
     const student = await Student.findOne({
-      $or: [{ email: username }, { rollNo: username }],
+      $or: [
+        { email: username }, 
+        { username: username },
+        { phone: username },
+        { rollNo: username }
+      ],
       isActive: true
     }).populate('courseId', 'courseName courseCode');
     
@@ -500,6 +552,7 @@ const getStudentDashboard = async (req, res) => {
 };
 
 module.exports = {
+  studentRegister,
   studentLogin,
   getStudentProfile,
   getStudentAttendance,

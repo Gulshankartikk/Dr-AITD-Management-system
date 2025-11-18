@@ -170,7 +170,7 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="mt-1">
+            <div className="mt-1 flex justify-between">
               <Link
                 to={
                   role === "student"
@@ -180,6 +180,21 @@ const Login = () => {
               >
                 <u className="cursor-pointer">Forget Password</u>
               </Link>
+              {role === "student" && (
+                <Link to="/register">
+                  <u className="cursor-pointer text-blue-500">Create Account</u>
+                </Link>
+              )}
+              {role === "teacher" && (
+                <Link to="/teacher-register">
+                  <u className="cursor-pointer text-blue-500">Create Account</u>
+                </Link>
+              )}
+              {role === "admin" && (
+                <Link to="/admin-register">
+                  <u className="cursor-pointer text-red-500">Create Admin Account</u>
+                </Link>
+              )}
             </div>
 
             {/* Submit button */}

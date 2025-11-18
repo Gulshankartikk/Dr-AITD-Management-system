@@ -20,6 +20,7 @@ const SubjectSchema = new mongoose.Schema({
 const TeacherSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  username: { type: String, unique: true, sparse: true },
   password: { type: String, required: true },
   phone: { type: String },
   department: { type: String },
@@ -33,6 +34,7 @@ const TeacherSchema = new mongoose.Schema({
 const StudentSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  username: { type: String, unique: true, sparse: true },
   password: { type: String, required: true },
   rollNo: { type: String, required: true, unique: true },
   phone: { type: String },
@@ -117,6 +119,7 @@ const TeacherSubjectAssignmentSchema = new mongoose.Schema({
 const AdminSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  username: { type: String, unique: true, sparse: true },
   password: { type: String, required: true },
   role: { type: String, default: 'admin' }
 }, { timestamps: true });

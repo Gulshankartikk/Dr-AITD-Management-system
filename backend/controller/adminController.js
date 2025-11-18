@@ -15,19 +15,86 @@ const {
 } = require('../models/CompleteModels');
 const { sendNotification } = require('./notificationController');
 
+// Admin Registration
+const adminRegister = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    
+    // Check if admin already exists
+    const existingAdmin = await Admin.findOne({ email });
+    if (existingAdmin) {
+      return res.status(400).json({ success: false, msg: 'Admin already exists with this email' });
+    }
+    
+    // Generate username from email
+    const username = email.split('@')[0];
+    
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const admin = new Admin({
+      name,
+      email,
+      username,
+      password: hashedPassword
+    });
+    
+    await admin.save();
+    
+    res.status(201).json({ 
+      success: true, 
+      msg: 'Admin registered successfully',
+      admin: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        username: admin.username
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
 // Admin Login
 const adminLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
     
-    if (username !== 'admin' || password !== 'admin') {
+    // Default admin login
+    if (username === 'admin' && password === 'admin') {
+      const token = jwt.sign({ id: 'admin', role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      res.cookie('token', token);
+      
+      return res.json({ success: true, token, admin: { id: 'admin', name: 'Administrator', role: 'admin' } });
+    }
+    
+    // Find admin by email or username
+    const admin = await Admin.findOne({
+      $or: [{ email: username }, { username: username }]
+    });
+    
+    if (!admin) {
+      return res.status(400).json({ success: false, msg: 'Admin not found' });
+    }
+    
+    // Check password
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    if (!isPasswordValid) {
       return res.status(400).json({ success: false, msg: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: 'admin', role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '24h' });
     res.cookie('token', token);
     
-    res.json({ success: true, token, admin: { id: 'admin', name: 'Administrator', role: 'admin' } });
+    res.json({ 
+      success: true, 
+      token, 
+      admin: { 
+        id: admin._id, 
+        name: admin.name, 
+        email: admin.email,
+        role: 'admin' 
+      } 
+    });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
   }
@@ -336,15 +403,70 @@ const deleteMaterial = async (req, res) => {
 const updateTeacher = async (req, res) => {
   try {
     const { teacherId } = req.params;
-    const { name, email, phone } = req.body;
+    const { name, email, phone, department, designation } = req.body;
     
     const teacher = await Teacher.findByIdAndUpdate(
       teacherId,
-      { name, email, phone },
+      { name, email, phone, department, designation },
       { new: true }
     );
     
     res.json({ success: true, msg: 'Teacher updated successfully', teacher });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Update Student - Admin/Teacher Only
+const updateStudent = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const { name, email, phone, courseId } = req.body;
+    
+    const student = await Student.findByIdAndUpdate(
+      studentId,
+      { name, email, phone, courseId },
+      { new: true }
+    ).populate('courseId', 'courseName courseCode');
+    
+    res.json({ success: true, msg: 'Student updated successfully', student });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Get Student Details - Admin/Teacher Only
+const getStudentDetails = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    
+    const student = await Student.findById(studentId)
+      .populate('courseId', 'courseName courseCode courseDuration');
+    
+    if (!student) {
+      return res.status(404).json({ success: false, msg: 'Student not found' });
+    }
+    
+    res.json({ success: true, student });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Get Teacher Details - Admin Only
+const getTeacherDetails = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    
+    const teacher = await Teacher.findById(teacherId)
+      .populate('assignedCourse', 'courseName courseCode')
+      .populate('assignedSubjects', 'subjectName subjectCode');
+    
+    if (!teacher) {
+      return res.status(404).json({ success: false, msg: 'Teacher not found' });
+    }
+    
+    res.json({ success: true, teacher });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
   }
@@ -508,6 +630,7 @@ const getComprehensiveAttendanceReport = async (req, res) => {
 };
 
 module.exports = {
+  adminRegister,
   adminLogin,
   addCourse,
   addSubject,
@@ -524,5 +647,8 @@ module.exports = {
   deleteNotice,
   deleteMaterial,
   updateTeacher,
+  updateStudent,
+  getStudentDetails,
+  getTeacherDetails,
   getComprehensiveAttendanceReport
 };
