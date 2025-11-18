@@ -81,8 +81,8 @@ npm start
 ## 🔐 Default Login Credentials
 
 ### Admin Access
-- **Email**: admin@college.edu
-- **Password**: admin123
+- **Username**: admin
+- **Password**: admin
 
 ### Teacher Access
 - Teachers are created by admin

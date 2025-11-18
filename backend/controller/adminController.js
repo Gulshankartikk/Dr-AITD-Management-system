@@ -20,7 +20,7 @@ const adminLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
     
-    if (username !== 'admin' || password !== 'admin123') {
+    if (username !== 'admin' || password !== 'admin') {
       return res.status(400).json({ success: false, msg: 'Invalid credentials' });
     }
 

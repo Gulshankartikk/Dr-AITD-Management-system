@@ -40,7 +40,7 @@ const teacherLogin = async (req, res) => {
     }
     
     // Check if admin is trying to access teacher view
-    if (username === 'admin' && password === 'admin123') {
+    if (username === 'admin' && password === 'admin') {
       const token = jwt.sign({ id: 'admin', role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
       res.cookie('token', token);
       
@@ -50,7 +50,7 @@ const teacherLogin = async (req, res) => {
         teacher: { 
           id: 'admin', 
           name: 'Administrator (Teacher View)', 
-          email: 'admin@college.edu',
+          email: 'admin',
           assignedCourse: [],
           assignedSubjects: [],
           role: 'teacher' 

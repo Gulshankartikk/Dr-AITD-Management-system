@@ -15,17 +15,17 @@ const setupERP = async () => {
     console.log('✅ Connected to MongoDB');
 
     // Create Admin User
-    const adminExists = await Admin.findOne({ email: 'admin@college.edu' });
+    const adminExists = await Admin.findOne({ email: 'admin' });
     if (!adminExists) {
-      const hashedPassword = await bcrypt.hash('admin123', 10);
+      const hashedPassword = await bcrypt.hash('admin', 10);
       const admin = new Admin({
         name: 'System Administrator',
-        email: 'admin@college.edu',
+        email: 'admin',
         password: hashedPassword,
         role: 'admin'
       });
       await admin.save();
-      console.log('✅ Admin user created (admin@college.edu / admin123)');
+      console.log('✅ Admin user created (admin / admin)');
     } else {
       console.log('ℹ️ Admin user already exists');
     }
@@ -63,7 +63,7 @@ const setupERP = async () => {
 
     console.log('🎉 College ERP Setup Complete!');
     console.log('📋 Login Credentials:');
-    console.log('   Admin: admin@college.edu / admin123');
+    console.log('   Admin: admin / admin');
     console.log('🌐 Access URLs:');
     console.log('   Frontend: http://localhost:5173');
     console.log('   Backend: http://localhost:4000');

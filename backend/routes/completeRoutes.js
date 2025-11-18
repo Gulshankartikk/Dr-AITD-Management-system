@@ -22,6 +22,26 @@ const { Course, Subject, Teacher, Student } = require('../models/CompleteModels'
 // Login
 router.post('/admin/login', adminController.adminLogin);
 
+// ======================================================
+//                     TEACHER ROUTES
+// ======================================================
+
+// Login
+router.post('/teacher/login', teacherController.teacherLogin);
+
+// Dashboard
+router.get('/teacher/:teacherId/dashboard', verifyToken, teacherController.getTeacherDashboard);
+
+// ======================================================
+//                     STUDENT ROUTES
+// ======================================================
+
+// Login
+router.post('/student/login', studentController.studentLogin);
+
+// Dashboard
+router.get('/student/:studentId/dashboard', verifyToken, studentController.getStudentDashboard);
+
 // Dashboard
 router.get('/admin/dashboard', verifyToken, isAdmin, adminController.getDashboardData);
 
