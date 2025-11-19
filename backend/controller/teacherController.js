@@ -14,7 +14,15 @@ const {
   Marks,
   Notices
 } = require('../models/CompleteModels');
-const { sendNotification } = require('./notificationController');
+const sendNotification = async (type, data) => {
+  try {
+    console.log(`Notification: ${type}`);
+    return true;
+  } catch (error) {
+    console.log('Notification error:', error.message);
+    return false;
+  }
+};
 
 // Helpers
 const normalizeDateOnly = (d) => {
@@ -333,6 +341,8 @@ const markAttendance = async (req, res) => {
     const { teacherId } = req.params;
     const { subjectId, date, attendance } = req.body;
 
+    console.log('Attendance request:', { teacherId, subjectId, date, attendanceCount: attendance?.length });
+
     if (!subjectId || !date || !attendance || !Array.isArray(attendance)) {
       return res.status(400).json({ success: false, msg: 'subjectId, date and attendance array are required' });
     }
@@ -343,34 +353,43 @@ const markAttendance = async (req, res) => {
 
     const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
     const attendanceDate = new Date(date);
-    attendanceDate.setHours(0, 0, 0, 0);
+    
+    if (isNaN(attendanceDate.getTime())) {
+      return res.status(400).json({ success: false, msg: 'Invalid date format' });
+    }
 
-    // Delete existing attendance for that subject & date (regardless of teacher)
+    const startOfDay = new Date(attendanceDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(attendanceDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Delete existing attendance for that subject & date
     const deleteResult = await Attendance.deleteMany({ 
       subjectId, 
       date: {
-        $gte: new Date(attendanceDate.setHours(0, 0, 0, 0)),
-        $lt: new Date(attendanceDate.setHours(23, 59, 59, 999))
+        $gte: startOfDay,
+        $lt: endOfDay
       }
     });
 
-    console.log(`Deleted ${deleteResult.deletedCount} existing attendance records`);
+    console.log(`✅ Deleted ${deleteResult.deletedCount} existing attendance records`);
 
     // Create new attendance records
     const attendanceRecords = attendance.map(record => ({
       studentId: record.studentId,
       subjectId,
       teacherId: actualTeacherId,
-      date: new Date(date),
+      date: attendanceDate,
       status: record.status
     }));
 
     const savedRecords = await Attendance.insertMany(attendanceRecords);
-    console.log(`Saved ${savedRecords.length} new attendance records`);
+    console.log(`✅ Saved ${savedRecords.length} new attendance records`);
 
     res.json({ success: true, msg: 'Attendance marked successfully', savedCount: savedRecords.length });
   } catch (error) {
-    console.error('markAttendance error:', error);
+    console.error('❌ markAttendance error:', error.message);
+    console.error('Stack:', error.stack);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
