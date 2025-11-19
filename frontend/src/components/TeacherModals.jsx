@@ -222,6 +222,8 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
 
   useEffect(() => {
     if (isOpen) {
+      setFile(null);
+      setUploadType('link');
       fetchSubjects();
     }
   }, [isOpen]);
@@ -232,11 +234,15 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
       const response = await axios.get(`${BASE_URL}/api/subjects`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (response.data.success) {
+      if (response.data.success && response.data.subjects.length > 0) {
         setSubjects(response.data.subjects);
-        if (response.data.subjects.length > 0) {
-          setFormData(prev => ({ ...prev, subjectId: response.data.subjects[0]._id }));
-        }
+        setFormData({ 
+          title: '', 
+          description: '', 
+          deadline: '', 
+          subjectId: response.data.subjects[0]._id,
+          fileUrl: ''
+        });
       }
     } catch (error) {
       console.error('Error fetching subjects:', error);
@@ -254,7 +260,7 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.title || !formData.deadline) {
+    if (!formData.title || !formData.deadline || !formData.subjectId) {
       toast.error('Please fill all required fields');
       return;
     }
@@ -276,7 +282,7 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
       if (uploadType === 'file') {
         const formDataToSend = new FormData();
         formDataToSend.append('title', formData.title);
-        formDataToSend.append('description', formData.description);
+        formDataToSend.append('description', formData.description || '');
         formDataToSend.append('deadline', formData.deadline);
         formDataToSend.append('subjectId', formData.subjectId);
         formDataToSend.append('file', file);
@@ -294,11 +300,10 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
       }
 
       toast.success('Assignment created successfully!');
-      setFormData({ title: '', description: '', deadline: '', subjectId: subjects[0]?._id || '', fileUrl: '' });
-      setFile(null);
       onClose();
     } catch (error) {
-      toast.error('Failed to create assignment');
+      console.error('Assignment error:', error);
+      toast.error(error.response?.data?.msg || 'Failed to create assignment');
     } finally {
       setLoading(false);
     }
@@ -335,6 +340,7 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
               onChange={(e) => setFormData({...formData, subjectId: e.target.value})}
               className="w-full p-2 border rounded-lg"
             >
+              <option value="">Select Subject</option>
               {subjects.map(subject => (
                 <option key={subject._id} value={subject._id}>
                   {subject.subjectName} - {subject.subjectCode}
@@ -406,7 +412,7 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
           )}
           
           <div>
-            <label className="block text-sm font-medium mb-2">Description</label>
+            <label className="block text-sm font-medium mb-2">Description (Optional)</label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -438,6 +444,7 @@ export const NoticeModal = ({ isOpen, onClose, teacherId }) => {
     courseId: ''
   });
   const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -451,20 +458,21 @@ export const NoticeModal = ({ isOpen, onClose, teacherId }) => {
       const response = await axios.get(`${BASE_URL}/api/courses`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (response.data.success) {
+      if (response.data.success && response.data.courses.length > 0) {
         setCourses(response.data.courses);
-        if (response.data.courses.length > 0) {
-          setFormData(prev => ({ ...prev, courseId: response.data.courses[0]._id }));
-        }
+        setFormData({ 
+          title: '', 
+          description: '', 
+          courseId: response.data.courses[0]._id 
+        });
       }
     } catch (error) {
       console.error('Error fetching courses:', error);
     }
   };
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!formData.title || !formData.description) {
+    if (!formData.title || !formData.description || !formData.courseId) {
       toast.error('Please fill all required fields');
       return;
     }
@@ -477,10 +485,10 @@ export const NoticeModal = ({ isOpen, onClose, teacherId }) => {
       });
 
       toast.success('Notice posted successfully!');
-      setFormData({ title: '', description: '', courseId: courses[0]?._id || '' });
       onClose();
     } catch (error) {
-      toast.error('Failed to post notice');
+      console.error('Notice error:', error);
+      toast.error(error.response?.data?.msg || 'Failed to post notice');
     } finally {
       setLoading(false);
     }
@@ -517,6 +525,7 @@ export const NoticeModal = ({ isOpen, onClose, teacherId }) => {
               onChange={(e) => setFormData({...formData, courseId: e.target.value})}
               className="w-full p-2 border rounded-lg"
             >
+              <option value="">Select Course</option>
               {courses.map(course => (
                 <option key={course._id} value={course._id}>
                   {course.courseName} ({course.courseCode})
@@ -565,6 +574,8 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
 
   useEffect(() => {
     if (isOpen) {
+      setFile(null);
+      setUploadType('link');
       fetchSubjects();
     }
   }, [isOpen]);
@@ -575,11 +586,14 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
       const response = await axios.get(`${BASE_URL}/api/subjects`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (response.data.success) {
+      if (response.data.success && response.data.subjects.length > 0) {
         setSubjects(response.data.subjects);
-        if (response.data.subjects.length > 0) {
-          setFormData(prev => ({ ...prev, subjectId: response.data.subjects[0]._id }));
-        }
+        setFormData({ 
+          title: '', 
+          description: '', 
+          subjectId: response.data.subjects[0]._id,
+          fileUrl: ''
+        });
       }
     } catch (error) {
       console.error('Error fetching subjects:', error);
@@ -597,7 +611,7 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.title) {
+    if (!formData.title || !formData.subjectId) {
       toast.error('Please fill all required fields');
       return;
     }
@@ -619,7 +633,7 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
       if (uploadType === 'file') {
         const formDataToSend = new FormData();
         formDataToSend.append('title', formData.title);
-        formDataToSend.append('description', formData.description);
+        formDataToSend.append('description', formData.description || '');
         formDataToSend.append('subjectId', formData.subjectId);
         formDataToSend.append('file', file);
 
@@ -636,8 +650,6 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
       }
 
       toast.success('Material uploaded successfully!');
-      setFormData({ title: '', description: '', subjectId: subjects[0]?._id || '', fileUrl: '' });
-      setFile(null);
       onClose();
     } catch (error) {
       console.error('Material upload error:', error);
@@ -678,6 +690,7 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
               onChange={(e) => setFormData({...formData, subjectId: e.target.value})}
               className="w-full p-2 border rounded-lg"
             >
+              <option value="">Select Subject</option>
               {subjects.map(subject => (
                 <option key={subject._id} value={subject._id}>
                   {subject.subjectName} - {subject.subjectCode}
@@ -739,7 +752,7 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
           )}
           
           <div>
-            <label className="block text-sm font-medium mb-2">Description</label>
+            <label className="block text-sm font-medium mb-2">Description (Optional)</label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}

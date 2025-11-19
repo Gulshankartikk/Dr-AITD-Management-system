@@ -480,12 +480,20 @@ const addStudyMaterial = async (req, res) => {
     const { teacherId } = req.params;
     const { subjectId, title, description, fileUrl } = req.body;
     
+    if (!title || !subjectId) {
+      return res.status(400).json({ success: false, msg: 'Title and subject are required' });
+    }
+    
     // Handle admin access
     const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
     
     let materialFileUrl = fileUrl;
     if (req.file) {
       materialFileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    }
+    
+    if (!materialFileUrl) {
+      return res.status(400).json({ success: false, msg: 'Please provide a file or file URL' });
     }
     
     const material = new StudyMaterial({ teacherId: actualTeacherId, subjectId, title, fileUrl: materialFileUrl, description });
@@ -506,6 +514,7 @@ const addStudyMaterial = async (req, res) => {
     
     res.status(201).json({ success: true, msg: 'Study material added successfully', material });
   } catch (error) {
+    console.error('Add material error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
@@ -514,17 +523,21 @@ const addStudyMaterial = async (req, res) => {
 const addAssignment = async (req, res) => {
   try {
     const { teacherId } = req.params;
-    const { subjectId, title, description, deadline } = req.body;
+    const { subjectId, title, description, deadline, fileUrl } = req.body;
+    
+    if (!title || !subjectId || !deadline) {
+      return res.status(400).json({ success: false, msg: 'Title, subject, and deadline are required' });
+    }
     
     // Handle admin access
     const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
     
-    let fileUrl = null;
+    let assignmentFileUrl = fileUrl || null;
     if (req.file) {
-      fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+      assignmentFileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
     }
     
-    const assignment = new Assignments({ teacherId: actualTeacherId, subjectId, title, description, deadline, fileUrl });
+    const assignment = new Assignments({ teacherId: actualTeacherId, subjectId, title, description, deadline, fileUrl: assignmentFileUrl });
     await assignment.save();
     
     // Get teacher and subject details for notification
@@ -542,6 +555,7 @@ const addAssignment = async (req, res) => {
     
     res.status(201).json({ success: true, msg: 'Assignment added successfully', assignment });
   } catch (error) {
+    console.error('Add assignment error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
@@ -551,6 +565,10 @@ const addNotice = async (req, res) => {
   try {
     const { teacherId } = req.params;
     const { courseId, title, description } = req.body;
+    
+    if (!title || !description || !courseId) {
+      return res.status(400).json({ success: false, msg: 'Title, description, and course are required' });
+    }
     
     // Handle admin access
     const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
@@ -571,6 +589,7 @@ const addNotice = async (req, res) => {
     
     res.status(201).json({ success: true, msg: 'Notice added successfully', notice });
   } catch (error) {
+    console.error('Add notice error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };

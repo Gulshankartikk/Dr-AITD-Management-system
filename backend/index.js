@@ -54,10 +54,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Error handling middleware
+// routes
+app.use("/subjects", require("./routes/subjects"));
+app.use("/api", require("./routes/completeRoutes"));
+
+// Error handling middleware (must be after routes)
 app.use((err, req, res, next) => {
-  console.error('❌ Server Error:', err.stack);
-  res.status(500).json({ success: false, msg: 'Internal Server Error' });
+  console.error('❌ Server Error:', err);
+  res.status(500).json({ success: false, msg: err.message || 'Internal Server Error' });
 });
 
 // Handle unhandled promise rejections
@@ -69,10 +73,6 @@ process.on('unhandledRejection', (err) => {
 process.on('uncaughtException', (err) => {
   console.error('❌ Uncaught Exception:', err);
 });
-
-// routes
-app.use("/subjects", require("./routes/subjects"));
-app.use("/api", require("./routes/completeRoutes"));
 
 // 404 handler
 app.use('*', (req, res) => {
