@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './LoginToggle.css';
+import '../styles/LoginToggle.css';
 
 const LoginToggle = () => {
   const [isTeacher, setIsTeacher] = useState(false);

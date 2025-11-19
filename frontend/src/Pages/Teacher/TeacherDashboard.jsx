@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { BASE_URL } from '../../constants/baseUrl';
+import { BASE_URL } from '../../services/api';
 import {
   FaUsers,
   FaClipboardList,

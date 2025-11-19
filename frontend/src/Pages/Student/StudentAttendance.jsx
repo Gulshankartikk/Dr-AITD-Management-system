@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { BASE_URL } from '../../constants/baseUrl';
+import { BASE_URL } from '../../services/api';
 import Cookies from 'js-cookie';
 import { FaClipboardList, FaCalendarAlt, FaCheck, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-toastify';

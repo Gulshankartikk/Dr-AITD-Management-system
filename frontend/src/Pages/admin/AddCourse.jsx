@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { BASE_URL } from '../../constants/baseUrl';
+import { BASE_URL } from '../../services/api';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { BASE_URL } from "../../../constants/baseUrl"
+import { BASE_URL } from "../../../services/api"
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate, useParams } from "react-router-dom";

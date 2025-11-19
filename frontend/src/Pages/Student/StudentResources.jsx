@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { BASE_URL } from '../../constants/baseUrl';
+import { BASE_URL } from '../../services/api';
 import Cookies from 'js-cookie';
 import { FaDownload, FaEye, FaFileAlt, FaCalendarAlt, FaUser } from 'react-icons/fa';
 import { toast } from 'react-toastify';

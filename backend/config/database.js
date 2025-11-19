@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 
+const config = require('./environment');
+
 const db = async () => {
   try {
-    const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/college-erp';
+    const mongoUri = config.MONGO_URI;
     
     await mongoose.connect(mongoUri);
 

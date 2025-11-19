@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaChalkboardTeacher, FaUserGraduate, FaSignOutAlt } from 'react-icons/fa';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import { BASE_URL } from '../constants/baseUrl';
+import { BASE_URL } from '../services/api';
 
 const TeacherHeader = ({ currentRole = 'teacher' }) => {
   const navigate = useNavigate();

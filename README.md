@@ -98,48 +98,70 @@ npm start
 College-ERP-main/
 ├── backend/                 # Backend API server
 │   ├── controller/         # Route controllers
-│   ├── database/          # Database connection
-│   ├── middleware/        # Authentication & upload middleware
-│   ├── models/           # MongoDB schemas
-│   ├── routes/           # API routes
-│   ├── uploads/          # File upload directory
-│   └── index.js          # Server entry point
+│   ├── models/            # Database models
+│   ├── routes/            # API routes
+│   ├── middleware/        # Authentication & middleware
+│   ├── config/            # Configuration files
+│   ├── services/          # Business logic services
+│   ├── validators/        # Input validation
+│   ├── utils/             # Utility scripts
+│   ├── uploads/           # File upload directory
+│   ├── logs/              # Backend logs
+│   └── index.js           # Server entry point
 ├── frontend/              # React frontend
 │   ├── src/
-│   │   ├── components/   # Reusable components
-│   │   ├── Pages/        # Page components
-│   │   ├── features/     # Redux slices
-│   │   └── constants/    # Configuration constants
-│   └── public/           # Static assets
-├── package.json          # Root package configuration
-├── start-server.js       # Application startup script
-└── setupCompleteERP.js   # Database initialization
+│   │   ├── components/    # Reusable UI components
+│   │   ├── Pages/         # Page components
+│   │   ├── features/      # Redux slices
+│   │   ├── services/      # API services
+│   │   ├── utils/         # Utility functions
+│   │   ├── hooks/         # Custom React hooks
+│   │   ├── context/       # React context
+│   │   ├── layouts/       # Layout components
+│   │   ├── styles/        # CSS files
+│   │   └── assets/        # Static assets
+│   └── public/            # Public assets
+├── config/                # Global configuration
+├── docs/                  # Documentation
+├── scripts/               # Setup & utility scripts
+├── tests/                 # Integration tests
+├── logs/                  # Application logs
+├── backups/               # Database backups
+├── deployment/            # Deployment configs
+└── package.json           # Root configuration
 ```
+
+📖 **Detailed Structure**: See [PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)
 
 ## 🔧 Available Scripts
 
 ```bash
-# Install all dependencies
-npm run install-all
+# Quick Start
+npm run install-all     # Install all dependencies
+npm run setup-env       # Initialize database
+npm start              # Start both servers
 
-# Start both servers
-npm start
+# Development
+npm run backend        # Start backend only
+npm run frontend       # Start frontend only
+npm run dev           # Start both in development mode
 
-# Start backend only
-npm run backend
+# Production
+npm run build         # Build for production
 
-# Start frontend only
-npm run frontend
+# Maintenance
+npm run health-check  # System health check
+npm run clean         # Clean node_modules
+npm run clean-logs    # Clean log files
+npm run backup-db     # Backup database
+npm run restore-db    # Restore database
 
-# Build for production
-npm run build
-
-# Run health check
-npm run health-check
-
-# Setup database
-npm run setup-env
+# Testing & Quality
+npm test              # Run all tests
+npm run lint          # Run linting
 ```
+
+📖 **Setup Guide**: See [SETUP_GUIDE.md](docs/SETUP_GUIDE.md)
 
 ## 🌐 API Endpoints
 

@@ -66,14 +66,14 @@ const studentLogin = async (req, res) => {
     
     // Check for simple student login
     if (username === 'student' && password === 'student123') {
-      const token = jwt.sign({ id: 'student', role: 'student' }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      const token = jwt.sign({ id: 'demo-student', role: 'student' }, process.env.JWT_SECRET, { expiresIn: '24h' });
       res.cookie('token', token);
       
       return res.json({ 
         success: true, 
         token, 
         student: { 
-          id: 'student', 
+          id: 'demo-student', 
           name: 'Demo Student', 
           email: 'student@college.edu',
           rollNo: 'STU001',
@@ -85,14 +85,15 @@ const studentLogin = async (req, res) => {
     
     // Check if admin is trying to access student view
     if (username === 'admin' && password === 'admin') {
-      const token = jwt.sign({ id: 'admin', role: 'student' }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      const token = jwt.sign({ id: 'admin-student', role: 'student' }, process.env.JWT_SECRET, { expiresIn: '24h' });
       res.cookie('token', token);
+      
       
       return res.json({ 
         success: true, 
         token, 
         student: { 
-          id: 'admin', 
+          id: 'admin-student', 
           name: 'Administrator (Student View)', 
           email: 'admin',
           rollNo: 'ADMIN001',
@@ -148,6 +149,25 @@ const getStudentProfile = async (req, res) => {
   try {
     const { studentId } = req.params;
     
+    // Handle demo students (including backward compatibility)
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+      return res.json({
+        success: true,
+        student: {
+          _id: studentId,
+          name: (studentId === 'demo-student' || studentId === 'student') ? 'Demo Student' : 'Administrator (Student View)',
+          email: (studentId === 'demo-student' || studentId === 'student') ? 'student@college.edu' : 'admin@college.edu',
+          rollNo: (studentId === 'demo-student' || studentId === 'student') ? 'STU001' : 'ADMIN001',
+          phone: '+91 1234567890',
+          courseId: {
+            courseName: (studentId === 'demo-student' || studentId === 'student') ? 'Computer Science' : 'System Administration',
+            courseCode: (studentId === 'demo-student' || studentId === 'student') ? 'CSE' : 'ADMIN',
+            courseDuration: 4
+          }
+        }
+      });
+    }
+    
     const student = await Student.findById(studentId).populate('courseId', 'courseName courseCode courseDuration');
     
     res.json({ success: true, student });
@@ -200,6 +220,25 @@ const getStudentAttendance = async (req, res) => {
   try {
     const { studentId } = req.params;
     const { subjectId, month, year } = req.query;
+
+    // Handle demo students (including backward compatibility)
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+      return res.json({
+        success: true,
+        attendance: [],
+        student: {
+          _id: studentId,
+          name: (studentId === 'demo-student' || studentId === 'student') ? 'Demo Student' : 'Administrator (Student View)',
+          email: (studentId === 'demo-student' || studentId === 'student') ? 'student@college.edu' : 'admin@college.edu'
+        },
+        stats: {
+          totalClasses: 0,
+          presentClasses: 0,
+          absentClasses: 0,
+          attendancePercentage: 0
+        }
+      });
+    }
 
     // Fetch student data to include in response
     const student = await Student.findById(studentId).populate(
@@ -274,6 +313,18 @@ const getNotesBySubject = async (req, res) => {
     const { studentId } = req.params;
     const { subjectId } = req.query;
     
+    // Handle demo students (including backward compatibility)
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+      return res.json({
+        success: true,
+        notes: [],
+        student: {
+          _id: studentId,
+          name: (studentId === 'demo-student' || studentId === 'student') ? 'Demo Student' : 'Administrator (Student View)'
+        }
+      });
+    }
+    
     const student = await Student.findById(studentId);
     const subjects = await Subject.find({ courseId: student.courseId });
     const subjectIds = subjectId ? [subjectId] : subjects.map(s => s._id);
@@ -295,6 +346,18 @@ const getStudyMaterials = async (req, res) => {
     const { studentId } = req.params;
     const { subjectId } = req.query;
     
+    // Handle demo students (including backward compatibility)
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+      return res.json({
+        success: true,
+        materials: [],
+        student: {
+          _id: studentId,
+          name: (studentId === 'demo-student' || studentId === 'student') ? 'Demo Student' : 'Administrator (Student View)'
+        }
+      });
+    }
+    
     const student = await Student.findById(studentId);
     const subjects = await Subject.find({ courseId: student.courseId });
     const subjectIds = subjectId ? [subjectId] : subjects.map(s => s._id);
@@ -315,6 +378,18 @@ const getAssignments = async (req, res) => {
   try {
     const { studentId } = req.params;
     const { subjectId } = req.query;
+    
+    // Handle demo students (including backward compatibility)
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+      return res.json({
+        success: true,
+        assignments: [],
+        student: {
+          _id: studentId,
+          name: (studentId === 'demo-student' || studentId === 'student') ? 'Demo Student' : 'Administrator (Student View)'
+        }
+      });
+    }
     
     const student = await Student.findById(studentId);
     const subjects = await Subject.find({ courseId: student.courseId });
@@ -360,6 +435,14 @@ const getStudentMarks = async (req, res) => {
     const { studentId } = req.params;
     const { subjectId, examType } = req.query;
     
+    // Handle demo students (including backward compatibility)
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+      return res.json({
+        success: true,
+        marks: []
+      });
+    }
+    
     let query = { studentId };
     if (subjectId) query.subjectId = subjectId;
     if (examType) query.examType = examType;
@@ -396,15 +479,15 @@ const getStudentDashboard = async (req, res) => {
   try {
     const { studentId } = req.params;
     
-    // Handle admin access
-    if (studentId === 'admin') {
+    // Handle admin access (including backward compatibility)
+    if (studentId === 'admin-student' || studentId === 'admin') {
       const courses = await Course.find({ isActive: true }).limit(1);
       const subjects = await Subject.find({ isActive: true }).limit(2);
       
       return res.json({
         success: true,
         student: {
-          _id: 'admin',
+          _id: studentId,
           name: 'Administrator (Student View)',
           email: 'admin@college.edu',
           rollNo: 'ADMIN001',
@@ -413,14 +496,14 @@ const getStudentDashboard = async (req, res) => {
       });
     }
     
-    // Handle demo student access
-    if (studentId === 'student') {
+    // Handle demo student access (including backward compatibility)
+    if (studentId === 'demo-student' || studentId === 'student') {
       const courses = await Course.find({ isActive: true }).limit(1);
       
       return res.json({
         success: true,
         student: {
-          _id: 'student',
+          _id: studentId,
           name: 'Demo Student',
           email: 'student@college.edu',
           rollNo: 'STU001',
