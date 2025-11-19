@@ -23,19 +23,22 @@ const StudentHeader = ({ studentId, studentName }) => {
           </div>
 
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to={`/student/${studentId}/dashboard`} className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link to={`/student/${studentId}/dashboard`} className="text-gray-700 hover:text-blue-600 font-semibold">
               Dashboard
             </Link>
-            <Link to={`/student/${studentId}/notes`} className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link to={`/student/${studentId}/profile`} className="text-gray-700 hover:text-blue-600 font-semibold">
+              Profile
+            </Link>
+            <Link to={`/student/${studentId}/notes`} className="text-gray-700 hover:text-blue-600 font-semibold">
               Notes
             </Link>
-            <Link to={`/student/${studentId}/materials`} className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link to={`/student/${studentId}/materials`} className="text-gray-700 hover:text-blue-600 font-semibold">
               Materials
             </Link>
-            <Link to={`/student/${studentId}/assignments`} className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link to={`/student/${studentId}/assignments`} className="text-gray-700 hover:text-blue-600 font-semibold">
               Assignments
             </Link>
-            <Link to={`/student/${studentId}/attendance`} className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link to={`/student/${studentId}/attendance`} className="text-gray-700 hover:text-blue-600 font-semibold">
               Attendance
             </Link>
           </nav>

@@ -75,18 +75,25 @@ const StudentDashboard = () => {
 
   const quickActions = [
     {
+      title: "My Profile",
+      description: "View your complete profile",
+      icon: <FaUser className="text-3xl text-blue-500" />,
+      link: `/student/${studentId}/profile`,
+      color: "bg-blue-50 hover:bg-blue-100 border-blue-200"
+    },
+    {
       title: "Notes",
       description: "Access your class notes",
-      icon: <FaFileAlt className="text-3xl text-blue-500" />,
+      icon: <FaFileAlt className="text-3xl text-green-500" />,
       link: `/student/${studentId}/notes`,
-      color: "bg-blue-50 hover:bg-blue-100 border-blue-200"
+      color: "bg-green-50 hover:bg-green-100 border-green-200"
     },
     {
       title: "Study Materials",
       description: "Download study materials",
-      icon: <FaBook className="text-3xl text-green-500" />,
+      icon: <FaBook className="text-3xl text-yellow-500" />,
       link: `/student/${studentId}/materials`,
-      color: "bg-green-50 hover:bg-green-100 border-green-200"
+      color: "bg-yellow-50 hover:bg-yellow-100 border-yellow-200"
     },
     {
       title: "Assignments",
@@ -142,7 +149,7 @@ const StudentDashboard = () => {
           </div>
           
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             {quickActions.map((action, index) => (
               <Link
                 key={index}

@@ -32,6 +32,8 @@ import StudentAssignments from "./Pages/Student/StudentAssignments";
 import StudentAttendance from "./Pages/Student/StudentAttendance";
 import TeacherDashboard from "./Pages/Teacher/TeacherDashboard";
 import StudentList from "./Pages/Teacher/StudentList";
+import StudentProfile from "./Pages/Student/StudentProfile";
+import TeacherProfile from "./Pages/Teacher/TeacherProfile";
 import UpdatePass from "./Pages/Common/UpdatePass";
 import ForgetPass from "./Pages/Common/ForgetPassword/ForgetPass";
 import VerifyOtp from "./Pages/Common/ForgetPassword/VerifyOtp";
@@ -48,6 +50,7 @@ const router = createBrowserRouter(
       {/* student routes */}
       <Route path="student/:studentId">
         <Route path="dashboard" element={<StudentDashboard />} />
+        <Route path="profile" element={<StudentProfile />} />
         <Route path="notes" element={<StudentNotes />} />
         <Route path="materials" element={<StudentMaterials />} />
         <Route path="assignments" element={<StudentAssignments />} />
@@ -59,6 +62,7 @@ const router = createBrowserRouter(
       {/* teacher routes */}
       <Route path="teacher/:id">
         <Route path="dashboard" element={<TeacherDashboard />} />
+        <Route path="profile" element={<TeacherProfile />} />
         <Route path="students" element={<StudentList />} />
         <Route path="summary" element={<TeacherSummary />} />
         <Route path="updatePassword" element={<UpdatePass />} />

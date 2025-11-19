@@ -10,7 +10,8 @@ import {
   FaBell,
   FaChartBar,
   FaCalendarAlt,
-  FaPlus
+  FaPlus,
+  FaUser
 } from 'react-icons/fa';
 import { MdAssignment, MdNotifications } from 'react-icons/md';
 import Cookies from 'js-cookie';
@@ -125,7 +126,13 @@ const TeacherDashboard = () => {
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+
+            <QuickAction
+              label="My Profile"
+              icon={<FaUser className="text-blue-500 mb-2" size={24} />}
+              onClick={() => navigate(`/teacher/${teacherId}/profile`)}
+            />
 
             <QuickAction
               label="View All Students"
