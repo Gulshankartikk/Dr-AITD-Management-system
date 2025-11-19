@@ -1,3 +1,4 @@
+// teacherController.js
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {
@@ -15,21 +16,36 @@ const {
 } = require('../models/CompleteModels');
 const { sendNotification } = require('./notificationController');
 
-// Teacher Registration
+// Helpers
+const normalizeDateOnly = (d) => {
+  // Accept string or Date; return YYYY-MM-DD
+  if (!d) return null;
+  const dt = new Date(d);
+  if (Number.isNaN(dt.getTime())) return null;
+  return dt.toISOString().split('T')[0];
+};
+
+const buildFileUrl = (req, file) => {
+  if (!file) return null;
+  return `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+};
+
+// ------------------------- TEACHER REGISTER -------------------------
 const teacherRegister = async (req, res) => {
   try {
     const { name, email, phone, password, department, designation } = req.body;
-    
-    // Check if teacher already exists
+    if (!name || !email || !password) {
+      return res.status(400).json({ success: false, msg: 'Name, email and password are required' });
+    }
+
     const existingTeacher = await Teacher.findOne({ email });
     if (existingTeacher) {
       return res.status(400).json({ success: false, msg: 'Teacher already exists with this email' });
     }
-    
-    // Generate username from email
+
     const username = email.split('@')[0];
-    
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const teacher = new Teacher({
       name,
       email,
@@ -37,13 +53,14 @@ const teacherRegister = async (req, res) => {
       phone,
       password: hashedPassword,
       department,
-      designation
+      designation,
+      isActive: true
     });
-    
+
     await teacher.save();
-    
-    res.status(201).json({ 
-      success: true, 
+
+    res.status(201).json({
+      success: true,
       msg: 'Teacher registered successfully',
       teacher: {
         id: teacher._id,
@@ -53,145 +70,149 @@ const teacherRegister = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('teacherRegister error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Teacher Login
+// ------------------------- TEACHER LOGIN -------------------------
 const teacherLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
-    
-    // Predefined teachers
+    if (!username || !password) return res.status(400).json({ success: false, msg: 'Username and password required' });
+
+    // Predefined/demo teachers for quick access (kept intentionally)
     const predefinedTeachers = {
-      'gulshan': { name: 'Gulshan Kartik', email: 'gulshan@college.edu' },
-      'ankita': { name: 'Ankita Maurya', email: 'ankita@college.edu' },
-      'aditya': { name: 'Aditya Kumar Sharma', email: 'aditya@college.edu' },
-      'abhishek': { name: 'Abhishek Gond', email: 'abhishek@college.edu' }
+      'gulshan': { id: 'gulshan', name: 'Gulshan Kartik', email: 'gulshan@college.edu' },
+      'ankita': { id: 'ankita', name: 'Ankita Maurya', email: 'ankita@college.edu' },
+      'aditya': { id: 'aditya', name: 'Aditya Kumar Sharma', email: 'aditya@college.edu' },
+      'abhishek': { id: 'abhishek', name: 'Abhishek Gond', email: 'abhishek@college.edu' }
     };
-    
-    if (predefinedTeachers[username.toLowerCase()] && password === 'teacher123') {
-      const teacherData = predefinedTeachers[username.toLowerCase()];
-      const token = jwt.sign({ id: username, role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-      res.cookie('token', token);
-      
-      return res.json({ 
-        success: true, 
-        token, 
-        teacher: { 
-          id: username, 
-          name: teacherData.name, 
-          email: teacherData.email,
+
+    const lower = username.toLowerCase();
+    if (predefinedTeachers[lower] && password === 'teacher123') {
+      const user = predefinedTeachers[lower];
+      const token = jwt.sign({ id: user.id, role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      res.cookie('token', token, { httpOnly: true });
+
+      return res.json({
+        success: true,
+        token,
+        teacher: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
           assignedCourse: [],
           assignedSubjects: [],
-          role: 'teacher' 
-        } 
+          role: 'teacher'
+        }
       });
     }
-    
-    // Check for simple teacher login
-    if (username === 'teacher' && password === 'teacher123') {
+
+    // Demo account:
+    if (lower === 'teacher' && password === 'teacher123') {
       const token = jwt.sign({ id: 'teacher', role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-      res.cookie('token', token);
-      
-      return res.json({ 
-        success: true, 
-        token, 
-        teacher: { 
-          id: 'teacher', 
-          name: 'Demo Teacher', 
+      res.cookie('token', token, { httpOnly: true });
+
+      return res.json({
+        success: true,
+        token,
+        teacher: {
+          id: 'teacher',
+          name: 'Demo Teacher',
           email: 'teacher@college.edu',
           assignedCourse: [],
           assignedSubjects: [],
-          role: 'teacher' 
-        } 
+          role: 'teacher'
+        }
       });
     }
-    
-    // Check if admin is trying to access teacher view
-    if (username === 'admin' && password === 'admin') {
+
+    // Admin view as teacher (demo)
+    if (lower === 'admin' && password === 'admin') {
       const token = jwt.sign({ id: 'admin', role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-      res.cookie('token', token);
-      
-      return res.json({ 
-        success: true, 
-        token, 
-        teacher: { 
-          id: 'admin', 
-          name: 'Administrator (Teacher View)', 
-          email: 'admin',
+      res.cookie('token', token, { httpOnly: true });
+
+      return res.json({
+        success: true,
+        token,
+        teacher: {
+          id: 'admin',
+          name: 'Administrator (Teacher View)',
+          email: 'admin@college.edu',
           assignedCourse: [],
           assignedSubjects: [],
-          role: 'teacher' 
-        } 
+          role: 'teacher'
+        }
       });
     }
-    
-    // Find teacher by email or username
+
+    // Real teacher auth: find by email or username
     const teacher = await Teacher.findOne({
-      $or: [{ email: username }, { username: username }],
+      $or: [{ email: username }, { username }],
       isActive: true
-    }).populate('assignedCourse', 'courseName courseCode')
+    })
+      .populate('assignedCourse', 'courseName courseCode')
       .populate('assignedSubjects', 'subjectName subjectCode');
-    
+
     if (!teacher) {
       return res.status(400).json({ success: false, msg: 'Teacher not found' });
     }
-    
-    // Check password
+
     const isPasswordValid = await bcrypt.compare(password, teacher.password);
     if (!isPasswordValid) {
       return res.status(400).json({ success: false, msg: 'Invalid credentials' });
     }
 
     const token = jwt.sign({ id: teacher._id, role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    res.cookie('token', token);
-    
-    res.json({ 
-      success: true, 
-      token, 
-      teacher: { 
-        id: teacher._id, 
-        name: teacher.name, 
+    res.cookie('token', token, { httpOnly: true });
+
+    res.json({
+      success: true,
+      token,
+      teacher: {
+        id: teacher._id,
+        name: teacher.name,
         email: teacher.email,
         assignedCourse: teacher.assignedCourse,
         assignedSubjects: teacher.assignedSubjects,
-        role: 'teacher' 
-      } 
+        role: 'teacher'
+      }
     });
   } catch (error) {
+    console.error('teacherLogin error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Get Teacher Dashboard
+// ------------------------- TEACHER DASHBOARD -------------------------
 const getTeacherDashboard = async (req, res) => {
   try {
     const { teacherId } = req.params;
-    
-    // Handle predefined teachers
-    const predefinedTeachers = ['gulshan', 'ankita', 'aditya', 'abhishek'];
-    if (predefinedTeachers.includes(teacherId)) {
+
+    // Demo/predefined handlers
+    const demoIds = ['gulshan', 'ankita', 'aditya', 'abhishek'];
+    if (demoIds.includes(teacherId)) {
+      // Try fetching by username first
       const teacher = await Teacher.findOne({ username: teacherId })
         .populate('assignedCourse', 'courseName courseCode')
         .populate('assignedSubjects', 'subjectName subjectCode');
-      
+
       if (teacher) {
         const assignments = await TeacherSubjectAssignment.find({ teacherId: teacher._id, isActive: true })
           .populate('subjectId', 'subjectName subjectCode')
           .populate('courseId', 'courseName courseCode');
-        
+
         return res.json({ success: true, teacher, assignments });
       }
     }
-    
-    // Handle demo teacher access
+
     if (teacherId === 'teacher') {
       const courses = await Course.find({ isActive: true }).limit(2);
       const subjects = await Subject.find({ isActive: true }).limit(3);
-      
-      return res.json({ 
-        success: true, 
+
+      return res.json({
+        success: true,
         teacher: {
           _id: 'teacher',
           name: 'Demo Teacher',
@@ -200,18 +221,17 @@ const getTeacherDashboard = async (req, res) => {
           assignedSubjects: subjects,
           department: 'Computer Science',
           designation: 'Assistant Professor'
-        }, 
-        assignments: [] 
+        },
+        assignments: []
       });
     }
-    
-    // Handle admin access
+
     if (teacherId === 'admin') {
       const courses = await Course.find({ isActive: true }).limit(2);
       const subjects = await Subject.find({ isActive: true }).limit(3);
-      
-      return res.json({ 
-        success: true, 
+
+      return res.json({
+        success: true,
         teacher: {
           _id: 'admin',
           name: 'Administrator (Teacher View)',
@@ -220,100 +240,162 @@ const getTeacherDashboard = async (req, res) => {
           assignedSubjects: subjects,
           department: 'Administration',
           designation: 'System Administrator'
-        }, 
-        assignments: [] 
+        },
+        assignments: []
       });
     }
-    
+
     const teacher = await Teacher.findById(teacherId)
       .populate('assignedCourse', 'courseName courseCode')
       .populate('assignedSubjects', 'subjectName subjectCode');
-    
+
     if (!teacher) {
       return res.status(404).json({ success: false, msg: 'Teacher not found' });
     }
-    
+
     const assignments = await TeacherSubjectAssignment.find({ teacherId, isActive: true })
       .populate('subjectId', 'subjectName subjectCode')
       .populate('courseId', 'courseName courseCode');
-    
+
     res.json({ success: true, teacher, assignments });
   } catch (error) {
+    console.error('getTeacherDashboard error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Get Students by Subject
+// ------------------------- GET TEACHER SUBJECTS (NEW) -------------------------
+const getTeacherSubjects = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+
+    if (!teacherId) return res.status(400).json({ success: false, msg: 'teacherId required' });
+
+    if (teacherId === 'admin' || teacherId === 'teacher') {
+      const subjects = await Subject.find({ isActive: true }).select('subjectName subjectCode courseId');
+      return res.json({ success: true, subjects });
+    }
+
+    const teacher = await Teacher.findById(teacherId).populate('assignedSubjects', 'subjectName subjectCode courseId');
+    if (!teacher) return res.status(404).json({ success: false, msg: 'Teacher not found' });
+
+    res.json({ success: true, subjects: teacher.assignedSubjects || [] });
+  } catch (error) {
+    console.error('getTeacherSubjects error:', error);
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// ------------------------- GET TEACHER COURSES (NEW) -------------------------
+const getTeacherCourses = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+
+    if (!teacherId) return res.status(400).json({ success: false, msg: 'teacherId required' });
+
+    if (teacherId === 'admin' || teacherId === 'teacher') {
+      const courses = await Course.find({ isActive: true }).select('courseName courseCode');
+      return res.json({ success: true, courses });
+    }
+
+    const teacher = await Teacher.findById(teacherId).populate('assignedCourse', 'courseName courseCode');
+    if (!teacher) return res.status(404).json({ success: false, msg: 'Teacher not found' });
+
+    res.json({ success: true, courses: teacher.assignedCourse || [] });
+  } catch (error) {
+    console.error('getTeacherCourses error:', error);
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// ------------------------- GET STUDENTS BY SUBJECT (accepts teacherId param) -------------------------
 const getStudentsBySubject = async (req, res) => {
   try {
+    // route: /api/teacher/:teacherId/subjects/:subjectId/students
     const { subjectId } = req.params;
-    
+
+    if (!subjectId) return res.status(400).json({ success: false, msg: 'subjectId required' });
+
     const subject = await Subject.findById(subjectId).populate('courseId');
+    if (!subject) return res.status(404).json({ success: false, msg: 'Subject not found' });
+
     const students = await Student.find({ courseId: subject.courseId, isActive: true });
-    
     res.json({ success: true, students, subject });
   } catch (error) {
+    console.error('getStudentsBySubject error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Mark Attendance
+// ------------------------- MARK ATTENDANCE -------------------------
 const markAttendance = async (req, res) => {
   try {
     const { teacherId } = req.params;
     const { subjectId, date, attendance } = req.body;
-    
-    // Handle admin access
+
+    if (!subjectId || !date || !attendance || !Array.isArray(attendance)) {
+      return res.status(400).json({ success: false, msg: 'subjectId, date and attendance array are required' });
+    }
+
     const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
-    
-    // Delete existing attendance for the date
-    await Attendance.deleteMany({ subjectId, teacherId: actualTeacherId, date });
-    
-    // Create new attendance records
+    const normalizedDate = normalizeDateOnly(date);
+    if (!normalizedDate) return res.status(400).json({ success: false, msg: 'Invalid date' });
+
+    // Delete existing attendance for that subject & teacher & date
+    await Attendance.deleteMany({ subjectId, teacherId: actualTeacherId, date: normalizedDate });
+
+    // Create new attendance records with normalized date
     const attendanceRecords = attendance.map(record => ({
       studentId: record.studentId,
       subjectId,
       teacherId: actualTeacherId,
-      date,
+      date: normalizedDate,
       status: record.status
     }));
-    
+
     const savedRecords = await Attendance.insertMany(attendanceRecords);
-    
-    res.json({ success: true, msg: 'Attendance marked successfully' });
+
+    res.json({ success: true, msg: 'Attendance marked successfully', savedCount: savedRecords.length });
   } catch (error) {
-    console.error('Attendance error:', error);
+    console.error('markAttendance error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Get Detailed Attendance Report
+// ------------------------- GET ATTENDANCE REPORT -------------------------
 const getAttendanceReport = async (req, res) => {
   try {
     const { teacherId } = req.params;
     const { subjectId, courseId, startDate, endDate } = req.query;
-    
-    // Get teacher's assigned subjects and courses
+
     const teacher = await Teacher.findById(teacherId).populate('assignedSubjects assignedCourse');
-    
-    let query = { teacherId };
+
+    let query = {};
+    // For admin/demo teacher, teacherId may be 'admin' or 'teacher' - allow query on those but keep teacherId filtering if real
+    if (teacherId && teacherId !== 'admin' && teacherId !== 'teacher') {
+      query.teacherId = teacherId;
+    }
+
     if (subjectId) query.subjectId = subjectId;
     if (startDate && endDate) {
-      query.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
+      const s = normalizeDateOnly(startDate);
+      const e = normalizeDateOnly(endDate);
+      if (!s || !e) return res.status(400).json({ success: false, msg: 'Invalid startDate or endDate' });
+      query.date = { $gte: s, $lte: e };
     }
-    
+
     const attendance = await Attendance.find(query)
       .populate('studentId', 'name rollNo email courseId')
       .populate('subjectId', 'subjectName subjectCode courseId')
       .populate({ path: 'studentId', populate: { path: 'courseId', select: 'courseName courseCode' } })
       .sort({ date: -1 });
-    
-    // Calculate attendance statistics
+
+    // Build student stats
     const studentStats = {};
     attendance.forEach(record => {
-      const studentId = record.studentId._id.toString();
-      if (!studentStats[studentId]) {
-        studentStats[studentId] = {
+      const sid = record.studentId._id.toString();
+      if (!studentStats[sid]) {
+        studentStats[sid] = {
           student: record.studentId,
           totalClasses: 0,
           presentClasses: 0,
@@ -321,99 +403,96 @@ const getAttendanceReport = async (req, res) => {
           subjects: {}
         };
       }
-      
-      const subjectId = record.subjectId._id.toString();
-      if (!studentStats[studentId].subjects[subjectId]) {
-        studentStats[studentId].subjects[subjectId] = {
-          subject: record.subjectId,
-          total: 0,
-          present: 0,
-          absent: 0
-        };
+
+      const subId = record.subjectId._id.toString();
+      if (!studentStats[sid].subjects[subId]) {
+        studentStats[sid].subjects[subId] = { subject: record.subjectId, total: 0, present: 0, absent: 0 };
       }
-      
-      studentStats[studentId].totalClasses++;
-      studentStats[studentId].subjects[subjectId].total++;
-      
+
+      studentStats[sid].totalClasses++;
+      studentStats[sid].subjects[subId].total++;
+
       if (record.status === 'Present') {
-        studentStats[studentId].presentClasses++;
-        studentStats[studentId].subjects[subjectId].present++;
+        studentStats[sid].presentClasses++;
+        studentStats[sid].subjects[subId].present++;
       } else {
-        studentStats[studentId].absentClasses++;
-        studentStats[studentId].subjects[subjectId].absent++;
+        studentStats[sid].absentClasses++;
+        studentStats[sid].subjects[subId].absent++;
       }
     });
-    
-    // Calculate percentages
-    Object.keys(studentStats).forEach(studentId => {
-      const stats = studentStats[studentId];
-      stats.attendancePercentage = stats.totalClasses > 0 ? 
-        ((stats.presentClasses / stats.totalClasses) * 100).toFixed(2) : 0;
-      
-      Object.keys(stats.subjects).forEach(subjectId => {
-        const subjectStats = stats.subjects[subjectId];
-        subjectStats.percentage = subjectStats.total > 0 ? 
-          ((subjectStats.present / subjectStats.total) * 100).toFixed(2) : 0;
+
+    // Compute percentages
+    Object.keys(studentStats).forEach(sid => {
+      const stats = studentStats[sid];
+      stats.attendancePercentage = stats.totalClasses > 0 ? ((stats.presentClasses / stats.totalClasses) * 100).toFixed(2) : '0.00';
+      Object.keys(stats.subjects).forEach(subId => {
+        const ss = stats.subjects[subId];
+        ss.percentage = ss.total > 0 ? ((ss.present / ss.total) * 100).toFixed(2) : '0.00';
       });
     });
-    
-    res.json({ 
-      success: true, 
-      attendance, 
+
+    res.json({
+      success: true,
+      attendance,
       studentStats: Object.values(studentStats),
       teacher: {
-        assignedSubjects: teacher.assignedSubjects,
-        assignedCourses: teacher.assignedCourse
+        assignedSubjects: teacher?.assignedSubjects || [],
+        assignedCourses: teacher?.assignedCourse || []
       }
     });
   } catch (error) {
+    console.error('getAttendanceReport error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Add Marks
+// ------------------------- ADD MARKS -------------------------
 const addMarks = async (req, res) => {
   try {
     const { teacherId } = req.params;
     const { studentId, subjectId, marks, totalMarks, examType } = req.body;
-    
+
+    if (!studentId || !subjectId || marks == null || totalMarks == null) {
+      return res.status(400).json({ success: false, msg: 'studentId, subjectId, marks and totalMarks are required' });
+    }
+
     const markRecord = new Marks({ studentId, subjectId, teacherId, marks, totalMarks, examType });
     await markRecord.save();
-    
-    // Get teacher and subject details for notification
-    const teacher = await Teacher.findById(teacherId);
+
+    const teacher = teacherId === 'admin' ? { name: 'Administrator' } : await Teacher.findById(teacherId);
     const subject = await Subject.findById(subjectId);
-    
-    // Send notification to specific student
+
+    // Send notification to student
     await sendNotification('marks', {
-      sender: { id: teacherId, role: 'teacher', name: teacher.name },
-      subjectName: subject.subjectName,
+      sender: { id: teacherId, role: 'teacher', name: teacher?.name || 'Teacher' },
+      subjectName: subject?.subjectName || '',
       studentId,
       entityId: markRecord._id
     });
-    
+
     res.status(201).json({ success: true, msg: 'Marks added successfully', markRecord });
   } catch (error) {
+    console.error('addMarks error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Get All Students Marks by Subject
+// ------------------------- GET ALL STUDENTS MARKS -------------------------
 const getAllStudentsMarks = async (req, res) => {
   try {
     const { teacherId } = req.params;
     const { subjectId } = req.query;
-    
-    // Get all students for the subject's course
+    if (!subjectId) return res.status(400).json({ success: false, msg: 'subjectId required' });
+
     const subject = await Subject.findById(subjectId);
+    if (!subject) return res.status(404).json({ success: false, msg: 'Subject not found' });
+
     const students = await Student.find({ courseId: subject.courseId, isActive: true });
-    
-    // Get marks for all students in this subject
+
     const marks = await Marks.find({ subjectId, teacherId })
       .populate('studentId', 'name rollNo email')
       .sort({ examType: 1, createdAt: -1 });
-    
-    // Organize marks by student and exam type
+
     const studentMarks = {};
     students.forEach(student => {
       studentMarks[student._id] = {
@@ -424,207 +503,189 @@ const getAllStudentsMarks = async (req, res) => {
         percentage: 0
       };
     });
-    
+
     marks.forEach(mark => {
-      const studentId = mark.studentId._id.toString();
-      if (studentMarks[studentId]) {
-        if (!studentMarks[studentId].marks[mark.examType]) {
-          studentMarks[studentId].marks[mark.examType] = [];
-        }
-        studentMarks[studentId].marks[mark.examType].push(mark);
-        studentMarks[studentId].totalMarks += mark.marks;
-        studentMarks[studentId].totalPossible += mark.totalMarks;
-      }
+      const sid = mark.studentId._id.toString();
+      if (!studentMarks[sid]) return;
+      if (!studentMarks[sid].marks[mark.examType]) studentMarks[sid].marks[mark.examType] = [];
+      studentMarks[sid].marks[mark.examType].push(mark);
+      studentMarks[sid].totalMarks += mark.marks;
+      studentMarks[sid].totalPossible += mark.totalMarks;
     });
-    
-    // Calculate percentages
-    Object.keys(studentMarks).forEach(studentId => {
-      const data = studentMarks[studentId];
-      data.percentage = data.totalPossible > 0 ? 
-        ((data.totalMarks / data.totalPossible) * 100).toFixed(2) : 0;
+
+    Object.keys(studentMarks).forEach(sid => {
+      const s = studentMarks[sid];
+      s.percentage = s.totalPossible > 0 ? ((s.totalMarks / s.totalPossible) * 100).toFixed(2) : '0.00';
     });
-    
-    res.json({ 
-      success: true, 
-      studentMarks: Object.values(studentMarks),
-      subject
-    });
+
+    res.json({ success: true, studentMarks: Object.values(studentMarks), subject });
   } catch (error) {
+    console.error('getAllStudentsMarks error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Add Notes
+// ------------------------- ADD NOTES -------------------------
 const addNotes = async (req, res) => {
   try {
     const { teacherId } = req.params;
     const { subjectId, title, description } = req.body;
-    
-    let fileUrl = null;
-    if (req.file) {
-      fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-    }
-    
-    const note = new Notes({ teacherId, subjectId, title, fileUrl, description });
-    await note.save();
-    
-    res.status(201).json({ success: true, msg: 'Note added successfully', note });
-  } catch (error) {
-    res.status(500).json({ success: false, msg: error.message });
-  }
-};
 
-// Add Study Material
-const addStudyMaterial = async (req, res) => {
-  try {
-    const { teacherId } = req.params;
-    const { subjectId, title, description, fileUrl } = req.body;
-    
     if (!title || !subjectId) {
       return res.status(400).json({ success: false, msg: 'Title and subject are required' });
     }
-    
-    // Handle admin access
-    const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
-    
-    let materialFileUrl = fileUrl;
-    if (req.file) {
-      materialFileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
+    const fileUrl = buildFileUrl(req, req.file);
+
+    const note = new Notes({ teacherId, subjectId, title, fileUrl, description });
+    await note.save();
+
+    res.status(201).json({ success: true, msg: 'Note added successfully', note });
+  } catch (error) {
+    console.error('addNotes error:', error);
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// ------------------------- ADD STUDY MATERIAL -------------------------
+const addStudyMaterial = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const { subjectId, title, description } = req.body;
+
+    if (!title || !subjectId) {
+      return res.status(400).json({ success: false, msg: 'Title and subject are required' });
     }
-    
+
+    const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
+    let materialFileUrl = req.body.fileUrl || buildFileUrl(req, req.file);
+
     if (!materialFileUrl) {
       return res.status(400).json({ success: false, msg: 'Please provide a file or file URL' });
     }
-    
+
     const material = new StudyMaterial({ teacherId: actualTeacherId, subjectId, title, fileUrl: materialFileUrl, description });
     await material.save();
-    
-    // Get teacher and subject details for notification
+
     const teacher = actualTeacherId === 'admin' ? { name: 'Administrator' } : await Teacher.findById(actualTeacherId);
     const subject = await Subject.findById(subjectId).populate('courseId');
-    
-    // Send notification to students
+
+    // Notify students of the course
     await sendNotification('material', {
-      sender: { id: actualTeacherId, role: 'teacher', name: teacher.name },
+      sender: { id: actualTeacherId, role: 'teacher', name: teacher?.name || 'Teacher' },
       title,
-      courseId: subject.courseId._id,
+      courseId: subject?.courseId?._id,
       subjectId,
       entityId: material._id
     });
-    
+
     res.status(201).json({ success: true, msg: 'Study material added successfully', material });
   } catch (error) {
-    console.error('Add material error:', error);
+    console.error('addStudyMaterial error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Add Assignment
+// ------------------------- ADD ASSIGNMENT -------------------------
 const addAssignment = async (req, res) => {
   try {
     const { teacherId } = req.params;
-    const { subjectId, title, description, deadline, fileUrl } = req.body;
-    
+    const { subjectId, title, description, deadline } = req.body;
+
     if (!title || !subjectId || !deadline) {
       return res.status(400).json({ success: false, msg: 'Title, subject, and deadline are required' });
     }
-    
-    // Handle admin access
+
     const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
-    
-    let assignmentFileUrl = fileUrl || null;
-    if (req.file) {
-      assignmentFileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-    }
-    
-    const assignment = new Assignments({ teacherId: actualTeacherId, subjectId, title, description, deadline, fileUrl: assignmentFileUrl });
+    const fileUrl = buildFileUrl(req, req.file) || req.body.fileUrl || null;
+
+    const assignment = new Assignments({ teacherId: actualTeacherId, subjectId, title, description, deadline, fileUrl });
     await assignment.save();
-    
-    // Get teacher and subject details for notification
+
     const teacher = actualTeacherId === 'admin' ? { name: 'Administrator' } : await Teacher.findById(actualTeacherId);
     const subject = await Subject.findById(subjectId).populate('courseId');
-    
-    // Send notification to students
+
+    // Notify students
     await sendNotification('assignment', {
-      sender: { id: actualTeacherId, role: 'teacher', name: teacher.name },
+      sender: { id: actualTeacherId, role: 'teacher', name: teacher?.name || 'Teacher' },
       title,
-      courseId: subject.courseId._id,
+      courseId: subject?.courseId?._id,
       subjectId,
       entityId: assignment._id
     });
-    
+
     res.status(201).json({ success: true, msg: 'Assignment added successfully', assignment });
   } catch (error) {
-    console.error('Add assignment error:', error);
+    console.error('addAssignment error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Add Notice
+// ------------------------- ADD NOTICE -------------------------
 const addNotice = async (req, res) => {
   try {
     const { teacherId } = req.params;
     const { courseId, title, description } = req.body;
-    
+
     if (!title || !description || !courseId) {
       return res.status(400).json({ success: false, msg: 'Title, description, and course are required' });
     }
-    
-    // Handle admin access
+
     const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
-    
+
     const notice = new Notices({ teacherId: actualTeacherId, courseId, title, description });
     await notice.save();
-    
-    // Get teacher details for notification
+
     const teacher = actualTeacherId === 'admin' ? { name: 'Administrator' } : await Teacher.findById(actualTeacherId);
-    
-    // Send notification to students
+
+    // Notify students in the course
     await sendNotification('notice', {
-      sender: { id: actualTeacherId, role: 'teacher', name: teacher.name },
+      sender: { id: actualTeacherId, role: 'teacher', name: teacher?.name || 'Teacher' },
       title,
       courseId,
       entityId: notice._id
     });
-    
+
     res.status(201).json({ success: true, msg: 'Notice added successfully', notice });
   } catch (error) {
-    console.error('Add notice error:', error);
+    console.error('addNotice error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Get Teacher's Notes
+// ------------------------- GET TEACHER'S NOTES -------------------------
 const getTeacherNotes = async (req, res) => {
   try {
     const { teacherId } = req.params;
     const notes = await Notes.find({ teacherId }).populate('subjectId', 'subjectName');
     res.json({ success: true, notes });
   } catch (error) {
+    console.error('getTeacherNotes error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Get Teacher's Study Materials
+// ------------------------- GET TEACHER'S STUDY MATERIALS -------------------------
 const getTeacherMaterials = async (req, res) => {
   try {
     const { teacherId } = req.params;
     const materials = await StudyMaterial.find({ teacherId }).populate('subjectId', 'subjectName');
     res.json({ success: true, materials });
   } catch (error) {
+    console.error('getTeacherMaterials error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Get Teacher's Assignments with Submissions
+// ------------------------- GET TEACHER ASSIGNMENTS WITH SUBMISSIONS -------------------------
 const getTeacherAssignments = async (req, res) => {
   try {
     const { teacherId } = req.params;
     const { subjectId } = req.query;
-    
+
     let query = { teacherId };
     if (subjectId) query.subjectId = subjectId;
-    
+
     const assignments = await Assignments.find(query)
       .populate('subjectId', 'subjectName subjectCode courseId')
       .populate({
@@ -632,88 +693,99 @@ const getTeacherAssignments = async (req, res) => {
         select: 'name rollNo email'
       })
       .sort({ deadline: -1 });
-    
-    // Get all students for each subject to show who hasn't submitted
+
     const assignmentsWithDetails = await Promise.all(assignments.map(async (assignment) => {
       const subject = await Subject.findById(assignment.subjectId._id);
       const allStudents = await Student.find({ courseId: subject.courseId, isActive: true });
-      
-      const submittedStudentIds = assignment.submissions.map(sub => sub.studentId._id.toString());
-      const notSubmitted = allStudents.filter(student => 
-        !submittedStudentIds.includes(student._id.toString())
-      );
-      
+
+      const submittedStudentIds = (assignment.submissions || []).map(sub => sub.studentId._id.toString());
+      const notSubmitted = allStudents.filter(student => !submittedStudentIds.includes(student._id.toString()));
+
       return {
         ...assignment.toObject(),
         totalStudents: allStudents.length,
-        submittedCount: assignment.submissions.length,
+        submittedCount: (assignment.submissions || []).length,
         pendingCount: notSubmitted.length,
         notSubmittedStudents: notSubmitted
       };
     }));
-    
+
     res.json({ success: true, assignments: assignmentsWithDetails });
   } catch (error) {
+    console.error('getTeacherAssignments error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Add Course - Teacher
+// ------------------------- ADD COURSE -------------------------
 const addCourse = async (req, res) => {
   try {
     const { courseName, courseCode, courseDuration } = req.body;
-    
+    if (!courseName || !courseCode) return res.status(400).json({ success: false, msg: 'courseName and courseCode required' });
+
+    // Prevent duplicates
+    const existing = await Course.findOne({ courseCode });
+    if (existing) return res.status(400).json({ success: false, msg: 'Course with this code already exists' });
+
     const course = new Course({ courseName, courseCode, courseDuration });
     await course.save();
-    
+
     res.status(201).json({ success: true, msg: 'Course added successfully', course });
   } catch (error) {
+    console.error('addCourse error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Add Subject - Teacher
+// ------------------------- ADD SUBJECT -------------------------
 const addSubject = async (req, res) => {
   try {
     const { subjectName, subjectCode, courseId } = req.body;
-    
+    if (!subjectName || !subjectCode || !courseId) {
+      return res.status(400).json({ success: false, msg: 'subjectName, subjectCode and courseId required' });
+    }
+
+    const existing = await Subject.findOne({ subjectCode, courseId });
+    if (existing) return res.status(400).json({ success: false, msg: 'Subject with this code already exists for the course' });
+
     const subject = new Subject({ subjectName, subjectCode, courseId });
     await subject.save();
-    
+
     res.status(201).json({ success: true, msg: 'Subject added successfully', subject });
   } catch (error) {
+    console.error('addSubject error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
 
-// Get All Notices for Teacher's Courses
+// ------------------------- GET TEACHER NOTICES -------------------------
 const getTeacherNotices = async (req, res) => {
   try {
     const { teacherId } = req.params;
-    
     const teacher = await Teacher.findById(teacherId);
-    const notices = await Notices.find({ 
+
+    const notices = await Notices.find({
       teacherId,
-      isActive: true 
+      isActive: true
     })
-    .populate('courseId', 'courseName courseCode')
-    .sort({ createdAt: -1 });
-    
-    // Get student count for each notice
+      .populate('courseId', 'courseName courseCode')
+      .sort({ createdAt: -1 });
+
     const noticesWithStudentCount = await Promise.all(notices.map(async (notice) => {
-      const studentCount = await Student.countDocuments({ 
-        courseId: notice.courseId._id, 
-        isActive: true 
+      const studentCount = await Student.countDocuments({
+        courseId: notice.courseId._id,
+        isActive: true
       });
-      
+
       return {
         ...notice.toObject(),
         studentCount
       };
     }));
-    
+
     res.json({ success: true, notices: noticesWithStudentCount });
   } catch (error) {
+    console.error('getTeacherNotices error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };
@@ -722,6 +794,8 @@ module.exports = {
   teacherRegister,
   teacherLogin,
   getTeacherDashboard,
+  getTeacherSubjects,
+  getTeacherCourses,
   getStudentsBySubject,
   markAttendance,
   getAttendanceReport,

@@ -9,128 +9,135 @@ const AttendanceUpload = ({ teacherId }) => {
   const [subjects, setSubjects] = useState([]);
   const [students, setStudents] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState('');
-  const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split('T')[0]);
+  const [attendanceDate, setAttendanceDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
   const [attendance, setAttendance] = useState({});
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // 🚀 Fetch subjects on page load
   useEffect(() => {
     fetchSubjects();
   }, []);
 
+  // 🚀 Fetch students when subject changes
   useEffect(() => {
-    if (selectedSubject) {
-      fetchStudents();
-    }
+    if (selectedSubject) fetchStudents();
   }, [selectedSubject]);
 
+  // ===================== FETCH SUBJECTS =====================
   const fetchSubjects = async () => {
     try {
       const token = Cookies.get('token');
       const headers = { Authorization: `Bearer ${token}` };
 
-      const response = await axios.get(`${BASE_URL}/subjects`, { headers });
-      setSubjects(response.data.subjects || []);
+      const res = await axios.get(`${BASE_URL}/api/teacher/${teacherId}/subjects`, {
+        headers,
+      });
+
+      setSubjects(res.data.subjects || []);
     } catch (error) {
       console.error('Error fetching subjects:', error);
+      toast.error('Failed to load subjects');
     }
   };
 
+  // ===================== FETCH STUDENTS =====================
   const fetchStudents = async () => {
     if (!selectedSubject) return;
-    
+
     setLoading(true);
     try {
       const token = Cookies.get('token');
       const headers = { Authorization: `Bearer ${token}` };
 
-      const response = await axios.get(
-        `${BASE_URL}/teacher/subjects/${selectedSubject}/students`, 
+      const res = await axios.get(
+        `${BASE_URL}/api/teacher/${teacherId}/subjects/${selectedSubject}/students`,
         { headers }
       );
-      
-      const studentList = response.data.students || [];
+
+      const studentList = res.data.students || [];
       setStudents(studentList);
-      
-      // Initialize attendance state
-      const initialAttendance = {};
-      studentList.forEach(student => {
-        initialAttendance[student._id] = 'Present';
+
+      // Initialize attendance as Present for all
+      const initial = {};
+      studentList.forEach((s) => {
+        initial[s._id] = 'Present';
       });
-      setAttendance(initialAttendance);
-      
+
+      setAttendance(initial);
     } catch (error) {
-      console.error('Error fetching students:', error);
+      console.error('Error:', error);
       toast.error('Failed to load students');
     } finally {
       setLoading(false);
     }
   };
 
+  // ===================== CHANGE STATUS =====================
   const handleAttendanceChange = (studentId, status) => {
-    setAttendance(prev => ({
+    setAttendance((prev) => ({
       ...prev,
-      [studentId]: status
+      [studentId]: status,
     }));
   };
 
+  // ===================== SUBMIT ATTENDANCE =====================
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!selectedSubject || students.length === 0) {
-      toast.error('Please select a subject and ensure students are loaded');
+      toast.error('Please select a subject and load students');
       return;
     }
 
     setSubmitting(true);
+
     try {
       const token = Cookies.get('token');
       const headers = { Authorization: `Bearer ${token}` };
 
-      const attendanceData = {
+      const data = {
         subjectId: selectedSubject,
         date: attendanceDate,
         attendance: Object.entries(attendance).map(([studentId, status]) => ({
           studentId,
-          status
-        }))
+          status,
+        })),
       };
 
-      await axios.post(
-        `${BASE_URL}/api/teacher/${teacherId}/attendance`,
-        attendanceData,
-        { headers }
-      );
+      await axios.post(`${BASE_URL}/api/teacher/${teacherId}/attendance`, data, {
+        headers,
+      });
 
       toast.success('Attendance submitted successfully!');
-      
-      // Reset form
+
+      // Reset Form
       setSelectedSubject('');
       setStudents([]);
       setAttendance({});
       setAttendanceDate(new Date().toISOString().split('T')[0]);
-      
+
     } catch (error) {
-      console.error('Error submitting attendance:', error);
+      console.error('Submit error:', error);
       toast.error('Failed to submit attendance');
     } finally {
       setSubmitting(false);
     }
   };
 
+  // ===================== MARK ALL =====================
   const markAllPresent = () => {
-    const newAttendance = {};
-    students.forEach(student => {
-      newAttendance[student._id] = 'Present';
-    });
-    setAttendance(newAttendance);
+    const obj = {};
+    students.forEach((s) => (obj[s._id] = 'Present'));
+    setAttendance(obj);
   };
 
   const markAllAbsent = () => {
-    const newAttendance = {};
-    students.forEach(student => {
-      newAttendance[student._id] = 'Absent';
-    });
-    setAttendance(newAttendance);
+    const obj = {};
+    students.forEach((s) => (obj[s._id] = 'Absent'));
+    setAttendance(obj);
   };
 
   return (
@@ -140,16 +147,18 @@ const AttendanceUpload = ({ teacherId }) => {
       <div className="bg-white rounded-lg shadow-md p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* SUBJECT DROPDOWN */}
             <div>
               <label className="block text-sm font-medium mb-2">Subject *</label>
               <select
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border rounded-lg"
                 required
               >
                 <option value="">Select Subject</option>
-                {subjects.map(subject => (
+                {subjects.map((subject) => (
                   <option key={subject._id} value={subject._id}>
                     {subject.subjectName} ({subject.subjectCode})
                   </option>
@@ -157,25 +166,29 @@ const AttendanceUpload = ({ teacherId }) => {
               </select>
             </div>
 
+            {/* DATE */}
             <div>
               <label className="block text-sm font-medium mb-2">Date *</label>
               <input
                 type="date"
                 value={attendanceDate}
                 onChange={(e) => setAttendanceDate(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border rounded-lg"
                 required
               />
             </div>
+
           </div>
 
+          {/* LOADING SPINNER */}
           {loading && (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <div className="animate-spin h-8 w-8 border-b-2 border-blue-500 rounded-full"></div>
               <span className="ml-2">Loading students...</span>
             </div>
           )}
 
+          {/* STUDENT LIST */}
           {students.length > 0 && (
             <>
               <div className="flex items-center justify-between">
@@ -184,18 +197,10 @@ const AttendanceUpload = ({ teacherId }) => {
                   Students ({students.length})
                 </h3>
                 <div className="space-x-2">
-                  <button
-                    type="button"
-                    onClick={markAllPresent}
-                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                  >
+                  <button type="button" onClick={markAllPresent} className="px-4 py-2 bg-green-500 text-white rounded-lg">
                     Mark All Present
                   </button>
-                  <button
-                    type="button"
-                    onClick={markAllAbsent}
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                  >
+                  <button type="button" onClick={markAllAbsent} className="px-4 py-2 bg-red-500 text-white rounded-lg">
                     Mark All Absent
                   </button>
                 </div>
@@ -208,36 +213,37 @@ const AttendanceUpload = ({ teacherId }) => {
                       <p className="font-medium">{student.name}</p>
                       <p className="text-sm text-gray-500">Roll No: {student.rollNo}</p>
                     </div>
+
                     <div className="flex space-x-2">
                       <button
                         type="button"
                         onClick={() => handleAttendanceChange(student._id, 'Present')}
-                        className={`flex items-center px-3 py-2 rounded-lg ${
+                        className={`px-3 py-2 rounded-lg ${
                           attendance[student._id] === 'Present'
                             ? 'bg-green-500 text-white'
-                            : 'bg-gray-200 text-gray-700 hover:bg-green-100'
+                            : 'bg-gray-200 text-gray-700'
                         }`}
                       >
-                        <FaCheck className="mr-1" />
-                        Present
+                        <FaCheck className="inline mr-1" /> Present
                       </button>
+
                       <button
                         type="button"
                         onClick={() => handleAttendanceChange(student._id, 'Absent')}
-                        className={`flex items-center px-3 py-2 rounded-lg ${
+                        className={`px-3 py-2 rounded-lg ${
                           attendance[student._id] === 'Absent'
                             ? 'bg-red-500 text-white'
-                            : 'bg-gray-200 text-gray-700 hover:bg-red-100'
+                            : 'bg-gray-200 text-gray-700'
                         }`}
                       >
-                        <FaTimes className="mr-1" />
-                        Absent
+                        <FaTimes className="inline mr-1" /> Absent
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
 
+              {/* SUBMIT BUTTON */}
               <button
                 type="submit"
                 disabled={submitting}
@@ -245,7 +251,7 @@ const AttendanceUpload = ({ teacherId }) => {
               >
                 {submitting ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    <div className="animate-spin h-5 w-5 border-b-2 border-white rounded-full mr-2"></div>
                     Submitting...
                   </>
                 ) : (

@@ -1,128 +1,146 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/baseUrl';
-import Cookies from 'js-cookie';
-import { toast } from 'react-toastify';
-import { FaUpload, FaFileAlt, FaCalendarAlt } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { BASE_URL } from "../../constants/baseUrl";
+import Cookies from "js-cookie";
+import { toast } from "react-toastify";
+import { FaUpload, FaFileAlt } from "react-icons/fa";
 
 const TeacherUpload = ({ teacherId }) => {
-  const [activeTab, setActiveTab] = useState('assignment');
+  const [activeTab, setActiveTab] = useState("assignment");
   const [subjects, setSubjects] = useState([]);
   const [courses, setCourses] = useState([]);
+
+  const fileInputRef = useRef(null);
+
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    subjectId: '',
-    courseId: '',
-    deadline: '',
-    file: null
+    title: "",
+    description: "",
+    subjectId: "",
+    courseId: "",
+    deadline: "",
+    file: null,
   });
+
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchSubjectsAndCourses();
-  }, []);
+  }, [teacherId]);
 
+  // ============================= FETCH SUBJECTS & COURSES =============================
   const fetchSubjectsAndCourses = async () => {
     try {
-      const token = Cookies.get('token');
+      const token = Cookies.get("token");
       const headers = { Authorization: `Bearer ${token}` };
 
       const [subjectsRes, coursesRes] = await Promise.all([
-        axios.get(`${BASE_URL}/subjects`, { headers }),
-        axios.get(`${BASE_URL}/courses`, { headers })
+        axios.get(`${BASE_URL}/api/teacher/${teacherId}/subjects`, { headers }),
+        axios.get(`${BASE_URL}/api/teacher/${teacherId}/courses`, { headers }),
       ]);
 
       setSubjects(subjectsRes.data.subjects || []);
       setCourses(coursesRes.data.courses || []);
-    } catch (error) {
-      console.error('Error fetching data:', error);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      toast.error("Failed to load subjects and courses");
     }
   };
 
+  // ============================= HANDLERS =============================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((p) => ({ ...p, [name]: value }));
   };
 
   const handleFileChange = (e) => {
-    setFormData(prev => ({ ...prev, file: e.target.files[0] }));
+    setFormData((p) => ({ ...p, file: e.target.files[0] }));
   };
 
+  // ============================= VALIDATION PER TAB =============================
+  const validateForm = () => {
+    if (!formData.title.trim()) return "Title is required";
+
+    if (activeTab !== "notice" && !formData.subjectId)
+      return "Please select a subject";
+
+    if (activeTab === "notice" && !formData.courseId)
+      return "Please select a course";
+
+    if (activeTab === "assignment" && !formData.deadline)
+      return "Deadline required";
+
+    if (activeTab !== "notice" && !formData.file)
+      return "File is required";
+
+    return null;
+  };
+
+  // ============================= SUBMIT =============================
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const error = validateForm();
+    if (error) return toast.error(error);
+
     setUploading(true);
 
     try {
-      const token = Cookies.get('token');
-      const uploadFormData = new FormData();
-      
-      uploadFormData.append('title', formData.title);
-      uploadFormData.append('description', formData.description);
-      uploadFormData.append('subjectId', formData.subjectId);
-      
-      if (activeTab === 'assignment') {
-        uploadFormData.append('deadline', formData.deadline);
-      }
-      if (activeTab === 'notice') {
-        uploadFormData.append('courseId', formData.courseId);
-      }
-      if (formData.file) {
-        uploadFormData.append('file', formData.file);
-      }
+      const token = Cookies.get("token");
+      const uploadData = new FormData();
 
-      let endpoint = '';
-      switch (activeTab) {
-        case 'assignment':
-          endpoint = `/api/teacher/${teacherId}/assignments`;
-          break;
-        case 'note':
-          endpoint = `/api/teacher/${teacherId}/notes`;
-          break;
-        case 'material':
-          endpoint = `/api/teacher/${teacherId}/materials`;
-          break;
-        case 'notice':
-          endpoint = `/api/teacher/${teacherId}/notices`;
-          break;
-      }
+      uploadData.append("title", formData.title);
+      uploadData.append("description", formData.description);
 
-      await axios.post(`${BASE_URL}${endpoint}`, uploadFormData, {
+      if (activeTab !== "notice") uploadData.append("subjectId", formData.subjectId);
+      if (activeTab === "notice") uploadData.append("courseId", formData.courseId);
+      if (activeTab === "assignment") uploadData.append("deadline", formData.deadline);
+      if (formData.file) uploadData.append("file", formData.file);
+
+      // Correct endpoints
+      const endpoints = {
+        assignment: `/api/teacher/${teacherId}/assignments`,
+        note: `/api/teacher/${teacherId}/notes`,
+        material: `/api/teacher/${teacherId}/materials`,
+        notice: `/api/teacher/${teacherId}/notices`,
+      };
+
+      await axios.post(`${BASE_URL}${endpoints[activeTab]}`, uploadData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       toast.success(`${activeTab} uploaded successfully!`);
-      setFormData({
-        title: '',
-        description: '',
-        subjectId: '',
-        courseId: '',
-        deadline: '',
-        file: null
-      });
-      
-      // Reset file input
-      const fileInput = document.querySelector('input[type="file"]');
-      if (fileInput) fileInput.value = '';
 
-    } catch (error) {
-      console.error('Upload error:', error);
-      toast.error(`Failed to upload ${activeTab}`);
+      // Reset Form
+      setFormData({
+        title: "",
+        description: "",
+        subjectId: "",
+        courseId: "",
+        deadline: "",
+        file: null,
+      });
+
+      if (fileInputRef.current) fileInputRef.current.value = "";
+
+    } catch (err) {
+      console.error("Upload error:", err);
+      toast.error("Failed to upload");
     } finally {
       setUploading(false);
     }
   };
 
+  // ============================= UI =============================
   const TabButton = ({ id, label }) => (
     <button
       onClick={() => setActiveTab(id)}
       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
         activeTab === id
-          ? 'bg-blue-500 text-white'
-          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          ? "bg-blue-500 text-white"
+          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
       }`}
     >
       {label}
@@ -133,7 +151,7 @@ const TeacherUpload = ({ teacherId }) => {
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">Upload Content</h1>
 
-      {/* Tab Navigation */}
+      {/* TABS */}
       <div className="flex gap-4 mb-6">
         <TabButton id="assignment" label="Assignment" />
         <TabButton id="note" label="Notes" />
@@ -141,117 +159,90 @@ const TeacherUpload = ({ teacherId }) => {
         <TabButton id="notice" label="Notice" />
       </div>
 
-      {/* Upload Form */}
+      {/* FORM */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium mb-2">Title *</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
+
+          {/* TITLE */}
+          <Input label="Title *" name="title" value={formData.title} onChange={handleInputChange} />
+
+          {/* DESCRIPTION */}
+          <TextArea
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+          />
+
+          {/* SUBJECT SELECT (not for notice) */}
+          {activeTab !== "notice" && (
+            <Select
+              label="Subject *"
+              name="subjectId"
+              value={formData.subjectId}
+              options={subjects}
               onChange={handleInputChange}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              display={(s) => `${s.subjectName} (${s.subjectCode})`}
             />
-          </div>
+          )}
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
+          {/* COURSE SELECT (for notice only) */}
+          {activeTab === "notice" && (
+            <Select
+              label="Course *"
+              name="courseId"
+              value={formData.courseId}
+              options={courses}
               onChange={handleInputChange}
-              rows="3"
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              display={(c) => `${c.courseName} (${c.courseCode})`}
             />
-          </div>
-
-          {activeTab !== 'notice' && (
-            <div>
-              <label className="block text-sm font-medium mb-2">Subject *</label>
-              <select
-                name="subjectId"
-                value={formData.subjectId}
-                onChange={handleInputChange}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Select Subject</option>
-                {subjects.map(subject => (
-                  <option key={subject._id} value={subject._id}>
-                    {subject.subjectName} ({subject.subjectCode})
-                  </option>
-                ))}
-              </select>
-            </div>
           )}
 
-          {activeTab === 'notice' && (
-            <div>
-              <label className="block text-sm font-medium mb-2">Course *</label>
-              <select
-                name="courseId"
-                value={formData.courseId}
-                onChange={handleInputChange}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Select Course</option>
-                {courses.map(course => (
-                  <option key={course._id} value={course._id}>
-                    {course.courseName} ({course.courseCode})
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* DEADLINE (assignment only) */}
+          {activeTab === "assignment" && (
+            <Input
+              type="datetime-local"
+              label="Deadline *"
+              name="deadline"
+              value={formData.deadline}
+              onChange={handleInputChange}
+            />
           )}
 
-          {activeTab === 'assignment' && (
-            <div>
-              <label className="block text-sm font-medium mb-2">Deadline *</label>
-              <input
-                type="datetime-local"
-                name="deadline"
-                value={formData.deadline}
-                onChange={handleInputChange}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-          )}
-
+          {/* FILE UPLOAD */}
           <div>
             <label className="block text-sm font-medium mb-2">
-              Upload File {activeTab !== 'notice' && '*'}
+              Upload File {activeTab !== "notice" && "*"}
             </label>
+
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
               <FaFileAlt className="mx-auto text-gray-400 text-3xl mb-2" />
+
               <input
+                ref={fileInputRef}
                 type="file"
-                onChange={handleFileChange}
                 accept=".pdf,.doc,.docx,.ppt,.pptx"
+                onChange={handleFileChange}
                 className="hidden"
                 id="file-upload"
-                required={activeTab !== 'notice'}
+                required={activeTab !== "notice"}
               />
-              <label
-                htmlFor="file-upload"
-                className="cursor-pointer text-blue-500 hover:text-blue-700"
-              >
-                Click to upload file
+
+              <label htmlFor="file-upload" className="cursor-pointer text-blue-500 hover:text-blue-700">
+                Click to upload a file
               </label>
+
               <p className="text-sm text-gray-500 mt-1">
                 PDF, DOC, DOCX, PPT, PPTX (Max 10MB)
               </p>
+
               {formData.file && (
-                <p className="text-sm text-green-600 mt-2">
-                  Selected: {formData.file.name}
-                </p>
+                <p className="text-sm text-green-600 mt-2">Selected: {formData.file.name}</p>
               )}
             </div>
           </div>
 
+          {/* SUBMIT BTN */}
           <button
             type="submit"
             disabled={uploading}
@@ -276,3 +267,45 @@ const TeacherUpload = ({ teacherId }) => {
 };
 
 export default TeacherUpload;
+
+/* ============================= REUSABLE COMPONENTS ============================= */
+
+const Input = ({ label, ...props }) => (
+  <div>
+    <label className="block text-sm font-medium mb-2">{label}</label>
+    <input
+      {...props}
+      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+);
+
+const TextArea = ({ label, ...props }) => (
+  <div>
+    <label className="block text-sm font-medium mb-2">{label}</label>
+    <textarea
+      rows="3"
+      {...props}
+      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+);
+
+const Select = ({ label, name, value, options, onChange, display }) => (
+  <div>
+    <label className="block text-sm font-medium mb-2">{label}</label>
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="">Select</option>
+      {options.map((opt) => (
+        <option key={opt._id} value={opt._id}>
+          {display(opt)}
+        </option>
+      ))}
+    </select>
+  </div>
+);

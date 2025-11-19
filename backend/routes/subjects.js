@@ -1,11 +1,13 @@
 const express = require("express");
-const { isAdmin } = require("../middleware/Auth");
-const { Subject, Teacher } = require("../models/CompleteModels");
+const { verifyToken, isAdmin } = require("../middleware/Auth");
+const { Subject, Teacher, Course } = require("../models/CompleteModels");
 
 const router = express.Router();
 
-// Add subject
-router.post("/add", isAdmin, async (req, res) => {
+// =========================
+// ADD NEW SUBJECT (ADMIN)
+// =========================
+router.post("/add", verifyToken, isAdmin, async (req, res) => {
   try {
     const { 
       subjectName,
@@ -19,15 +21,15 @@ router.post("/add", isAdmin, async (req, res) => {
       courseId
     } = req.body;
 
-    // Validate required fields
+    // Required fields
     if (!subjectName || !subjectCode || !semester || !branch) {
       return res.status(400).json({
         success: false,
-        msg: "Subject Name, Code, Semester and Branch are required"
+        msg: "Subject Name, Code, Semester, and Branch are required"
       });
     }
 
-    // Check for duplicate subject code
+    // Check duplicate subject code
     const existingSubject = await Subject.findOne({ subjectCode });
     if (existingSubject) {
       return res.status(400).json({
@@ -36,40 +38,62 @@ router.post("/add", isAdmin, async (req, res) => {
       });
     }
 
-    // Build subject data
-    const subjectData = {
+    // Validate course if provided
+    if (courseId) {
+      const courseExists = await Course.findById(courseId);
+      if (!courseExists) {
+        return res.status(404).json({
+          success: false,
+          msg: "Invalid Course ID"
+        });
+      }
+    }
+
+    // Validate teacher if provided
+    if (teacherId) {
+      const teacherExists = await Teacher.findById(teacherId);
+      if (!teacherExists) {
+        return res.status(404).json({
+          success: false,
+          msg: "Invalid Teacher ID"
+        });
+      }
+    }
+
+    // Prepare subject data
+    const newSubject = new Subject({
       subjectName,
       subjectCode,
       subjectType,
       credits,
       semester,
       branch,
-      isElective,
+      isElective: isElective || false,
       teacherId: teacherId || null,
       courseId: courseId || null
-    };
+    });
 
-    const subject = new Subject(subjectData);
-    await subject.save();
+    // Save subject
+    await newSubject.save();
 
-    // Assign subject to teacher (optional)
+    // Auto-assign subject to teacher
     if (teacherId) {
       await Teacher.findByIdAndUpdate(teacherId, {
-        $push: { assignedSubjects: subject._id }
+        $push: { assignedSubjects: newSubject._id }
       });
     }
 
     res.status(201).json({
       success: true,
       msg: "Subject added successfully",
-      subject
+      subject: newSubject
     });
 
   } catch (error) {
-    console.error("Error adding subject:", error);
+    console.error("Subject Add Error:", error);
     res.status(500).json({
       success: false,
-      msg: error.message || "Failed to add subject"
+      msg: error.message || "Server error while adding subject"
     });
   }
 });
