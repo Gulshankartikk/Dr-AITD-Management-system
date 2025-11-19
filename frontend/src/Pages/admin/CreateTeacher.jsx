@@ -103,7 +103,7 @@ const CreateTeacher = () => {
                   onChange={handleInputChange}
                   required
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="Dr. John Smith"
+                  placeholder="Dr. kartik Sharma"
                 />
               </div>
 
@@ -118,7 +118,7 @@ const CreateTeacher = () => {
                   onChange={handleInputChange}
                   required
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="john.smith@college.edu"
+                  placeholder="prince.verma@college.edu"
                 />
               </div>
 

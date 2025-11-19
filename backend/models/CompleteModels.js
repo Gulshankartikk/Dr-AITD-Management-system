@@ -81,7 +81,7 @@ const StudentSchema = new mongoose.Schema({
 const AttendanceSchema = new mongoose.Schema({
   studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
   subjectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject', required: true },
-  teacherId: { type: mongoose.Schema.Types.ObjectId, ref: 'Teacher', required: true },
+  teacherId: { type: mongoose.Schema.Types.Mixed, required: true },
   date: { type: Date, required: true },
   status: { type: String, enum: ['Present', 'Absent'], required: true }
 }, { timestamps: true });

@@ -13,7 +13,6 @@ const StudentList = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const teacherId = localStorage.getItem('userId') || 'admin';
 
   useEffect(() => {
     fetchSubjects();

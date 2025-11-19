@@ -53,19 +53,19 @@ const NotificationSummary = () => {
             _id: '1',
             title: 'Data Structures Assignment 1',
             subjectId: { subjectName: 'Data Structures', subjectCode: 'CSE201' },
-            deadline: '2024-02-15',
+            deadline: '2025-02-15',
             submittedCount: 2,
             totalStudents: 3,
-            createdAt: '2024-01-15'
+            createdAt: '2025-01-15'
           },
           {
             _id: '2',
             title: 'Database Project',
             subjectId: { subjectName: 'Database Systems', subjectCode: 'CSE301' },
-            deadline: '2024-03-01',
+            deadline: '2025-03-01',
             submittedCount: 0,
             totalStudents: 3,
-            createdAt: '2024-01-20'
+            createdAt: '2025-01-20'
           }
         ],
         notices: [
@@ -74,7 +74,7 @@ const NotificationSummary = () => {
             title: 'Important Notice for B.Tech CSE',
             description: 'All students are requested to attend the special lecture.',
             courseId: { courseName: 'B.Tech CSE' },
-            createdAt: '2024-01-10',
+            createdAt: '2025-01-10',
             studentCount: 3
           }
         ],
@@ -84,7 +84,7 @@ const NotificationSummary = () => {
             title: 'Data Structures Notes',
             subjectId: { subjectName: 'Data Structures', subjectCode: 'CSE201' },
             fileUrl: 'https://example.com/notes.pdf',
-            createdAt: '2024-01-12'
+            createdAt: '2025-01-12'
           }
         ],
         attendance: [
@@ -99,15 +99,15 @@ const NotificationSummary = () => {
         teachers: [
           {
             _id: '6919d9542d2366a7429b117f',
-            name: 'Dr. John Smith',
-            email: 'john.smith@college.edu',
+            name: 'Dr. kartik Sharma',
+            email: 'kartik.sharma@college.edu',
             phone: '+91-9876543210',
             assignedSubjects: ['Data Structures', 'Database Systems']
           },
           {
             _id: '6919d9542d2366a7429b1180',
-            name: 'Prof. Sarah Johnson',
-            email: 'sarah.johnson@college.edu',
+            name: 'Prof. prince verma',
+            email: 'prince.verma@college.edu',
             phone: '+91-9876543211',
             assignedSubjects: ['Web Development']
           }

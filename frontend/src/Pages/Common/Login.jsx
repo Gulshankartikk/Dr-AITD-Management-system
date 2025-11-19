@@ -53,6 +53,8 @@ const Login = () => {
       dispatch(addUserDetails({ token: token }));
 
       let decodedToken = jwtDecode(token);
+      localStorage.setItem("userId", decodedToken.id);
+      localStorage.setItem("userRole", decodedToken.role);
       console.log(decodedToken);
 
       if (decodedToken.role === "admin") {

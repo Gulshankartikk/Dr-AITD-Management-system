@@ -155,7 +155,10 @@ router.delete('/admin/materials/:materialId', verifyToken, isAdmin, adminControl
 // ======================================================
 //              ADMIN USING TEACHER FUNCTIONS
 // ======================================================
-router.post('/teacher/admin/attendance', verifyToken, teacherController.markAttendance);
+router.post('/teacher/admin/attendance', verifyToken, (req, res) => {
+  req.params.teacherId = req.body.teacherId || 'admin';
+  teacherController.markAttendance(req, res);
+});
 router.post('/teacher/admin/assignments', verifyToken, upload.single('file'), teacherController.addAssignment);
 router.post('/teacher/admin/notices', verifyToken, teacherController.addNotice);
 router.post('/teacher/admin/materials', verifyToken, upload.single('file'), teacherController.addStudyMaterial);

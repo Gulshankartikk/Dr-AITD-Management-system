@@ -115,6 +115,22 @@ const TeacherSummary = () => {
             totalStudents: 3,
             presentCount: 3,
             absentCount: 0
+          },
+          {
+            _id: "att3",
+            date: "2025-01-17",
+            subjectId: { subjectName: "Mathematics" },
+            totalStudents: 3,
+            presentCount: 2,
+            absentCount: 1
+          },
+          {
+            _id: "att4",
+            date: "2025-01-18",
+            subjectId: { subjectName: "Mathematics 2" },
+            totalStudents: 3,
+            presentCount: 3,
+            absentCount: 0
           }
         ]
       });

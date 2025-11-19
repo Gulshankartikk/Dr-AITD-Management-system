@@ -83,7 +83,7 @@ const CreateStudent = () => {
                   onChange={handleInputChange}
                   required
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="Alice Johnson"
+                  placeholder="gulshan kartik"
                 />
               </div>
 
@@ -98,7 +98,7 @@ const CreateStudent = () => {
                   onChange={handleInputChange}
                   required
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="alice@student.edu"
+                  placeholder="kartik@student.edu"
                 />
               </div>
 
