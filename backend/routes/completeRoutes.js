@@ -133,65 +133,7 @@ router.get('/teachers', verifyToken, isAdmin, async (req, res) => {
   }
 });
 
-
-// ======================================================
-//             ⭐ CORRECTED ADD SUBJECT ROUTE ⭐
-// ======================================================
-router.post('/subjects/add', verifyToken, isAdmin, async (req, res) => {
-  try {
-    const {
-      subjectName,
-      subjectCode,
-      subjectType,
-      credits,
-      semester,
-      branch,
-      isElective,
-      teacherId,
-      courseId
-    } = req.body;
-
-    if (!subjectName || !subjectCode || !semester || !branch) {
-      return res.status(400).json({
-        success: false,
-        msg: "Subject Name, Code, Semester and Branch are required."
-      });
-    }
-
-    const existing = await Subject.findOne({ subjectCode });
-    if (existing) {
-      return res.status(400).json({ success: false, msg: "Subject Code already exists." });
-    }
-
-    const subjectData = {
-      subjectName,
-      subjectCode,
-      subjectType,
-      credits,
-      semester,
-      branch,
-      isElective,
-      courseId: courseId || null,
-      teacherId: teacherId || null
-    };
-
-    const subject = new Subject(subjectData);
-    await subject.save();
-
-    if (teacherId) {
-      await Teacher.findByIdAndUpdate(teacherId, {
-        $push: { assignedSubjects: subject._id }
-      });
-    }
-
-    res.json({ success: true, msg: "Subject added successfully", subject });
-  } catch (error) {
-    console.error("Error adding subject:", error);
-    res.status(500).json({ success: false, msg: error.message });
-  }
-});
-
-
+router.post('/subjects/add', verifyToken, isAdmin, adminController.addSubject);
 
 // ======================================================
 //                COURSE / SUBJECT MANAGEMENT (ADMIN)
@@ -223,6 +165,33 @@ router.delete('/admin/students/:studentId', verifyToken, isAdmin, adminControlle
 router.post('/admin/assign-teacher', verifyToken, isAdmin, adminController.assignTeacherToSubject);
 router.post('/admin/remove-teacher', verifyToken, isAdmin, adminController.removeTeacherFromSubject);
 
+// ======================================================
+//              ADMIN AS TEACHER ROUTES
+// ======================================================
+router.post('/teacher/admin/attendance', verifyToken, teacherController.markAttendance);
+router.post('/teacher/admin/assignments', verifyToken, upload.single('file'), teacherController.addAssignment);
+router.post('/teacher/admin/notices', verifyToken, teacherController.addNotice);
+router.post('/teacher/admin/materials', verifyToken, upload.single('file'), teacherController.addStudyMaterial);
+router.get('/teacher/admin/dashboard', verifyToken, teacherController.getTeacherDashboard);
+
+// ======================================================
+//              ADMIN OPERATIONS
+// ======================================================
+router.get('/admin/attendance-report', verifyToken, isAdmin, adminController.getComprehensiveAttendanceReport);
+router.delete('/admin/assignments/:assignmentId', verifyToken, isAdmin, adminController.deleteAssignment);
+router.delete('/admin/notices/:noticeId', verifyToken, isAdmin, adminController.deleteNotice);
+router.delete('/admin/materials/:materialId', verifyToken, isAdmin, adminController.deleteMaterial);
+router.put('/admin/teachers/:teacherId', verifyToken, isAdmin, adminController.updateTeacher);
+router.put('/admin/students/:studentId', verifyToken, adminController.updateStudent);
+router.get('/admin/students/:studentId', verifyToken, adminController.getStudentDetails);
+router.get('/admin/teachers/:teacherId', verifyToken, isAdmin, adminController.getTeacherDetails);
+
+// ======================================================
+//              TEACHER STUDENT MANAGEMENT
+// ======================================================
+router.get('/teacher/students/:studentId', verifyToken, adminController.getStudentDetails);
+router.put('/teacher/students/:studentId', verifyToken, adminController.updateStudent);
+router.delete('/teacher/students/:studentId', verifyToken, adminController.deleteStudent);
 
 // ======================================================
 module.exports = router;
