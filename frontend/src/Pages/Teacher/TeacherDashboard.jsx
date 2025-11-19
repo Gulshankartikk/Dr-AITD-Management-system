@@ -125,7 +125,13 @@ const TeacherDashboard = () => {
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+
+            <QuickAction
+              label="View All Students"
+              icon={<FaUsers className="text-indigo-500 mb-2" size={24} />}
+              onClick={() => navigate(`/teacher/${teacherId}/students`)}
+            />
 
             <QuickAction
               label="Mark Attendance"

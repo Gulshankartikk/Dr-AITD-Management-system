@@ -337,23 +337,36 @@ const markAttendance = async (req, res) => {
       return res.status(400).json({ success: false, msg: 'subjectId, date and attendance array are required' });
     }
 
+    if (attendance.length === 0) {
+      return res.status(400).json({ success: false, msg: 'Attendance array cannot be empty' });
+    }
+
     const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
-    const normalizedDate = normalizeDateOnly(date);
-    if (!normalizedDate) return res.status(400).json({ success: false, msg: 'Invalid date' });
+    const attendanceDate = new Date(date);
+    attendanceDate.setHours(0, 0, 0, 0);
 
-    // Delete existing attendance for that subject & teacher & date
-    await Attendance.deleteMany({ subjectId, teacherId: actualTeacherId, date: normalizedDate });
+    // Delete existing attendance for that subject & date (regardless of teacher)
+    const deleteResult = await Attendance.deleteMany({ 
+      subjectId, 
+      date: {
+        $gte: new Date(attendanceDate.setHours(0, 0, 0, 0)),
+        $lt: new Date(attendanceDate.setHours(23, 59, 59, 999))
+      }
+    });
 
-    // Create new attendance records with normalized date
+    console.log(`Deleted ${deleteResult.deletedCount} existing attendance records`);
+
+    // Create new attendance records
     const attendanceRecords = attendance.map(record => ({
       studentId: record.studentId,
       subjectId,
       teacherId: actualTeacherId,
-      date: normalizedDate,
+      date: new Date(date),
       status: record.status
     }));
 
     const savedRecords = await Attendance.insertMany(attendanceRecords);
+    console.log(`Saved ${savedRecords.length} new attendance records`);
 
     res.json({ success: true, msg: 'Attendance marked successfully', savedCount: savedRecords.length });
   } catch (error) {

@@ -590,6 +590,26 @@ const getComprehensiveAttendanceReport = async (req, res) => {
   }
 };
 
+// Get All Students
+const getAllStudents = async (req, res) => {
+  try {
+    const students = await Student.find({ isActive: true }).populate('courseId', 'courseName courseCode');
+    res.json({ success: true, students });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Get All Teachers
+const getAllTeachers = async (req, res) => {
+  try {
+    const teachers = await Teacher.find({ isActive: true });
+    res.json({ success: true, teachers });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
 module.exports = {
   adminLogin,
   addCourse,
@@ -610,5 +630,7 @@ module.exports = {
   updateStudent,
   getStudentDetails,
   getTeacherDetails,
-  getComprehensiveAttendanceReport
+  getComprehensiveAttendanceReport,
+  getAllStudents,
+  getAllTeachers
 };
