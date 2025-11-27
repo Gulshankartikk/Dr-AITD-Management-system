@@ -23,7 +23,7 @@ router.post('/admin/login', adminController.adminLogin);
 // ======================================================
 //                      TEACHER ROUTES
 // ======================================================
-router.post('/teacher/register', teacherController.teacherRegister);
+
 router.post('/teacher/login', teacherController.teacherLogin);
 
 // Dashboard + subjects + courses

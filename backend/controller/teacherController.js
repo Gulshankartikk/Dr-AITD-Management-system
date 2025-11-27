@@ -38,50 +38,7 @@ const buildFileUrl = (req, file) => {
   return `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
 };
 
-// ------------------------- TEACHER REGISTER -------------------------
-const teacherRegister = async (req, res) => {
-  try {
-    const { name, email, phone, password, department, designation } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ success: false, msg: 'Name, email and password are required' });
-    }
-
-    const existingTeacher = await Teacher.findOne({ email });
-    if (existingTeacher) {
-      return res.status(400).json({ success: false, msg: 'Teacher already exists with this email' });
-    }
-
-    const username = email.split('@')[0];
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const teacher = new Teacher({
-      name,
-      email,
-      username,
-      phone,
-      password: hashedPassword,
-      department,
-      designation,
-      isActive: true
-    });
-
-    await teacher.save();
-
-    res.status(201).json({
-      success: true,
-      msg: 'Teacher registered successfully',
-      teacher: {
-        id: teacher._id,
-        name: teacher.name,
-        email: teacher.email,
-        username: teacher.username
-      }
-    });
-  } catch (error) {
-    console.error('teacherRegister error:', error);
-    res.status(500).json({ success: false, msg: error.message });
-  }
-};
+// NOTE: Teacher registration removed - Teachers are now created by admin only
 
 // ------------------------- TEACHER LOGIN -------------------------
 const teacherLogin = async (req, res) => {
@@ -747,7 +704,6 @@ const getTeacherNotices = async (req, res) => {
 };
 
 module.exports = {
-  teacherRegister,
   teacherLogin,
   getTeacherDashboard,
   getTeacherSubjects,

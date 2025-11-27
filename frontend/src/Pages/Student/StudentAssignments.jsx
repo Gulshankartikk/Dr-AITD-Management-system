@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import { FaDownload, FaEye, FaUser, FaClock, FaTasks, FaCalendarAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import StudentHeader from '../../components/StudentHeader';
+import BackButton from '../../components/BackButton';
 
 const StudentAssignments = () => {
   const { studentId } = useParams();
@@ -69,6 +70,7 @@ const StudentAssignments = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <StudentHeader studentId={studentId} studentName={studentName} />
+      <BackButton />
       
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4">
