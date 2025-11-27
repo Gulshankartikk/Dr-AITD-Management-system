@@ -13,10 +13,12 @@ const AdminHeader = ({ currentRole = 'admin' }) => {
   };
 
   const switchRole = (role) => {
+    // Note: Role switching requires proper authentication
+    // This is a placeholder for demo purposes
     if (role === 'teacher') {
-      navigate('/teacher/admin/dashboard');
+      alert('Teacher view would require proper authentication');
     } else if (role === 'student') {
-      navigate('/student/admin/dashboard');
+      alert('Student view would require proper authentication');
     }
   };
 

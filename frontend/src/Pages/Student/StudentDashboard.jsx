@@ -21,7 +21,7 @@ import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import StudentHeader from '../../components/StudentHeader';
 import BackButton from '../../components/BackButton';
-import Footer from '../../components/Footer';
+
 
 const StudentDashboard = () => {
   const { studentId } = useParams();
@@ -168,7 +168,7 @@ const StudentDashboard = () => {
           </div>
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 };

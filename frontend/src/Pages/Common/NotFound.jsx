@@ -17,7 +17,7 @@ const NotFound = () => {
         
         <div className="space-y-4">
           <Link
-            to="/"
+            to="/login"
             className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             <FaHome />
@@ -27,8 +27,8 @@ const NotFound = () => {
           <div className="text-sm text-gray-500">
             <p>Or try one of these:</p>
             <div className="mt-2 space-x-4">
-              <Link to="/admin/dashboard" className="text-blue-500 hover:underline">
-                Admin Dashboard
+              <Link to="/login" className="text-blue-500 hover:underline">
+                Login Page
               </Link>
               <span>•</span>
               <button 

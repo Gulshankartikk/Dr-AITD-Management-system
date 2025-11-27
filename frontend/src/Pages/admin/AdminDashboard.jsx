@@ -7,7 +7,7 @@ import AdminHeader from '../../components/AdminHeader';
 import CourseForm from '../../components/CourseForm';
 import SubjectForm from '../../components/SubjectForm';
 import BackButton from '../../components/BackButton';
-import Footer from '../../components/Footer';
+
 import Cookies from 'js-cookie';
 
 const AdminDashboard = () => {
@@ -227,7 +227,7 @@ const AdminDashboard = () => {
         </div>
       </div>
       </div>
-      <Footer />
+
     </div>
   );
 };

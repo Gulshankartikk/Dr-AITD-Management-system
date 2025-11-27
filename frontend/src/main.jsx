@@ -39,6 +39,18 @@ import ForgetPass from "./Pages/Common/ForgetPassword/ForgetPass";
 import VerifyOtp from "./Pages/Common/ForgetPassword/VerifyOtp";
 import NotFound from "./Pages/Common/NotFound";
 
+// Additional Admin Pages
+import TeacherManagement from "./Pages/admin/TeacherManagement";
+import CourseManagement from "./Pages/admin/CourseManagement";
+import FeeManagement from "./Pages/admin/FeeManagement";
+import AttendanceManagement from "./Pages/admin/AttendanceManagement";
+import ExamManagement from "./Pages/admin/ExamManagement";
+import LibraryManagement from "./Pages/admin/LibraryManagement";
+import TimetableManagement from "./Pages/admin/TimetableManagement";
+import ReportsManagement from "./Pages/admin/ReportsManagement";
+import SettingsManagement from "./Pages/admin/SettingsManagement";
+import NoticesManagement from "./Pages/admin/NoticesManagement";
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
@@ -78,6 +90,16 @@ const router = createBrowserRouter(
         <Route path="add-subject" element={<AddSubject />} />
         <Route path="students" element={<StudentManagement />} />
         <Route path="notifications" element={<NotificationSummary />} />
+        <Route path="teachers" element={<TeacherManagement />} />
+        <Route path="courses" element={<CourseManagement />} />
+        <Route path="fees" element={<FeeManagement />} />
+        <Route path="attendance" element={<AttendanceManagement />} />
+        <Route path="exams" element={<ExamManagement />} />
+        <Route path="library" element={<LibraryManagement />} />
+        <Route path="timetable" element={<TimetableManagement />} />
+        <Route path="reports" element={<ReportsManagement />} />
+        <Route path="settings" element={<SettingsManagement />} />
+        <Route path="notices" element={<NoticesManagement />} />
       </Route>
       {/* 404 route */}
       <Route path="*" element={<NotFound />} />

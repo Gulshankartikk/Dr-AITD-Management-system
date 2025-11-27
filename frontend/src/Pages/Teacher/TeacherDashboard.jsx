@@ -18,7 +18,7 @@ import Cookies from 'js-cookie';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TeacherHeader from '../../components/TeacherHeader';
 import BackButton from '../../components/BackButton';
-import Footer from '../../components/Footer';
+
 import { AttendanceModal, AssignmentModal, NoticeModal, MaterialModal } from '../../components/TeacherModals';
 
 const TeacherDashboard = () => {
@@ -249,7 +249,7 @@ const TeacherDashboard = () => {
         onClose={() => setShowMaterialModal(false)}
         teacherId={teacherId}
       />
-      <Footer />
+
     </div>
   );
 };
