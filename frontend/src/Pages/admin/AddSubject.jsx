@@ -3,7 +3,7 @@ import { BASE_URL } from "../../services/api";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import BackButton from "../../components/back";
+import BackButton from "../../components/BackButton";
 
 const AddSubject = () => {
   const [courses, setCourses] = useState([]);
@@ -35,10 +35,10 @@ const AddSubject = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/courses`, {
+      const response = await axios.get(`${BASE_URL}/courses`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setCourses(response.data.data || []);
+      setCourses(response.data.courses || []);
     } catch (error) {
       console.error("Error fetching courses:", error);
       setCourses([]);
@@ -47,7 +47,7 @@ const AddSubject = () => {
 
   const fetchTeachers = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/teachers`, {
+      const response = await axios.get(`${BASE_URL}/api/admin/teachers`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTeachers(response.data.teachers || []);
@@ -65,71 +65,67 @@ const AddSubject = () => {
     }));
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (
-    !formData.subject_name ||
-    !formData.subject_code ||
-    !formData.credits ||
-    !formData.semester ||
-    !formData.branch
-  ) {
-    toast.error("Please fill all required fields");
-    return;
-  }
+    if (
+      !formData.subject_name ||
+      !formData.subject_code ||
+      !formData.credits ||
+      !formData.semester ||
+      !formData.branch
+    ) {
+      toast.error("Please fill all required fields");
+      return;
+    }
 
-  try {
-    const payload = {
-      subjectName: formData.subject_name,
-      subjectCode: formData.subject_code,
-      subjectType: formData.subject_type,
-      credits: Number(formData.credits),
-      semester: Number(formData.semester),
-      branch: formData.branch,
-      isElective: formData.is_elective,
-      teacherId: formData.teacher || null,
-      courseId: selectedCourse || null,
-    };
+    try {
+      const payload = {
+        subjectName: formData.subject_name,
+        subjectCode: formData.subject_code,
+        subjectType: formData.subject_type,
+        credits: Number(formData.credits),
+        semester: Number(formData.semester),
+        branch: formData.branch,
+        isElective: formData.is_elective,
+        teacherId: formData.teacher || null,
+        courseId: selectedCourse || null,
+      };
 
-    const res = await axios.post(`${BASE_URL}/api/subjects/add`, payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      await axios.post(`${BASE_URL}/api/admin/subjects`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    toast.success("Subject added successfully");
+      toast.success("Subject added successfully");
 
-    setFormData({
-      selectedCourse: "",
-      subject_name: "",
-      subject_code: "",
-      subject_type: "Theory",
-      credits: "",
-      semester: "",
-      branch: "",
-      is_elective: false,
-      teacher: "",
-    });
+      setFormData({
+        selectedCourse: "",
+        subject_name: "",
+        subject_code: "",
+        subject_type: "Theory",
+        credits: "",
+        semester: "",
+        branch: "",
+        is_elective: false,
+        teacher: "",
+      });
 
-    setSelectedCourse("");
+      setSelectedCourse("");
 
-  } catch (error) {
-    console.error("Error adding subject:", error);
-    toast.error(error.response?.data?.message || "Failed to add subject");
-  }
-};
-
-
+    } catch (error) {
+      console.error("Error adding subject:", error);
+      toast.error(error.response?.data?.message || "Failed to add subject");
+    }
+  };
 
   return (
-    <div className="flex flex-col w-full min-h-[100vh] bg-blue-500 pb-10">
-      <div className="ms-5 mt-5 xl:mt-0">
-        <BackButton targetRoute="/admin/dashboard" />
-      </div>
+    <div className="flex flex-col w-full min-h-[100vh] pb-10" style={{ background: 'linear-gradient(135deg, #2d545e 0%, #12343b 100%)' }}>
+      <BackButton />
 
       <div className="text-white flex items-center justify-center py-11">
-        <h1 className="font-extrabold text-5xl md:text-8xl text-center overflow-hidden">
+        <h1 className="font-extrabold text-5xl md:text-8xl text-center overflow-hidden" style={{ color: '#c89666' }}>
           Add Subject
         </h1>
       </div>
@@ -137,54 +133,23 @@ const AddSubject = () => {
       <div className="w-full flex justify-center px-5 lg:px-44">
         <form
           method="post"
-          className="bg-white flex flex-col gap-4 justify-evenly py-10 w-full md:w-[50vw] px-10 border-2 border-black rounded-xl"
+          className="bg-white flex flex-col gap-4 justify-evenly py-10 w-full md:w-[50vw] px-10 rounded-xl shadow-xl"
+          style={{ borderTop: '4px solid #c89666' }}
           onSubmit={handleSubmit}
         >
-          <div className="w-full flex justify-center items-center mb-6">
-            <div className="flex items-center justify-center w-52">
-              <img
-                src="/src/assets/dr-ambedkar-institute-of-technology-for-handicapped-kanpur.jpeg.jpg"
-                alt="logo"
-                className="w-full"
-              />
-            </div>
-          </div>
-
-          {/* Course Selection */}
-          <div className="flex flex-col">
-            <label className="block text-gray-700 font-bold mb-2">
-              Select Course (Optional)
-            </label>
-            <select
-              value={selectedCourse}
-              onChange={(e) => setSelectedCourse(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-2 focus:shadow-outline"
-            >
-              <option value="">Select Course</option>
-              {selectedCourses.map(course => (
-                <option key={course} value={course}>
-                  {course}
-                </option>
-              ))}
-              {courses && courses.map(course => (
-                <option key={course._id} value={course._id}>
-                  {course.courseName}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Subject Basic Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <label className="block text-gray-700 font-bold mb-2">
+              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
                 Subject Name *
               </label>
               <input
                 type="text"
                 name="subject_name"
                 placeholder="e.g., Data Structures"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-2 focus:shadow-outline"
+                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
+                style={{ borderColor: '#c89666' }}
+                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                onBlur={(e) => e.target.style.borderColor = '#c89666'}
                 value={formData.subject_name}
                 onChange={handleChange}
                 required
@@ -192,14 +157,17 @@ const AddSubject = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block text-gray-700 font-bold mb-2">
+              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
                 Subject Code *
               </label>
               <input
                 type="text"
                 name="subject_code"
                 placeholder="e.g., CSE201"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-2 focus:shadow-outline"
+                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
+                style={{ borderColor: '#c89666' }}
+                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                onBlur={(e) => e.target.style.borderColor = '#c89666'}
                 value={formData.subject_code}
                 onChange={handleChange}
                 required
@@ -207,15 +175,17 @@ const AddSubject = () => {
             </div>
           </div>
 
-          {/* Subject Type and Credits */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col">
-              <label className="block text-gray-700 font-bold mb-2">
+              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
                 Subject Type *
               </label>
               <select
                 name="subject_type"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-2 focus:shadow-outline"
+                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
+                style={{ borderColor: '#c89666' }}
+                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                onBlur={(e) => e.target.style.borderColor = '#c89666'}
                 value={formData.subject_type}
                 onChange={handleChange}
                 required
@@ -227,12 +197,15 @@ const AddSubject = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block text-gray-700 font-bold mb-2">
+              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
                 Credits *
               </label>
               <select
                 name="credits"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-2 focus:shadow-outline"
+                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
+                style={{ borderColor: '#c89666' }}
+                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                onBlur={(e) => e.target.style.borderColor = '#c89666'}
                 value={formData.credits}
                 onChange={handleChange}
                 required
@@ -245,49 +218,15 @@ const AddSubject = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block text-gray-700 font-bold mb-2">
-                Elective Subject
-              </label>
-              <label className="flex items-center mt-2">
-                <input
-                  type="checkbox"
-                  name="is_elective"
-                  checked={formData.is_elective}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                <span className="text-gray-700">Is Elective?</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Branch and Semester */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label className="block text-gray-700 font-bold mb-2">
-                Branch *
-              </label>
-              <select
-                name="branch"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-2 focus:shadow-outline"
-                value={formData.branch}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Branch</option>
-                {branches.map(branch => (
-                  <option key={branch} value={branch}>{branch}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col">
-              <label className="block text-gray-700 font-bold mb-2">
+              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
                 Semester *
               </label>
               <select
                 name="semester"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-2 focus:shadow-outline"
+                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
+                style={{ borderColor: '#c89666' }}
+                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                onBlur={(e) => e.target.style.borderColor = '#c89666'}
                 value={formData.semester}
                 onChange={handleChange}
                 required
@@ -300,30 +239,58 @@ const AddSubject = () => {
             </div>
           </div>
 
-          {/* Teacher Assignment */}
-          <div className="flex flex-col">
-            <label className="block text-gray-700 font-bold mb-2">
-              Assign Teacher (Optional)
-            </label>
-            <select
-              name="teacher"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-2 focus:shadow-outline"
-              value={formData.teacher}
-              onChange={handleChange}
-            >
-              <option value="">Select Teacher</option>
-              {teachers && teachers.map(teacher => (
-                <option key={teacher._id} value={teacher._id}>
-                  {teacher.name} ({teacher.teacher_Id})
-                </option>
-              ))}
-            </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
+                Branch *
+              </label>
+              <select
+                name="branch"
+                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
+                style={{ borderColor: '#c89666' }}
+                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                onBlur={(e) => e.target.style.borderColor = '#c89666'}
+                value={formData.branch}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Branch</option>
+                {branches.map(branch => (
+                  <option key={branch} value={branch}>{branch}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col">
+              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
+                Assign Teacher (Optional)
+              </label>
+              <select
+                name="teacher"
+                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
+                style={{ borderColor: '#c89666' }}
+                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                onBlur={(e) => e.target.style.borderColor = '#c89666'}
+                value={formData.teacher}
+                onChange={handleChange}
+              >
+                <option value="">Select Teacher</option>
+                {teachers && teachers.map(teacher => (
+                  <option key={teacher._id} value={teacher._id}>
+                    {teacher.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="flex justify-center mt-6 w-full">
             <button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="w-full text-white font-bold py-3 px-4 rounded focus:outline-none transition-colors"
+              style={{ backgroundColor: '#2d545e' }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#12343b'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#2d545e'}
             >
               Add Subject
             </button>

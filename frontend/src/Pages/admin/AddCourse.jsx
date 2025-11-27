@@ -46,15 +46,15 @@ const AddCourse = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8" style={{ background: 'linear-gradient(135deg, #2d545e 0%, #12343b 100%)' }}>
       <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-8">Add New Course</h1>
+        <div className="bg-white rounded-lg shadow-xl p-8" style={{ borderTop: '4px solid #c89666' }}>
+          <h1 className="text-3xl font-bold mb-8" style={{ color: '#12343b' }}>Add New Course</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#2d545e' }}>
                   Course Name *
                 </label>
                 <input
@@ -63,15 +63,16 @@ const AddCourse = () => {
                   value={formData.courseName}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none"
+                  style={{ borderColor: '#c89666' }}
+                  onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                  onBlur={(e) => e.target.style.borderColor = '#c89666'}
                   placeholder="Bachelor of Technology - Computer Science"
-                  
-                  
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#2d545e' }}>
                   Course Code *
                 </label>
                 <input
@@ -80,13 +81,16 @@ const AddCourse = () => {
                   value={formData.courseCode}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none"
+                  style={{ borderColor: '#c89666' }}
+                  onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                  onBlur={(e) => e.target.style.borderColor = '#c89666'}
                   placeholder="BTECH-CSE"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#2d545e' }}>
                   Course Duration *
                 </label>
                 <select
@@ -94,7 +98,10 @@ const AddCourse = () => {
                   value={formData.courseDuration}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none"
+                  style={{ borderColor: '#c89666' }}
+                  onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                  onBlur={(e) => e.target.style.borderColor = '#c89666'}
                 >
                   <option value="">Select Duration</option>
                   <option value="1 Year">1 Year</option>
@@ -107,7 +114,7 @@ const AddCourse = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: '#2d545e' }}>
                 Course Description
               </label>
               <textarea
@@ -115,7 +122,10 @@ const AddCourse = () => {
                 value={formData.courseDescription}
                 onChange={handleInputChange}
                 rows="4"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none"
+                style={{ borderColor: '#c89666' }}
+                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                onBlur={(e) => e.target.style.borderColor = '#c89666'}
                 placeholder="Brief description of the course..."
               />
             </div>
@@ -124,14 +134,20 @@ const AddCourse = () => {
               <button
                 type="button"
                 onClick={() => navigate('/admin/dashboard')}
-                className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                className="px-6 py-3 text-white rounded-lg transition-colors font-semibold"
+                style={{ backgroundColor: '#c89666' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#2d545e'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#c89666'}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+                className="px-6 py-3 text-white rounded-lg transition-colors disabled:opacity-50 font-semibold"
+                style={{ backgroundColor: '#2d545e' }}
+                onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#12343b')}
+                onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#2d545e')}
               >
                 {loading ? 'Creating...' : 'Create Course'}
               </button>

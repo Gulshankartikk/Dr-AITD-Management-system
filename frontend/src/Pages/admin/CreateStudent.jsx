@@ -4,6 +4,7 @@ import axios from 'axios';
 import { BASE_URL } from '../../services/api';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
+import BackButton from '../../components/BackButton';
 
 const CreateStudent = () => {
   const navigate = useNavigate();
@@ -26,9 +27,9 @@ const CreateStudent = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/admin/dashboard`);
+      const response = await axios.get(`${BASE_URL}/courses`);
       if (response.data.success) {
-        setCourses(response.data.data.courses);
+        setCourses(response.data.courses || []);
       }
     } catch (error) {
       console.error('Error fetching courses:', error);
@@ -65,15 +66,16 @@ const CreateStudent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8" style={{ background: 'linear-gradient(135deg, #2d545e 0%, #12343b 100%)' }}>
+      <BackButton />
       <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-8">Create Student Profile</h1>
+        <div className="bg-white rounded-lg shadow-xl p-8" style={{ borderTop: '4px solid #c89666' }}>
+          <h1 className="text-3xl font-bold mb-8" style={{ color: '#12343b' }}>Create Student Profile</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#2d545e' }}>
                   Full Name *
                 </label>
                 <input
@@ -82,13 +84,16 @@ const CreateStudent = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="gulshan kartik"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none"
+                  style={{ borderColor: '#c89666' }}
+                  onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                  onBlur={(e) => e.target.style.borderColor = '#c89666'}
+                  placeholder="Gulshan Kartik"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#2d545e' }}>
                   Email Address *
                 </label>
                 <input
@@ -97,13 +102,16 @@ const CreateStudent = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none"
+                  style={{ borderColor: '#c89666' }}
+                  onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                  onBlur={(e) => e.target.style.borderColor = '#c89666'}
                   placeholder="kartik@student.edu"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#2d545e' }}>
                   Phone Number *
                 </label>
                 <input
@@ -112,13 +120,16 @@ const CreateStudent = () => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none"
+                  style={{ borderColor: '#c89666' }}
+                  onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                  onBlur={(e) => e.target.style.borderColor = '#c89666'}
                   placeholder="+91-9876543220"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#2d545e' }}>
                   Roll Number *
                 </label>
                 <input
@@ -127,13 +138,16 @@ const CreateStudent = () => {
                   value={formData.rollNo}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none"
+                  style={{ borderColor: '#c89666' }}
+                  onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                  onBlur={(e) => e.target.style.borderColor = '#c89666'}
                   placeholder="CSE2021001"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#2d545e' }}>
                   Password *
                 </label>
                 <input
@@ -142,13 +156,16 @@ const CreateStudent = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none"
+                  style={{ borderColor: '#c89666' }}
+                  onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                  onBlur={(e) => e.target.style.borderColor = '#c89666'}
                   placeholder="Enter password"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#2d545e' }}>
                   Course *
                 </label>
                 <select
@@ -156,7 +173,10 @@ const CreateStudent = () => {
                   value={formData.courseId}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none"
+                  style={{ borderColor: '#c89666' }}
+                  onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                  onBlur={(e) => e.target.style.borderColor = '#c89666'}
                 >
                   <option value="">Select Course</option>
                   {courses.map(course => (
@@ -168,7 +188,7 @@ const CreateStudent = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#2d545e' }}>
                   Semester *
                 </label>
                 <select
@@ -176,7 +196,10 @@ const CreateStudent = () => {
                   value={formData.semester}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none"
+                  style={{ borderColor: '#c89666' }}
+                  onFocus={(e) => e.target.style.borderColor = '#2d545e'}
+                  onBlur={(e) => e.target.style.borderColor = '#c89666'}
                 >
                   {[1,2,3,4,5,6,7,8].map(sem => (
                     <option key={sem} value={sem}>Semester {sem}</option>
@@ -189,14 +212,20 @@ const CreateStudent = () => {
               <button
                 type="button"
                 onClick={() => navigate('/admin/dashboard')}
-                className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                className="px-6 py-3 text-white rounded-lg transition-colors font-semibold"
+                style={{ backgroundColor: '#c89666' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#2d545e'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#c89666'}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+                className="px-6 py-3 text-white rounded-lg transition-colors disabled:opacity-50 font-semibold"
+                style={{ backgroundColor: '#2d545e' }}
+                onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#12343b')}
+                onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#2d545e')}
               >
                 {loading ? 'Creating...' : 'Create Student'}
               </button>
