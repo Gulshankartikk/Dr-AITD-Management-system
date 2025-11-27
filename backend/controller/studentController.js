@@ -99,18 +99,18 @@ const getStudentProfile = async (req, res) => {
     const { studentId } = req.params;
     
     // Handle demo students (including backward compatibility)
-    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'student1' || studentId === 'admin') {
       return res.json({
         success: true,
         student: {
           _id: studentId,
-          name: (studentId === 'demo-student' || studentId === 'student') ? 'Demo Student' : 'Administrator (Student View)',
-          email: (studentId === 'demo-student' || studentId === 'student') ? 'student@college.edu' : 'admin@college.edu',
-          rollNo: (studentId === 'demo-student' || studentId === 'student') ? 'STU001' : 'ADMIN001',
+          name: (studentId === 'demo-student' || studentId === 'student' || studentId === 'student1') ? 'Demo Student' : 'Administrator (Student View)',
+          email: (studentId === 'demo-student' || studentId === 'student' || studentId === 'student1') ? 'student@college.edu' : 'admin@college.edu',
+          rollNo: (studentId === 'demo-student' || studentId === 'student' || studentId === 'student1') ? 'STU001' : 'ADMIN001',
           phone: '+91 1234567890',
           courseId: {
-            courseName: (studentId === 'demo-student' || studentId === 'student') ? 'Computer Science' : 'System Administration',
-            courseCode: (studentId === 'demo-student' || studentId === 'student') ? 'CSE' : 'ADMIN',
+            courseName: (studentId === 'demo-student' || studentId === 'student' || studentId === 'student1') ? 'Computer Science' : 'System Administration',
+            courseCode: (studentId === 'demo-student' || studentId === 'student' || studentId === 'student1') ? 'CSE' : 'ADMIN',
             courseDuration: 4
           }
         }
@@ -171,14 +171,14 @@ const getStudentAttendance = async (req, res) => {
     const { subjectId, month, year } = req.query;
 
     // Handle demo students (including backward compatibility)
-    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'student1' || studentId === 'admin') {
       return res.json({
         success: true,
         attendance: [],
         student: {
           _id: studentId,
-          name: (studentId === 'demo-student' || studentId === 'student') ? 'Demo Student' : 'Administrator (Student View)',
-          email: (studentId === 'demo-student' || studentId === 'student') ? 'student@college.edu' : 'admin@college.edu'
+          name: (studentId === 'demo-student' || studentId === 'student' || studentId === 'student1') ? 'Demo Student' : 'Administrator (Student View)',
+          email: (studentId === 'demo-student' || studentId === 'student' || studentId === 'student1') ? 'student@college.edu' : 'admin@college.edu'
         },
         stats: {
           totalClasses: 0,
@@ -263,13 +263,13 @@ const getNotesBySubject = async (req, res) => {
     const { subjectId } = req.query;
     
     // Handle demo students (including backward compatibility)
-    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'student1' || studentId === 'admin') {
       return res.json({
         success: true,
         notes: [],
         student: {
           _id: studentId,
-          name: (studentId === 'demo-student' || studentId === 'student') ? 'Demo Student' : 'Administrator (Student View)'
+          name: (studentId === 'demo-student' || studentId === 'student' || studentId === 'student1') ? 'Demo Student' : 'Administrator (Student View)'
         }
       });
     }
@@ -296,13 +296,13 @@ const getStudyMaterials = async (req, res) => {
     const { subjectId } = req.query;
     
     // Handle demo students (including backward compatibility)
-    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'student1' || studentId === 'admin') {
       return res.json({
         success: true,
         materials: [],
         student: {
           _id: studentId,
-          name: (studentId === 'demo-student' || studentId === 'student') ? 'Demo Student' : 'Administrator (Student View)'
+          name: (studentId === 'demo-student' || studentId === 'student' || studentId === 'student1') ? 'Demo Student' : 'Administrator (Student View)'
         }
       });
     }
@@ -329,13 +329,13 @@ const getAssignments = async (req, res) => {
     const { subjectId } = req.query;
     
     // Handle demo students (including backward compatibility)
-    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'student1' || studentId === 'admin') {
       return res.json({
         success: true,
         assignments: [],
         student: {
           _id: studentId,
-          name: (studentId === 'demo-student' || studentId === 'student') ? 'Demo Student' : 'Administrator (Student View)'
+          name: (studentId === 'demo-student' || studentId === 'student' || studentId === 'student1') ? 'Demo Student' : 'Administrator (Student View)'
         }
       });
     }
@@ -385,7 +385,7 @@ const getStudentMarks = async (req, res) => {
     const { subjectId, examType } = req.query;
     
     // Handle demo students (including backward compatibility)
-    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'admin') {
+    if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'student1' || studentId === 'admin') {
       return res.json({
         success: true,
         marks: []
@@ -446,7 +446,7 @@ const getStudentDashboard = async (req, res) => {
     }
     
     // Handle demo student access (including backward compatibility)
-    if (studentId === 'demo-student' || studentId === 'student') {
+    if (studentId === 'demo-student' || studentId === 'student' || studentId === 'student1') {
       const courses = await Course.find({ isActive: true }).limit(1);
       
       return res.json({
