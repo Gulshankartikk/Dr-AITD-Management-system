@@ -20,42 +20,19 @@ const adminLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
     
-    // Default admin login
-    if (username === 'admin' && (password === 'admin' || password === 'admin123')) {
-      const token = jwt.sign({ id: 'admin', role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-      res.cookie('token', token);
-      
-      return res.json({ success: true, token, admin: { id: 'admin', name: 'Administrator', role: 'admin' } });
+    if (!username || !password) {
+      return res.status(400).json({ success: false, msg: 'Username and password are required' });
     }
     
-    // Find admin by email or username
-    const admin = await Admin.findOne({
-      $or: [{ email: username }, { username: username }]
-    });
-    
-    if (!admin) {
-      return res.status(400).json({ success: false, msg: 'Admin not found' });
-    }
-    
-    // Check password
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
-    if (!isPasswordValid) {
+    // STRICT validation - must match exactly
+    if (username !== 'admin' || password !== 'admin123') {
       return res.status(400).json({ success: false, msg: 'Invalid credentials' });
     }
-
-    const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    res.cookie('token', token);
     
-    res.json({ 
-      success: true, 
-      token, 
-      admin: { 
-        id: admin._id, 
-        name: admin.name, 
-        email: admin.email,
-        role: 'admin' 
-      } 
-    });
+    const token = jwt.sign({ id: 'admin', role: 'admin' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
+    res.cookie('token', token, { httpOnly: true });
+    
+    return res.json({ success: true, token, admin: { id: 'admin', name: 'Administrator', role: 'admin' } });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
   }

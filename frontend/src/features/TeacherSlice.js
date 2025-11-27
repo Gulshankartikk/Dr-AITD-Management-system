@@ -14,7 +14,7 @@ export const fetchTeacherDetails = createAsyncThunk(
   "teacher/fetchTeacherDetails",
   async (teacherId) => {
     let res = await axios.get(
-      `${BASE_URL}/teacher/${teacherId}/details`
+      `${BASE_URL}/api/teacher/${teacherId}/dashboard`
     );
 
     return res.data;

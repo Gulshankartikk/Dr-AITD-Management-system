@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const db = require("./database/db");
 
 // variables
@@ -36,6 +36,11 @@ app.get("/", (req, res) => {
 // routes
 app.use("/subjects", require("./routes/subjects"));
 app.use("/api", require("./routes/completeRoutes"));
+
+// Fallback route for SPA
+app.get('*', (req, res) => {
+  res.json({ success: false, msg: 'API route not found' });
+});
 
 app.listen(PORT, () => {
   console.log("Server Started at", PORT);

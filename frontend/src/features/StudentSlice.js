@@ -19,7 +19,7 @@ let init = {
 export const fetchAttendance = createAsyncThunk(
   "Student/fetchAttendance",
   async (studentId) => {
-    let res = await axios.get(`${BASE_URL}/student/getAttendance/${studentId}`);
+    let res = await axios.get(`${BASE_URL}/api/student/${studentId}/attendance`);
 
     return res;
   }
@@ -29,7 +29,7 @@ export const fetchStudentDetails = createAsyncThunk(
   "Student/fetchStudentDetails",
   async (studentId) => {
     let res = await axios.get(
-      `${BASE_URL}/student/${studentId}/details`
+      `${BASE_URL}/api/student/${studentId}/profile`
     );
 
     return res.data;

@@ -87,108 +87,32 @@ const teacherRegister = async (req, res) => {
 const teacherLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ success: false, msg: 'Username and password required' });
-
-    // Predefined/demo teachers for quick access (kept intentionally)
-    const predefinedTeachers = {
-      'gulshan': { id: 'gulshan', name: 'Gulshan Kartik', email: 'gulshan@college.edu' },
-      'ankita': { id: 'ankita', name: 'Ankita Maurya', email: 'ankita@college.edu' },
-      'aditya': { id: 'aditya', name: 'Aditya Kumar Sharma', email: 'aditya@college.edu' },
-      'abhishek': { id: 'abhishek', name: 'Abhishek Gond', email: 'abhishek@college.edu' }
-    };
-
-    const lower = username.toLowerCase();
-    if (predefinedTeachers[lower] && password === 'teacher123') {
-      const user = predefinedTeachers[lower];
-      const token = jwt.sign({ id: user.id, role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-      res.cookie('token', token, { httpOnly: true });
-
-      return res.json({
-        success: true,
-        token,
-        teacher: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          assignedCourse: [],
-          assignedSubjects: [],
-          role: 'teacher'
-        }
-      });
+    
+    if (!username || !password) {
+      return res.status(400).json({ success: false, msg: 'Username and password required' });
     }
 
-    // Demo account:
-    if (lower === 'teacher' && password === 'teacher123') {
-      const token = jwt.sign({ id: 'teacher', role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-      res.cookie('token', token, { httpOnly: true });
-
-      return res.json({
-        success: true,
-        token,
-        teacher: {
-          id: 'teacher',
-          name: 'Demo Teacher',
-          email: 'teacher@college.edu',
-          assignedCourse: [],
-          assignedSubjects: [],
-          role: 'teacher'
-        }
-      });
-    }
-
-    // Admin view as teacher (demo)
-    if (lower === 'admin' && password === 'admin') {
-      const token = jwt.sign({ id: 'admin', role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-      res.cookie('token', token, { httpOnly: true });
-
-      return res.json({
-        success: true,
-        token,
-        teacher: {
-          id: 'admin',
-          name: 'Administrator (Teacher View)',
-          email: 'admin@college.edu',
-          assignedCourse: [],
-          assignedSubjects: [],
-          role: 'teacher'
-        }
-      });
-    }
-
-    // Real teacher auth: find by email or username
-    const teacher = await Teacher.findOne({
-      $or: [{ email: username }, { username }],
-      isActive: true
-    })
-      .populate('assignedCourse', 'courseName courseCode')
-      .populate('assignedSubjects', 'subjectName subjectCode');
-
-    if (!teacher) {
-      return res.status(400).json({ success: false, msg: 'Teacher not found' });
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, teacher.password);
-    if (!isPasswordValid) {
+    // STRICT validation - only accept exact match
+    if (username !== 'teacher' || password !== 'teacher123') {
       return res.status(400).json({ success: false, msg: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: teacher._id, role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ id: 'teacher1', role: 'teacher' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
     res.cookie('token', token, { httpOnly: true });
 
-    res.json({
+    return res.json({
       success: true,
       token,
       teacher: {
-        id: teacher._id,
-        name: teacher.name,
-        email: teacher.email,
-        assignedCourse: teacher.assignedCourse,
-        assignedSubjects: teacher.assignedSubjects,
+        id: 'teacher1',
+        name: 'Demo Teacher',
+        email: 'teacher@college.edu',
+        assignedCourse: [],
+        assignedSubjects: [],
         role: 'teacher'
       }
     });
   } catch (error) {
-    console.error('teacherLogin error:', error);
     res.status(500).json({ success: false, msg: error.message });
   }
 };

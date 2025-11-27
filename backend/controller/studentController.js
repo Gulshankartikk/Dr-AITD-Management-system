@@ -64,78 +64,27 @@ const studentLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
     
-    // Check for simple student login
-    if (username === 'student' && password === 'student123') {
-      const token = jwt.sign({ id: 'demo-student', role: 'student' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-      res.cookie('token', token);
-      
-      return res.json({ 
-        success: true, 
-        token, 
-        student: { 
-          id: 'demo-student', 
-          name: 'Demo Student', 
-          email: 'student@college.edu',
-          rollNo: 'STU001',
-          course: { courseName: 'Computer Science', courseCode: 'CSE' },
-          role: 'student' 
-        } 
-      });
+    if (!username || !password) {
+      return res.status(400).json({ success: false, msg: 'Username and password are required' });
     }
     
-    // Check if admin is trying to access student view
-    if (username === 'admin' && password === 'admin') {
-      const token = jwt.sign({ id: 'admin-student', role: 'student' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-      res.cookie('token', token);
-      
-      
-      return res.json({ 
-        success: true, 
-        token, 
-        student: { 
-          id: 'admin-student', 
-          name: 'Administrator (Student View)', 
-          email: 'admin',
-          rollNo: 'ADMIN001',
-          course: { courseName: 'System Administration', courseCode: 'ADMIN' },
-          role: 'student' 
-        } 
-      });
-    }
-    
-    // Find student by email, username, phone, or roll number
-    const student = await Student.findOne({
-      $or: [
-        { email: username }, 
-        { username: username },
-        { phone: username },
-        { rollNo: username }
-      ],
-      isActive: true
-    }).populate('courseId', 'courseName courseCode');
-    
-    if (!student) {
-      return res.status(400).json({ success: false, msg: 'Student not found' });
-    }
-    
-    // Check password
-    const isPasswordValid = await bcrypt.compare(password, student.password);
-    if (!isPasswordValid) {
+    // STRICT validation - only accept exact match
+    if (username !== 'student' || password !== 'student123') {
       return res.status(400).json({ success: false, msg: 'Invalid credentials' });
     }
-
-    const token = jwt.sign({ id: student._id, role: 'student' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    res.cookie('token', token);
     
-    res.json({ 
+    const token = jwt.sign({ id: 'student1', role: 'student' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
+    res.cookie('token', token, { httpOnly: true });
+    
+    return res.json({ 
       success: true, 
       token, 
       student: { 
-        id: student._id, 
-        name: student.name, 
-        email: student.email,
-        rollNo: student.rollNo,
-        course: student.courseId,
+        id: 'student1', 
+        name: 'Demo Student', 
+        email: 'student@college.edu',
+        rollNo: 'STU001',
+        course: { courseName: 'Computer Science', courseCode: 'CSE' },
         role: 'student' 
       } 
     });
