@@ -65,6 +65,10 @@ router.post('/teacher/:teacherId/assignments', verifyToken, upload.single('file'
 router.post('/teacher/:teacherId/marks', verifyToken, teacherController.addMarks);
 router.get('/teacher/:teacherId/marks/:subjectId', verifyToken, teacherController.getAllStudentsMarks);
 
+// Teacher subjects and courses
+router.get('/teacher/:teacherId/subjects', verifyToken, teacherController.getTeacherSubjects);
+router.get('/teacher/:teacherId/courses', verifyToken, teacherController.getTeacherCourses);
+
 // Notes + Materials + Notices
 router.post('/teacher/:teacherId/notes', verifyToken, upload.single('file'), teacherController.addNotes);
 router.post('/teacher/:teacherId/materials', verifyToken, upload.single('file'), teacherController.addStudyMaterial);

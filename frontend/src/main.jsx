@@ -34,6 +34,10 @@ import TeacherDashboard from "./Pages/Teacher/TeacherDashboardNew";
 import StudentList from "./Pages/Teacher/StudentList";
 import StudentProfile from "./Pages/Student/StudentProfile";
 import TeacherProfile from "./Pages/Teacher/TeacherProfile";
+import TeacherAttendance from "./Pages/Teacher/TeacherAttendance";
+import TeacherAssignments from "./Pages/Teacher/TeacherAssignments";
+import TeacherMaterials from "./Pages/Teacher/TeacherMaterials";
+import TeacherMarks from "./Pages/Teacher/TeacherMarks";
 import UpdatePass from "./Pages/Common/UpdatePass";
 import ForgetPass from "./Pages/Common/ForgetPassword/ForgetPass";
 import VerifyOtp from "./Pages/Common/ForgetPassword/VerifyOtp";
@@ -77,6 +81,10 @@ const router = createBrowserRouter(
         <Route path="profile" element={<TeacherProfile />} />
         <Route path="students" element={<StudentList />} />
         <Route path="summary" element={<TeacherSummary />} />
+        <Route path="attendance" element={<TeacherAttendance />} />
+        <Route path="assignments" element={<TeacherAssignments />} />
+        <Route path="materials" element={<TeacherMaterials />} />
+        <Route path="marks" element={<TeacherMarks />} />
         <Route path="updatePassword" element={<UpdatePass />} />
         <Route path="forgetPassword" element={<ForgetPass />} />
         <Route path="forgetPassword/verifyotp" element={<VerifyOtp />} />
