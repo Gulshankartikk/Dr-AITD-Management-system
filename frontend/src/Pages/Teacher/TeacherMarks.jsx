@@ -11,7 +11,7 @@ import { FaPlus, FaTrophy, FaChartLine } from 'react-icons/fa';
 const TeacherMarks = () => {
   const { id: teacherId } = useParams();
   const [subjects, setSubjects] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('all');
   const [students, setStudents] = useState([]);
   const [studentMarks, setStudentMarks] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -28,8 +28,11 @@ const TeacherMarks = () => {
   }, [teacherId]);
 
   useEffect(() => {
-    if (selectedSubject) {
+    if (selectedSubject && selectedSubject !== 'all') {
       fetchStudentsAndMarks();
+    } else if (selectedSubject === 'all') {
+      setStudents([]);
+      setStudentMarks([]);
     }
   }, [selectedSubject]);
 
@@ -68,6 +71,10 @@ const TeacherMarks = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (selectedSubject === 'all') {
+      alert('Please select a specific subject to add marks');
+      return;
+    }
     try {
       const token = Cookies.get('token');
       await axios.post(
@@ -92,7 +99,7 @@ const TeacherMarks = () => {
         <BackButton className="mb-4" />
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-white">Manage Marks</h1>
-          {selectedSubject && (
+          {selectedSubject && selectedSubject !== 'all' && (
             <button
               onClick={() => setShowModal(true)}
               className="px-6 py-3 rounded-lg text-white font-bold flex items-center gap-2"
@@ -113,7 +120,7 @@ const TeacherMarks = () => {
             className="w-full p-3 border rounded-lg"
             style={{ borderColor: '#e1b382' }}
           >
-            <option value="">-- Select Subject --</option>
+            <option value="all">All Subjects</option>
             {subjects.map(subject => (
               <option key={subject._id} value={subject._id}>
                 {subject.subjectName} ({subject.subjectCode})
@@ -124,6 +131,11 @@ const TeacherMarks = () => {
 
         {loading ? (
           <LoadingSpinner message="Loading marks..." />
+        ) : selectedSubject === 'all' ? (
+          <div className="bg-white rounded-lg shadow-xl p-12 text-center">
+            <FaChartLine size={48} className="mx-auto mb-4" style={{ color: '#e1b382' }} />
+            <p className="text-gray-500 text-lg">Please select a specific subject to view and manage marks</p>
+          </div>
         ) : selectedSubject && studentMarks.length > 0 ? (
           <div className="bg-white rounded-lg shadow-xl p-6">
             <h2 className="text-xl font-bold mb-4" style={{ color: '#2d545e' }}>Student Performance</h2>
@@ -161,16 +173,12 @@ const TeacherMarks = () => {
               </table>
             </div>
           </div>
-        ) : selectedSubject ? (
+        ) : selectedSubject && selectedSubject !== 'all' ? (
           <div className="bg-white rounded-lg shadow-xl p-12 text-center">
             <FaChartLine size={48} className="mx-auto mb-4" style={{ color: '#e1b382' }} />
             <p className="text-gray-500 text-lg">No marks recorded yet for this subject</p>
           </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-xl p-12 text-center">
-            <p className="text-gray-500 text-lg">Please select a subject to view marks</p>
-          </div>
-        )}
+        ) : null}
       </div>
 
       {showModal && (

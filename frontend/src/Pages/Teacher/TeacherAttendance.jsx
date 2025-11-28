@@ -11,7 +11,7 @@ import { FaCalendarAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 const TeacherAttendance = () => {
   const { id: teacherId } = useParams();
   const [subjects, setSubjects] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('all');
   const [students, setStudents] = useState([]);
   const [attendance, setAttendance] = useState({});
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -23,8 +23,10 @@ const TeacherAttendance = () => {
   }, [teacherId]);
 
   useEffect(() => {
-    if (selectedSubject) {
+    if (selectedSubject && selectedSubject !== 'all') {
       fetchStudents();
+    } else if (selectedSubject === 'all') {
+      setStudents([]);
     }
   }, [selectedSubject]);
 
@@ -67,6 +69,10 @@ const TeacherAttendance = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (selectedSubject === 'all') {
+      alert('Please select a specific subject to mark attendance');
+      return;
+    }
     setSubmitting(true);
     try {
       const token = Cookies.get('token');
@@ -108,7 +114,7 @@ const TeacherAttendance = () => {
                 className="w-full p-3 border rounded-lg"
                 style={{ borderColor: '#e1b382' }}
               >
-                <option value="">-- Select Subject --</option>
+                <option value="all">All Subjects</option>
                 {subjects.map(subject => (
                   <option key={subject._id} value={subject._id}>
                     {subject.subjectName} ({subject.subjectCode})
@@ -134,6 +140,8 @@ const TeacherAttendance = () => {
 
           {loading ? (
             <LoadingSpinner message="Loading students..." />
+          ) : selectedSubject === 'all' ? (
+            <p className="text-gray-500 text-center py-4">Please select a specific subject to mark attendance</p>
           ) : selectedSubject && students.length > 0 ? (
             <form onSubmit={handleSubmit}>
               <div className="overflow-x-auto">
@@ -184,11 +192,9 @@ const TeacherAttendance = () => {
                 {submitting ? 'Submitting...' : 'Submit Attendance'}
               </button>
             </form>
-          ) : selectedSubject ? (
+          ) : selectedSubject && selectedSubject !== 'all' ? (
             <p className="text-gray-500 text-center py-4">No students found for this subject</p>
-          ) : (
-            <p className="text-gray-500 text-center py-4">Please select a subject</p>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

@@ -171,8 +171,17 @@ router.get('/courses', async (req, res) => {
 router.post('/admin/courses', verifyToken, isAdmin, adminController.addCourse);
 router.delete('/admin/courses/:courseId', verifyToken, isAdmin, adminController.deleteCourse);
 
-// Subjects
+// Subjects (public read, admin write)
 router.get('/subjects', async (req, res) => {
+  try {
+    const { Subject } = require('../models/CompleteModels');
+    const subjects = await Subject.find({}).populate('courseId', 'courseName courseCode').populate('teacherId', 'name email');
+    res.json({ success: true, subjects });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+});
+router.get('/admin/subjects', verifyToken, async (req, res) => {
   try {
     const { Subject } = require('../models/CompleteModels');
     const subjects = await Subject.find({}).populate('courseId', 'courseName courseCode').populate('teacherId', 'name email');

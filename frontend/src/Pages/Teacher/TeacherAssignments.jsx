@@ -11,7 +11,9 @@ import { FaPlus, FaCalendarAlt, FaUsers, FaCheckCircle } from 'react-icons/fa';
 const TeacherAssignments = () => {
   const { id: teacherId } = useParams();
   const [assignments, setAssignments] = useState([]);
+  const [allAssignments, setAllAssignments] = useState([]);
   const [subjects, setSubjects] = useState([]);
+  const [filterSubject, setFilterSubject] = useState('');
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,7 +38,9 @@ const TeacherAssignments = () => {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
-      setAssignments(assignmentsRes.data.assignments || []);
+      const assignmentsData = assignmentsRes.data.assignments || [];
+      setAllAssignments(assignmentsData);
+      setAssignments(assignmentsData);
       setSubjects(dashboardRes.data.teacher?.assignedSubjects || []);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -44,6 +48,14 @@ const TeacherAssignments = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (filterSubject) {
+      setAssignments(allAssignments.filter(a => a.subjectId?._id === filterSubject));
+    } else {
+      setAssignments(allAssignments);
+    }
+  }, [filterSubject, allAssignments]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,6 +92,23 @@ const TeacherAssignments = () => {
           >
             <FaPlus /> Create Assignment
           </button>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-xl p-4 mb-6">
+          <label className="block text-sm font-bold mb-2" style={{ color: '#2d545e' }}>Filter by Subject</label>
+          <select
+            value={filterSubject}
+            onChange={(e) => setFilterSubject(e.target.value)}
+            className="w-full p-3 border rounded-lg"
+            style={{ borderColor: '#e1b382' }}
+          >
+            <option value="">All Subjects</option>
+            {subjects.map(subject => (
+              <option key={subject._id} value={subject._id}>
+                {subject.subjectName} ({subject.subjectCode})
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -129,7 +158,7 @@ const TeacherAssignments = () => {
                   <option value="">-- Select Subject --</option>
                   {subjects.map(subject => (
                     <option key={subject._id} value={subject._id}>
-                      {subject.subjectName}
+                      {subject.subjectName} ({subject.subjectCode})
                     </option>
                   ))}
                 </select>

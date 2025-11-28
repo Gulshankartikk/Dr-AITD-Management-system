@@ -11,7 +11,10 @@ import {
   FaChartBar,
   FaCalendarAlt,
   FaPlus,
-  FaUser
+  FaUser,
+  FaFileAlt,
+  FaTrophy,
+  FaDownload
 } from 'react-icons/fa';
 import { MdAssignment, MdNotifications } from 'react-icons/md';
 import Cookies from 'js-cookie';
@@ -127,8 +130,7 @@ const TeacherDashboard = () => {
         <div className="bg-white rounded-lg shadow-xl p-6 mb-8" style={{ borderTop: '4px solid #e1b382' }}>
           <h2 className="text-xl font-bold mb-4" style={{ color: '#2d545e' }}>Quick Actions</h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <QuickAction
               label="My Profile"
               icon={<FaUser className="text-blue-500 mb-2" size={24} />}
@@ -136,21 +138,33 @@ const TeacherDashboard = () => {
             />
 
             <QuickAction
-              label="View All Students"
+              label="View Students"
               icon={<FaUsers className="text-indigo-500 mb-2" size={24} />}
               onClick={() => navigate(`/teacher/${teacherId}/students`)}
             />
 
             <QuickAction
-              label="Mark Attendance"
+              label="Take Attendance"
               icon={<FaClipboardList className="text-blue-500 mb-2" size={24} />}
-              onClick={() => setShowAttendanceModal(true)}
+              onClick={() => navigate(`/teacher/${teacherId}/attendance`)}
             />
 
             <QuickAction
-              label="Add Assignment"
-              icon={<FaPlus className="text-green-500 mb-2" size={24} />}
-              onClick={() => setShowAssignmentModal(true)}
+              label="Assignments"
+              icon={<MdAssignment className="text-green-500 mb-2" size={24} />}
+              onClick={() => navigate(`/teacher/${teacherId}/assignments`)}
+            />
+
+            <QuickAction
+              label="Study Materials"
+              icon={<FaFileAlt className="text-orange-500 mb-2" size={24} />}
+              onClick={() => navigate(`/teacher/${teacherId}/materials`)}
+            />
+
+            <QuickAction
+              label="Manage Marks"
+              icon={<FaTrophy className="text-yellow-500 mb-2" size={24} />}
+              onClick={() => navigate(`/teacher/${teacherId}/marks`)}
             />
 
             <QuickAction
@@ -160,9 +174,34 @@ const TeacherDashboard = () => {
             />
 
             <QuickAction
-              label="Upload Material"
-              icon={<FaStickyNote className="text-orange-500 mb-2" size={24} />}
+              label="Quick Upload"
+              icon={<FaPlus className="text-teal-500 mb-2" size={24} />}
               onClick={() => setShowMaterialModal(true)}
+            />
+          </div>
+        </div>
+
+        {/* ===================== REPORTS ===================== */}
+        <div className="bg-white rounded-lg shadow-xl p-6 mb-8" style={{ borderTop: '4px solid #c89666' }}>
+          <h2 className="text-xl font-bold mb-4" style={{ color: '#2d545e' }}>Reports & Downloads</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <ReportCard
+              title="Attendance Report"
+              description="Download attendance records"
+              icon={<FaClipboardList size={20} />}
+              onClick={() => window.open(`${BASE_URL}/api/teacher/${teacherId}/attendance-report?format=pdf`, '_blank')}
+            />
+            <ReportCard
+              title="Marks Report"
+              description="Download student marks"
+              icon={<FaTrophy size={20} />}
+              onClick={() => alert('Marks report will be downloaded')}
+            />
+            <ReportCard
+              title="Class Summary"
+              description="Download class performance"
+              icon={<FaChartBar size={20} />}
+              onClick={() => alert('Class summary will be downloaded')}
             />
           </div>
         </div>
@@ -310,5 +349,22 @@ const ListItem = ({ title, subtitle, extra, color }) => {
 };
 
 const Empty = ({ message }) => (
-  <p classcommon="text-gray-500 text-center py-4">{message}</p>
+  <p className="text-gray-500 text-center py-4">{message}</p>
+);
+
+const ReportCard = ({ title, description, icon, onClick }) => (
+  <button
+    onClick={onClick}
+    className="flex items-center gap-4 p-4 rounded-lg border-2 transition-all hover:shadow-lg"
+    style={{ borderColor: '#e1b382' }}
+  >
+    <div className="p-3 rounded-full" style={{ backgroundColor: '#e1b38220', color: '#2d545e' }}>
+      {icon}
+    </div>
+    <div className="flex-1 text-left">
+      <p className="font-bold" style={{ color: '#2d545e' }}>{title}</p>
+      <p className="text-sm text-gray-600">{description}</p>
+    </div>
+    <FaDownload style={{ color: '#e1b382' }} />
+  </button>
 );

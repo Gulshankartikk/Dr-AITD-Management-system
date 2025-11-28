@@ -11,7 +11,9 @@ import { FaPlus, FaFileAlt, FaDownload } from 'react-icons/fa';
 const TeacherMaterials = () => {
   const { id: teacherId } = useParams();
   const [materials, setMaterials] = useState([]);
+  const [allMaterials, setAllMaterials] = useState([]);
   const [subjects, setSubjects] = useState([]);
+  const [filterSubject, setFilterSubject] = useState('');
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,7 +38,9 @@ const TeacherMaterials = () => {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
-      setMaterials(materialsRes.data.materials || []);
+      const materialsData = materialsRes.data.materials || [];
+      setAllMaterials(materialsData);
+      setMaterials(materialsData);
       setSubjects(dashboardRes.data.teacher?.assignedSubjects || []);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -44,6 +48,14 @@ const TeacherMaterials = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (filterSubject) {
+      setMaterials(allMaterials.filter(m => m.subjectId?._id === filterSubject));
+    } else {
+      setMaterials(allMaterials);
+    }
+  }, [filterSubject, allMaterials]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,6 +94,23 @@ const TeacherMaterials = () => {
           </button>
         </div>
 
+        <div className="bg-white rounded-lg shadow-xl p-4 mb-6">
+          <label className="block text-sm font-bold mb-2" style={{ color: '#2d545e' }}>Filter by Subject</label>
+          <select
+            value={filterSubject}
+            onChange={(e) => setFilterSubject(e.target.value)}
+            className="w-full p-3 border rounded-lg"
+            style={{ borderColor: '#e1b382' }}
+          >
+            <option value="">All Subjects</option>
+            {subjects.map(subject => (
+              <option key={subject._id} value={subject._id}>
+                {subject.subjectName} ({subject.subjectCode})
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {materials.map(material => (
             <div key={material._id} className="bg-white rounded-lg shadow-xl p-6" style={{ borderTop: '4px solid #c89666' }}>
@@ -90,7 +119,7 @@ const TeacherMaterials = () => {
                 <div className="flex-1">
                   <h3 className="text-xl font-bold mb-1" style={{ color: '#2d545e' }}>{material.title}</h3>
                   <p className="text-sm" style={{ color: '#c89666' }}>
-                    {material.subjectId?.subjectName}
+                    {material.subjectId?.subjectName} ({material.subjectId?.subjectCode})
                   </p>
                 </div>
               </div>
@@ -133,7 +162,7 @@ const TeacherMaterials = () => {
                   <option value="">-- Select Subject --</option>
                   {subjects.map(subject => (
                     <option key={subject._id} value={subject._id}>
-                      {subject.subjectName}
+                      {subject.subjectName} ({subject.subjectCode})
                     </option>
                   ))}
                 </select>
