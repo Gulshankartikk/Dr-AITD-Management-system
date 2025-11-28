@@ -229,9 +229,20 @@ const FeeSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
+// Manual Report Schema
+const ReportSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  type: { type: String, required: true }, // Academic, Administrative, Other
+  content: { type: String, required: true },
+  date: { type: Date, default: Date.now },
+  generatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
+  isActive: { type: Boolean, default: true }
+}, { timestamps: true });
+
 const Timetable = mongoose.model('Timetable', TimetableSchema);
 const Leave = mongoose.model('Leave', LeaveSchema);
 const Fee = mongoose.model('Fee', FeeSchema);
+const Report = mongoose.model('Report', ReportSchema);
 
 module.exports = {
   Course,
@@ -249,5 +260,6 @@ module.exports = {
   Notification,
   Timetable,
   Leave,
-  Fee
+  Fee,
+  Report
 };

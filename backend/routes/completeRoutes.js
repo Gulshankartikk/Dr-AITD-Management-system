@@ -221,6 +221,17 @@ router.post('/admin/remove-teacher', verifyToken, isAdmin, adminController.remov
 // Attendance report
 router.get('/admin/attendance-report', verifyToken, isAdmin, adminController.getComprehensiveAttendanceReport);
 
+// Other Reports
+router.get('/admin/reports/fees', verifyToken, isAdmin, adminController.getFeeReport);
+router.get('/admin/reports/academic', verifyToken, isAdmin, adminController.getAcademicReport);
+router.get('/admin/reports/enrollment', verifyToken, isAdmin, adminController.getEnrollmentReport);
+
+// Manual Reports
+router.post('/admin/manual-reports', verifyToken, isAdmin, adminController.createManualReport);
+router.get('/admin/manual-reports', verifyToken, isAdmin, adminController.getAllManualReports);
+router.put('/admin/manual-reports/:reportId', verifyToken, isAdmin, adminController.updateManualReport);
+router.delete('/admin/manual-reports/:reportId', verifyToken, isAdmin, adminController.deleteManualReport);
+
 // Delete operations
 router.delete('/admin/assignments/:assignmentId', verifyToken, isAdmin, adminController.deleteAssignment);
 router.delete('/admin/notices/:noticeId', verifyToken, isAdmin, adminController.deleteNotice);

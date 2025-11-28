@@ -11,7 +11,9 @@ const {
   Admin,
   Assignments,
   Notices,
-  StudyMaterial
+  StudyMaterial,
+  Fee,
+  Report
 } = require('../models/CompleteModels');
 const { sendNotification } = require('./notificationController');
 
@@ -19,19 +21,19 @@ const { sendNotification } = require('./notificationController');
 const adminLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
-    
+
     if (!username || !password) {
       return res.status(400).json({ success: false, msg: 'Username and password are required' });
     }
-    
+
     // STRICT validation - must match exactly
     if (username !== 'admin' || password !== 'admin123') {
       return res.status(400).json({ success: false, msg: 'Invalid credentials' });
     }
-    
+
     const token = jwt.sign({ id: 'admin', role: 'admin' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
     res.cookie('token', token, { httpOnly: true });
-    
+
     return res.json({ success: true, token, admin: { id: 'admin', name: 'Administrator', role: 'admin' } });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -42,10 +44,10 @@ const adminLogin = async (req, res) => {
 const addCourse = async (req, res) => {
   try {
     const { courseName, courseCode, courseDuration, courseDescription } = req.body;
-    
+
     const course = new Course({ courseName, courseCode, courseDuration, courseDescription });
     await course.save();
-    
+
     res.status(201).json({ success: true, msg: 'Course added successfully', course });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -56,14 +58,14 @@ const addCourse = async (req, res) => {
 const addSubject = async (req, res) => {
   try {
     const { subjectName, subjectCode, courseId, subjectType, credits, semester, branch, isElective, teacherId } = req.body;
-    
+
     if (!subjectName || !subjectCode || !semester || !branch) {
       return res.status(400).json({ success: false, msg: 'Subject name, code, semester, and branch are required' });
     }
-    
-    const subject = new Subject({ 
-      subjectName, 
-      subjectCode, 
+
+    const subject = new Subject({
+      subjectName,
+      subjectCode,
       courseId: courseId || null,
       subjectType: subjectType || 'Theory',
       credits: credits || 0,
@@ -73,7 +75,7 @@ const addSubject = async (req, res) => {
       teacherId: teacherId || null
     });
     await subject.save();
-    
+
     res.status(201).json({ success: true, msg: 'Subject added successfully', subject });
   } catch (error) {
     console.error('Add subject error:', error);
@@ -85,13 +87,13 @@ const addSubject = async (req, res) => {
 const addTeacher = async (req, res) => {
   try {
     const { name, email, phone, password, assignedCourse, assignedSubjects } = req.body;
-    
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const teacher = new Teacher({
       name, email, phone, password: hashedPassword, assignedCourse, assignedSubjects
     });
     await teacher.save();
-    
+
     res.status(201).json({ success: true, msg: 'Teacher added successfully', teacher });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -102,13 +104,13 @@ const addTeacher = async (req, res) => {
 const addStudent = async (req, res) => {
   try {
     const { name, email, phone, rollNo, password, courseId, semester } = req.body;
-    
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const student = new Student({
       name, email, phone, rollNo, password: hashedPassword, courseId, semester
     });
     await student.save();
-    
+
     res.status(201).json({ success: true, msg: 'Student added successfully', student });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -119,15 +121,15 @@ const addStudent = async (req, res) => {
 const assignTeacherToSubject = async (req, res) => {
   try {
     const { teacherId, subjectId, courseId } = req.body;
-    
+
     const assignment = new TeacherSubjectAssignment({ teacherId, subjectId, courseId });
     await assignment.save();
-    
+
     // Update teacher's assigned subjects
     await Teacher.findByIdAndUpdate(teacherId, {
       $addToSet: { assignedSubjects: subjectId, assignedCourse: courseId }
     });
-    
+
     res.status(201).json({ success: true, msg: 'Teacher assigned successfully', assignment });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -138,16 +140,16 @@ const assignTeacherToSubject = async (req, res) => {
 const removeTeacherFromSubject = async (req, res) => {
   try {
     const { teacherId, subjectId } = req.body;
-    
+
     await TeacherSubjectAssignment.findOneAndUpdate(
       { teacherId, subjectId },
       { isActive: false }
     );
-    
+
     await Teacher.findByIdAndUpdate(teacherId, {
       $pull: { assignedSubjects: subjectId }
     });
-    
+
     res.json({ success: true, msg: 'Teacher removed from subject successfully' });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -161,10 +163,10 @@ const getDashboardData = async (req, res) => {
     const subjects = await Subject.find({ isActive: true }).populate('courseId');
     const teachers = await Teacher.find({ isActive: true });
     const students = await Student.find({ isActive: true }).populate('courseId');
-    
+
     const totalAttendance = await Attendance.countDocuments();
     const totalMarks = await Marks.countDocuments();
-    
+
     res.json({
       success: true,
       data: {
@@ -191,19 +193,19 @@ const getDashboardData = async (req, res) => {
 const deleteCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
-    
+
     // Check if user is admin
     if (req.user.role !== 'admin') {
       return res.status(403).json({ success: false, msg: 'Access denied. Admin only.' });
     }
-    
+
     const course = await Course.findById(courseId);
     if (!course) {
       return res.status(404).json({ success: false, msg: 'Course not found' });
     }
-    
+
     await Course.findByIdAndUpdate(courseId, { isActive: false });
-    
+
     // Send notification to all teachers
     await sendNotification('general', {
       sender: { id: req.user.id, role: 'admin', name: 'Administrator' },
@@ -211,7 +213,7 @@ const deleteCourse = async (req, res) => {
       message: `Course ${course.courseName} has been deleted by administrator`,
       recipients: { type: 'teachers' }
     });
-    
+
     res.json({ success: true, msg: 'Course deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -222,19 +224,19 @@ const deleteCourse = async (req, res) => {
 const deleteSubject = async (req, res) => {
   try {
     const { subjectId } = req.params;
-    
+
     // Check if user is admin
     if (req.user.role !== 'admin') {
       return res.status(403).json({ success: false, msg: 'Access denied. Admin only.' });
     }
-    
+
     const subject = await Subject.findById(subjectId);
     if (!subject) {
       return res.status(404).json({ success: false, msg: 'Subject not found' });
     }
-    
+
     await Subject.findByIdAndUpdate(subjectId, { isActive: false });
-    
+
     // Send notification to teachers
     await sendNotification('general', {
       sender: { id: req.user.id, role: 'admin', name: 'Administrator' },
@@ -242,7 +244,7 @@ const deleteSubject = async (req, res) => {
       message: `Subject ${subject.subjectName} has been deleted by administrator`,
       recipients: { type: 'teachers' }
     });
-    
+
     res.json({ success: true, msg: 'Subject deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -253,19 +255,19 @@ const deleteSubject = async (req, res) => {
 const deleteTeacher = async (req, res) => {
   try {
     const { teacherId } = req.params;
-    
+
     // Check if user is admin
     if (req.user.role !== 'admin') {
       return res.status(403).json({ success: false, msg: 'Access denied. Admin only.' });
     }
-    
+
     const teacher = await Teacher.findById(teacherId);
     if (!teacher) {
       return res.status(404).json({ success: false, msg: 'Teacher not found' });
     }
-    
+
     await Teacher.findByIdAndUpdate(teacherId, { isActive: false });
-    
+
     res.json({ success: true, msg: 'Teacher deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -276,19 +278,19 @@ const deleteTeacher = async (req, res) => {
 const deleteStudent = async (req, res) => {
   try {
     const { studentId } = req.params;
-    
+
     // Check if user is admin
     if (req.user.role !== 'admin') {
       return res.status(403).json({ success: false, msg: 'Access denied. Admin only.' });
     }
-    
+
     const student = await Student.findById(studentId);
     if (!student) {
       return res.status(404).json({ success: false, msg: 'Student not found' });
     }
-    
+
     await Student.findByIdAndUpdate(studentId, { isActive: false });
-    
+
     res.json({ success: true, msg: 'Student deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -300,12 +302,12 @@ const deleteAssignment = async (req, res) => {
   try {
     const { assignmentId } = req.params;
     console.log('Attempting to delete assignment:', assignmentId);
-    
+
     const assignment = await Assignments.findById(assignmentId);
     if (!assignment) {
       return res.status(404).json({ success: false, msg: 'Assignment not found' });
     }
-    
+
     await Assignments.findByIdAndUpdate(assignmentId, { isActive: false });
     res.json({ success: true, msg: 'Assignment deleted successfully' });
   } catch (error) {
@@ -319,12 +321,12 @@ const deleteNotice = async (req, res) => {
   try {
     const { noticeId } = req.params;
     console.log('Attempting to delete notice:', noticeId);
-    
+
     const notice = await Notices.findById(noticeId);
     if (!notice) {
       return res.status(404).json({ success: false, msg: 'Notice not found' });
     }
-    
+
     await Notices.findByIdAndUpdate(noticeId, { isActive: false });
     res.json({ success: true, msg: 'Notice deleted successfully' });
   } catch (error) {
@@ -338,12 +340,12 @@ const deleteMaterial = async (req, res) => {
   try {
     const { materialId } = req.params;
     console.log('Attempting to delete material:', materialId);
-    
+
     const material = await StudyMaterial.findById(materialId);
     if (!material) {
       return res.status(404).json({ success: false, msg: 'Material not found' });
     }
-    
+
     await StudyMaterial.findByIdAndUpdate(materialId, { isActive: false });
     res.json({ success: true, msg: 'Material deleted successfully' });
   } catch (error) {
@@ -357,13 +359,13 @@ const updateTeacher = async (req, res) => {
   try {
     const { teacherId } = req.params;
     const { name, email, phone, department, designation } = req.body;
-    
+
     const teacher = await Teacher.findByIdAndUpdate(
       teacherId,
       { name, email, phone, department, designation },
       { new: true }
     );
-    
+
     res.json({ success: true, msg: 'Teacher updated successfully', teacher });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -375,13 +377,13 @@ const updateStudent = async (req, res) => {
   try {
     const { studentId } = req.params;
     const { name, email, phone, courseId } = req.body;
-    
+
     const student = await Student.findByIdAndUpdate(
       studentId,
       { name, email, phone, courseId },
       { new: true }
     ).populate('courseId', 'courseName courseCode');
-    
+
     res.json({ success: true, msg: 'Student updated successfully', student });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -392,14 +394,14 @@ const updateStudent = async (req, res) => {
 const getStudentDetails = async (req, res) => {
   try {
     const { studentId } = req.params;
-    
+
     const student = await Student.findById(studentId)
       .populate('courseId', 'courseName courseCode courseDuration');
-    
+
     if (!student) {
       return res.status(404).json({ success: false, msg: 'Student not found' });
     }
-    
+
     res.json({ success: true, student });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -410,15 +412,15 @@ const getStudentDetails = async (req, res) => {
 const getTeacherDetails = async (req, res) => {
   try {
     const { teacherId } = req.params;
-    
+
     const teacher = await Teacher.findById(teacherId)
       .populate('assignedCourse', 'courseName courseCode')
       .populate('assignedSubjects', 'subjectName subjectCode');
-    
+
     if (!teacher) {
       return res.status(404).json({ success: false, msg: 'Teacher not found' });
     }
-    
+
     res.json({ success: true, teacher });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -429,7 +431,7 @@ const getTeacherDetails = async (req, res) => {
 const getComprehensiveAttendanceReport = async (req, res) => {
   try {
     const { courseId, subjectId, startDate, endDate, studentId } = req.query;
-    
+
     // Build query
     let query = {};
     if (courseId) query.course = courseId;
@@ -438,7 +440,7 @@ const getComprehensiveAttendanceReport = async (req, res) => {
     if (startDate && endDate) {
       query.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
     }
-    
+
     // Get attendance records
     const attendance = await Attendance.find(query)
       .populate('student', 'name rollNo email')
@@ -446,21 +448,21 @@ const getComprehensiveAttendanceReport = async (req, res) => {
       .populate('course', 'courseName courseCode')
       .populate('teacher', 'name')
       .sort({ date: -1, 'student.name': 1 });
-    
+
     // Get all courses and subjects for filters
     const allCourses = await Course.find({ isActive: true }, 'courseName courseCode');
     const allSubjects = await Subject.find({}, 'subject_name subject_code');
-    
+
     // Calculate statistics
     const studentStats = {};
     const subjectStats = {};
     const courseStats = {};
-    
+
     attendance.forEach(record => {
       const studentId = record.student._id.toString();
       const subjectId = record.subject._id.toString();
       const courseId = record.course._id.toString();
-      
+
       // Student statistics
       if (!studentStats[studentId]) {
         studentStats[studentId] = {
@@ -472,14 +474,14 @@ const getComprehensiveAttendanceReport = async (req, res) => {
           subjects: {}
         };
       }
-      
+
       studentStats[studentId].totalClasses++;
       if (record.isPresent) {
         studentStats[studentId].presentClasses++;
       } else {
         studentStats[studentId].absentClasses++;
       }
-      
+
       // Subject-wise student stats
       if (!studentStats[studentId].subjects[subjectId]) {
         studentStats[studentId].subjects[subjectId] = {
@@ -489,14 +491,14 @@ const getComprehensiveAttendanceReport = async (req, res) => {
           absent: 0
         };
       }
-      
+
       studentStats[studentId].subjects[subjectId].total++;
       if (record.isPresent) {
         studentStats[studentId].subjects[subjectId].present++;
       } else {
         studentStats[studentId].subjects[subjectId].absent++;
       }
-      
+
       // Subject statistics
       if (!subjectStats[subjectId]) {
         subjectStats[subjectId] = {
@@ -507,7 +509,7 @@ const getComprehensiveAttendanceReport = async (req, res) => {
           absentCount: 0
         };
       }
-      
+
       subjectStats[subjectId].totalClasses++;
       subjectStats[subjectId].totalStudents.add(studentId);
       if (record.isPresent) {
@@ -515,7 +517,7 @@ const getComprehensiveAttendanceReport = async (req, res) => {
       } else {
         subjectStats[subjectId].absentCount++;
       }
-      
+
       // Course statistics
       if (!courseStats[courseId]) {
         courseStats[courseId] = {
@@ -526,7 +528,7 @@ const getComprehensiveAttendanceReport = async (req, res) => {
           absentCount: 0
         };
       }
-      
+
       courseStats[courseId].totalClasses++;
       courseStats[courseId].totalStudents.add(studentId);
       if (record.isPresent) {
@@ -535,35 +537,35 @@ const getComprehensiveAttendanceReport = async (req, res) => {
         courseStats[courseId].absentCount++;
       }
     });
-    
+
     // Calculate percentages
     Object.keys(studentStats).forEach(studentId => {
       const stats = studentStats[studentId];
-      stats.attendancePercentage = stats.totalClasses > 0 ? 
+      stats.attendancePercentage = stats.totalClasses > 0 ?
         ((stats.presentClasses / stats.totalClasses) * 100).toFixed(2) : 0;
-      
+
       Object.keys(stats.subjects).forEach(subjectId => {
         const subjectStats = stats.subjects[subjectId];
-        subjectStats.percentage = subjectStats.total > 0 ? 
+        subjectStats.percentage = subjectStats.total > 0 ?
           ((subjectStats.present / subjectStats.total) * 100).toFixed(2) : 0;
       });
     });
-    
+
     // Convert sets to counts and calculate percentages for subject and course stats
     Object.keys(subjectStats).forEach(subjectId => {
       const stats = subjectStats[subjectId];
       stats.totalStudents = stats.totalStudents.size;
-      stats.attendancePercentage = stats.totalClasses > 0 ? 
+      stats.attendancePercentage = stats.totalClasses > 0 ?
         ((stats.presentCount / (stats.presentCount + stats.absentCount)) * 100).toFixed(2) : 0;
     });
-    
+
     Object.keys(courseStats).forEach(courseId => {
       const stats = courseStats[courseId];
       stats.totalStudents = stats.totalStudents.size;
-      stats.attendancePercentage = stats.totalClasses > 0 ? 
+      stats.attendancePercentage = stats.totalClasses > 0 ?
         ((stats.presentCount / (stats.presentCount + stats.absentCount)) * 100).toFixed(2) : 0;
     });
-    
+
     res.json({
       success: true,
       data: {
@@ -602,6 +604,196 @@ const getAllTeachers = async (req, res) => {
   }
 };
 
+// Get Fee Report
+const getFeeReport = async (req, res) => {
+  try {
+    const fees = await Fee.find({ isActive: true }).populate('studentId', 'name rollNo courseId');
+
+    let totalExpected = 0;
+    let totalCollected = 0;
+    let totalDue = 0;
+    const courseWiseStats = {};
+
+    fees.forEach(fee => {
+      totalExpected += fee.totalAmount;
+      totalCollected += fee.paidAmount;
+      totalDue += fee.dueAmount;
+
+      // Course-wise breakdown (if student exists)
+      if (fee.studentId && fee.studentId.courseId) {
+        const courseId = fee.studentId.courseId.toString();
+        if (!courseWiseStats[courseId]) {
+          courseWiseStats[courseId] = { total: 0, collected: 0, due: 0 };
+        }
+        courseWiseStats[courseId].total += fee.totalAmount;
+        courseWiseStats[courseId].collected += fee.paidAmount;
+        courseWiseStats[courseId].due += fee.dueAmount;
+      }
+    });
+
+    res.json({
+      success: true,
+      data: {
+        summary: { totalExpected, totalCollected, totalDue },
+        courseWiseStats,
+        details: fees
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Get Academic Report
+const getAcademicReport = async (req, res) => {
+  try {
+    const marks = await Marks.find({}).populate('studentId', 'name rollNo').populate('subjectId', 'subjectName');
+
+    const subjectStats = {};
+    const studentPerformance = {};
+
+    marks.forEach(mark => {
+      // Subject Stats
+      if (mark.subjectId) {
+        const subName = mark.subjectId.subjectName;
+        if (!subjectStats[subName]) {
+          subjectStats[subName] = { totalMarks: 0, count: 0, average: 0, highest: 0 };
+        }
+        subjectStats[subName].totalMarks += mark.marksObtained;
+        subjectStats[subName].count++;
+        if (mark.marksObtained > subjectStats[subName].highest) {
+          subjectStats[subName].highest = mark.marksObtained;
+        }
+      }
+
+      // Student Performance
+      if (mark.studentId) {
+        const studName = mark.studentId.name;
+        if (!studentPerformance[studName]) {
+          studentPerformance[studName] = { totalMarks: 0, subjects: 0 };
+        }
+        studentPerformance[studName].totalMarks += mark.marksObtained;
+        studentPerformance[studName].subjects++;
+      }
+    });
+
+    // Calculate averages
+    Object.keys(subjectStats).forEach(sub => {
+      subjectStats[sub].average = (subjectStats[sub].totalMarks / subjectStats[sub].count).toFixed(2);
+    });
+
+    res.json({
+      success: true,
+      data: {
+        subjectStats,
+        studentPerformance
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Get Enrollment Report
+const getEnrollmentReport = async (req, res) => {
+  try {
+    const students = await Student.find({ isActive: true }).populate('courseId', 'courseName');
+
+    const courseDistribution = {};
+    const yearDistribution = {};
+
+    students.forEach(student => {
+      // Course Distribution
+      if (student.courseId) {
+        const courseName = student.courseId.courseName;
+        courseDistribution[courseName] = (courseDistribution[courseName] || 0) + 1;
+      }
+
+      // Year/Semester Distribution (assuming semester indicates year roughly)
+      if (student.semester) {
+        yearDistribution[`Semester ${student.semester}`] = (yearDistribution[`Semester ${student.semester}`] || 0) + 1;
+      }
+    });
+
+    res.json({
+      success: true,
+      data: {
+        totalStudents: students.length,
+        courseDistribution,
+        yearDistribution
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Create Manual Report
+const createManualReport = async (req, res) => {
+  try {
+    const { title, type, content } = req.body;
+    const report = new Report({
+      title,
+      type,
+      content,
+      generatedBy: req.user.id
+    });
+    await report.save();
+    res.status(201).json({ success: true, msg: 'Report created successfully', report });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Get All Manual Reports
+const getAllManualReports = async (req, res) => {
+  try {
+    const reports = await Report.find({ isActive: true }).sort({ createdAt: -1 });
+    res.json({ success: true, reports });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Update Manual Report
+const updateManualReport = async (req, res) => {
+  try {
+    const { reportId } = req.params;
+    const { title, type, content } = req.body;
+
+    const report = await Report.findByIdAndUpdate(
+      reportId,
+      { title, type, content },
+      { new: true }
+    );
+
+    if (!report) {
+      return res.status(404).json({ success: false, msg: 'Report not found' });
+    }
+
+    res.json({ success: true, msg: 'Report updated successfully', report });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Delete Manual Report
+const deleteManualReport = async (req, res) => {
+  try {
+    const { reportId } = req.params;
+
+    const report = await Report.findByIdAndUpdate(reportId, { isActive: false });
+
+    if (!report) {
+      return res.status(404).json({ success: false, msg: 'Report not found' });
+    }
+
+    res.json({ success: true, msg: 'Report deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
 module.exports = {
   adminLogin,
   addCourse,
@@ -623,6 +815,13 @@ module.exports = {
   getStudentDetails,
   getTeacherDetails,
   getComprehensiveAttendanceReport,
+  getFeeReport,
+  getAcademicReport,
+  getEnrollmentReport,
+  createManualReport,
+  getAllManualReports,
+  updateManualReport,
+  deleteManualReport,
   getAllStudents,
   getAllTeachers
 };

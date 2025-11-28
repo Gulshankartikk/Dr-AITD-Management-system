@@ -13,8 +13,6 @@ const AdminHeader = ({ currentRole = 'admin' }) => {
   };
 
   const switchRole = (role) => {
-    // Note: Role switching requires proper authentication
-    // This is a placeholder for demo purposes
     if (role === 'teacher') {
       alert('Teacher view would require proper authentication');
     } else if (role === 'student') {
@@ -23,30 +21,33 @@ const AdminHeader = ({ currentRole = 'admin' }) => {
   };
 
   return (
-    <header className="bg-white shadow-md border-b">
+    <header className="bg-night-blue shadow-lg border-b border-night-blue-shadow">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center space-x-4">
-            <Link to="/admin/dashboard" className="text-2xl font-bold text-blue-600">
+            <Link to="/admin/dashboard" className="text-2xl font-bold text-sand-tan hover:text-white transition-colors font-oswald tracking-wide">
               College ERP
             </Link>
-            <span className="text-sm text-gray-500">Admin Panel</span>
+            <span className="text-sm text-gray-300 bg-night-blue-shadow px-2 py-1 rounded">Admin Panel</span>
           </div>
 
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/admin/dashboard" className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link to="/admin/dashboard" className="text-gray-300 hover:text-sand-tan font-medium transition-colors">
               Dashboard
             </Link>
-            <Link to="/admin/add-course" className="text-gray-700 hover:text-blue-600 font-medium">
-              Courses
-            </Link>
-            <Link to="/admin/create-teacher" className="text-gray-700 hover:text-blue-600 font-medium">
-              Teachers
-            </Link>
-            <Link to="/admin/create-student" className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link to="/admin/students" className="text-gray-300 hover:text-sand-tan font-medium transition-colors">
               Students
             </Link>
-            <Link to="/admin/notifications" className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link to="/admin/teachers" className="text-gray-300 hover:text-sand-tan font-medium transition-colors">
+              Teachers
+            </Link>
+            <Link to="/admin/courses" className="text-gray-300 hover:text-sand-tan font-medium transition-colors">
+              Courses
+            </Link>
+            <Link to="/admin/add-subject" className="text-gray-300 hover:text-sand-tan font-medium transition-colors">
+              Subjects
+            </Link>
+            <Link to="/admin/reports" className="text-gray-300 hover:text-sand-tan font-medium transition-colors">
               Reports
             </Link>
           </nav>
@@ -56,7 +57,7 @@ const AdminHeader = ({ currentRole = 'admin' }) => {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => switchRole('teacher')}
-                className="flex items-center space-x-1 px-3 py-2 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+                className="flex items-center space-x-1 px-3 py-2 text-sm bg-night-blue-shadow text-sand-tan rounded-lg hover:bg-opacity-80 transition-colors border border-sand-tan border-opacity-20"
                 title="Switch to Teacher View"
               >
                 <FaChalkboardTeacher />
@@ -64,7 +65,7 @@ const AdminHeader = ({ currentRole = 'admin' }) => {
               </button>
               <button
                 onClick={() => switchRole('student')}
-                className="flex items-center space-x-1 px-3 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                className="flex items-center space-x-1 px-3 py-2 text-sm bg-night-blue-shadow text-sand-tan rounded-lg hover:bg-opacity-80 transition-colors border border-sand-tan border-opacity-20"
                 title="Switch to Student View"
               >
                 <FaGraduationCap />
@@ -72,14 +73,14 @@ const AdminHeader = ({ currentRole = 'admin' }) => {
               </button>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <FaUserShield className="text-red-500" />
-              <span className="text-sm font-medium text-gray-700">Gulshankartikk</span>
+            <div className="flex items-center space-x-2 text-sand-tan">
+              <FaUserShield />
+              <span className="text-sm font-medium">Gulshankartikk</span>
             </div>
 
             <button
               onClick={handleLogout}
-              className="flex items-center space-x-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              className="flex items-center space-x-1 px-4 py-2 bg-sand-tan text-night-blue-shadow font-bold rounded-lg hover:bg-sand-tan-shadow transition-colors shadow-md"
             >
               <FaSignOutAlt />
               <span>Logout</span>

@@ -1,192 +1,446 @@
-import React, { useState } from 'react';
-import { FaFileAlt, FaDownload, FaChartBar, FaCalendarAlt, FaUsers, FaDollarSign } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaFileAlt, FaDownload, FaChartBar, FaCalendarAlt, FaUsers, FaDollarSign, FaSpinner, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
+import axios from 'axios';
+import { BASE_URL } from '../../constants/api';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
 
 const ReportsManagement = () => {
-  const [selectedReport, setSelectedReport] = useState('attendance');
-  
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [reportData, setReportData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [manualReports, setManualReports] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [editingReport, setEditingReport] = useState(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    type: 'Administrative',
+    content: ''
+  });
+
   const reportTypes = [
-    { id: 'attendance', name: 'Attendance Report', icon: FaUsers, color: 'blue' },
-    { id: 'fees', name: 'Fee Collection Report', icon: FaDollarSign, color: 'green' },
-    { id: 'academic', name: 'Academic Performance', icon: FaChartBar, color: 'purple' },
-    { id: 'monthly', name: 'Monthly Summary', icon: FaCalendarAlt, color: 'orange' }
+    { id: 'attendance', name: 'Attendance Report', icon: FaUsers, color: 'blue', endpoint: '/api/admin/attendance-report' },
+    { id: 'fees', name: 'Fee Collection Report', icon: FaDollarSign, color: 'green', endpoint: '/api/admin/reports/fees' },
+    { id: 'academic', name: 'Academic Performance', icon: FaChartBar, color: 'purple', endpoint: '/api/admin/reports/academic' },
+    { id: 'enrollment', name: 'Student Enrollment', icon: FaCalendarAlt, color: 'orange', endpoint: '/api/admin/reports/enrollment' }
   ];
 
-  const recentReports = [
-    { name: 'Monthly Attendance Report - January 2024', date: '2024-01-31', type: 'Attendance', size: '2.3 MB' },
-    { name: 'Fee Collection Summary - Q4 2023', date: '2024-01-15', type: 'Financial', size: '1.8 MB' },
-    { name: 'Academic Performance Analysis', date: '2024-01-10', type: 'Academic', size: '3.1 MB' },
-    { name: 'Student Enrollment Report', date: '2024-01-05', type: 'Enrollment', size: '1.2 MB' }
-  ];
+  useEffect(() => {
+    fetchManualReports();
+  }, []);
+
+  const fetchManualReports = async () => {
+    try {
+      const token = Cookies.get('token');
+      const response = await axios.get(`${BASE_URL}/api/admin/manual-reports`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.data.success) {
+        setManualReports(response.data.reports);
+      }
+    } catch (error) {
+      console.error('Error fetching manual reports:', error);
+    }
+  };
+
+  const generateReport = async (type) => {
+    setLoading(true);
+    setSelectedReport(type);
+    setReportData(null);
+    try {
+      const token = Cookies.get('token');
+      const response = await axios.get(`${BASE_URL}${type.endpoint}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.data.success) {
+        setReportData(response.data.data);
+        toast.success(`${type.name} generated successfully`);
+      }
+    } catch (error) {
+      console.error('Error generating report:', error);
+      toast.error('Failed to generate report');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleManualSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = Cookies.get('token');
+      if (editingReport) {
+        await axios.put(`${BASE_URL}/api/admin/manual-reports/${editingReport._id}`, formData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Report updated successfully');
+      } else {
+        await axios.post(`${BASE_URL}/api/admin/manual-reports`, formData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Report created successfully');
+      }
+      setShowModal(false);
+      setEditingReport(null);
+      setFormData({ title: '', type: 'Administrative', content: '' });
+      fetchManualReports();
+    } catch (error) {
+      console.error('Error saving report:', error);
+      toast.error('Failed to save report');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this report?')) {
+      try {
+        const token = Cookies.get('token');
+        await axios.delete(`${BASE_URL}/api/admin/manual-reports/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Report deleted successfully');
+        fetchManualReports();
+      } catch (error) {
+        console.error('Error deleting report:', error);
+        toast.error('Failed to delete report');
+      }
+    }
+  };
+
+  const downloadCSV = () => {
+    if (!reportData) return;
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += JSON.stringify(reportData, null, 2);
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${selectedReport.id}_report.json`);
+    document.body.appendChild(link);
+    link.click();
+  };
+
+  const renderReportContent = () => {
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center py-12">
+          <FaSpinner className="animate-spin text-4xl text-blue-500" />
+        </div>
+      );
+    }
+
+    if (!reportData) return null;
+
+    switch (selectedReport.id) {
+      case 'fees':
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <h3 className="text-green-800 font-semibold">Total Expected</h3>
+                <p className="text-2xl font-bold text-green-600">₹{reportData.summary.totalExpected.toLocaleString()}</p>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <h3 className="text-blue-800 font-semibold">Total Collected</h3>
+                <p className="text-2xl font-bold text-blue-600">₹{reportData.summary.totalCollected.toLocaleString()}</p>
+              </div>
+              <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                <h3 className="text-red-800 font-semibold">Total Due</h3>
+                <p className="text-2xl font-bold text-red-600">₹{reportData.summary.totalDue.toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <h3 className="px-6 py-4 bg-gray-50 font-bold border-b">Course-wise Collection</h3>
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Course ID</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Collected</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Due</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {Object.entries(reportData.courseWiseStats).map(([courseId, stats]) => (
+                    <tr key={courseId}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{courseId}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">₹{stats.collected.toLocaleString()}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">₹{stats.due.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+
+      case 'academic':
+        return (
+          <div className="space-y-6">
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <h3 className="px-6 py-4 bg-gray-50 font-bold border-b">Subject Performance</h3>
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subject</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Average Marks</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Highest Marks</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Records</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {Object.entries(reportData.subjectStats).map(([subject, stats]) => (
+                    <tr key={subject}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{subject}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{stats.average}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{stats.highest}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{stats.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+
+      case 'enrollment':
+        return (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-bold text-gray-800 mb-2">Total Students</h3>
+              <p className="text-3xl font-bold text-blue-600">{reportData.totalStudents}</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white border rounded-lg overflow-hidden">
+                <h3 className="px-6 py-4 bg-gray-50 font-bold border-b">Course Distribution</h3>
+                <ul className="divide-y divide-gray-200">
+                  {Object.entries(reportData.courseDistribution).map(([course, count]) => (
+                    <li key={course} className="px-6 py-4 flex justify-between items-center">
+                      <span className="text-gray-700">{course}</span>
+                      <span className="bg-blue-100 text-blue-800 py-1 px-3 rounded-full text-sm font-medium">{count}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-white border rounded-lg overflow-hidden">
+                <h3 className="px-6 py-4 bg-gray-50 font-bold border-b">Semester Distribution</h3>
+                <ul className="divide-y divide-gray-200">
+                  {Object.entries(reportData.yearDistribution).map(([sem, count]) => (
+                    <li key={sem} className="px-6 py-4 flex justify-between items-center">
+                      <span className="text-gray-700">{sem}</span>
+                      <span className="bg-purple-100 text-purple-800 py-1 px-3 rounded-full text-sm font-medium">{count}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'attendance':
+        return (
+          <div className="bg-white p-6 rounded-lg border text-center text-gray-500">
+            <p>Attendance data loaded. {reportData.attendance?.length || 0} records found.</p>
+            <p className="text-sm mt-2">Use the specific Attendance Management page for detailed analysis.</p>
+          </div>
+        );
+
+      default:
+        return <div className="text-center py-8 text-gray-500">Select a report type to view details</div>;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <AdminHeader />
-      <BackButton />
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">Reports Management</h1>
-            <p className="text-gray-600">Generate and manage institutional reports</p>
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <BackButton className="mb-4" />
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800">Reports Management</h1>
+              <p className="text-gray-600 mt-2">Generate and manage institutional reports</p>
+            </div>
           </div>
-          <button className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-            <FaFileAlt />
-            <span>Generate Report</span>
-          </button>
-        </div>
 
-        {/* Report Types */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {reportTypes.map((report) => (
-            <div 
-              key={report.id}
-              className={`bg-white p-6 rounded-lg shadow-md cursor-pointer transition-all hover:shadow-lg ${
-                selectedReport === report.id ? 'ring-2 ring-blue-500' : ''
-              }`}
-              onClick={() => setSelectedReport(report.id)}
-            >
-              <div className="flex items-center mb-4">
-                <div className={`p-3 rounded-full bg-${report.color}-100 mr-4`}>
-                  <report.icon className={`text-2xl text-${report.color}-500`} />
+          {/* Report Types Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {reportTypes.map((report) => (
+              <div
+                key={report.id}
+                className={`bg-white p-6 rounded-lg shadow-md cursor-pointer transition-all hover:shadow-lg border-2 ${selectedReport?.id === report.id ? `border-${report.color}-500` : 'border-transparent'
+                  }`}
+                onClick={() => generateReport(report)}
+              >
+                <div className="flex items-center mb-4">
+                  <div className={`p-3 rounded-full bg-${report.color}-100 mr-4`}>
+                    <report.icon className={`text-2xl text-${report.color}-500`} />
+                  </div>
+                  <h3 className="font-bold text-gray-800">{report.name}</h3>
                 </div>
-                <h3 className="font-bold text-gray-800">{report.name}</h3>
+                <button className="w-full py-2 bg-gray-50 text-gray-600 rounded hover:bg-gray-100 transition-colors text-sm font-medium">
+                  Generate Report
+                </button>
               </div>
-              <button className="w-full py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors">
-                Generate
+            ))}
+          </div>
+
+          {/* Report Content Area */}
+          {selectedReport && (
+            <div className="bg-white rounded-lg shadow-md p-6 mb-8 animate-fade-in">
+              <div className="flex justify-between items-center mb-6 border-b pb-4">
+                <h2 className="text-xl font-bold text-gray-800">{selectedReport.name}</h2>
+                {reportData && (
+                  <button
+                    onClick={downloadCSV}
+                    className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    <FaDownload />
+                    <span>Download Data</span>
+                  </button>
+                )}
+              </div>
+
+              {renderReportContent()}
+            </div>
+          )}
+
+          {/* Manual Reports Section */}
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="px-6 py-4 bg-gray-50 border-b flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-800">Custom Reports</h2>
+              <button
+                onClick={() => {
+                  setEditingReport(null);
+                  setFormData({ title: '', type: 'Administrative', content: '' });
+                  setShowModal(true);
+                }}
+                className="flex items-center space-x-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+              >
+                <FaPlus />
+                <span>Add Report</span>
               </button>
             </div>
-          ))}
-        </div>
-
-        {/* Report Generation Form */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Generate Custom Report</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
-              <select className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option>Attendance Report</option>
-                <option>Fee Collection Report</option>
-                <option>Academic Performance</option>
-                <option>Student Enrollment</option>
-                <option>Teacher Performance</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
-              <select className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option>Last 30 Days</option>
-                <option>Last 3 Months</option>
-                <option>Last 6 Months</option>
-                <option>Last Year</option>
-                <option>Custom Range</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Format</label>
-              <select className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option>PDF</option>
-                <option>Excel</option>
-                <option>CSV</option>
-              </select>
-            </div>
-          </div>
-          <div className="flex space-x-3">
-            <button className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-              Generate Report
-            </button>
-            <button className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
-              Schedule Report
-            </button>
-          </div>
-        </div>
-
-        {/* Recent Reports */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="px-6 py-4 bg-gray-50 border-b">
-            <h2 className="text-xl font-bold text-gray-800">Recent Reports</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Report Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Generated Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Size</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {recentReports.map((report, index) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <FaFileAlt className="text-blue-500 mr-3" />
-                        <span className="font-medium text-gray-900">{report.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {report.type}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">{report.date}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">{report.size}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button className="flex items-center space-x-1 text-blue-600 hover:text-blue-900">
-                        <FaDownload />
-                        <span>Download</span>
-                      </button>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center">
-              <FaFileAlt className="text-3xl text-blue-500 mr-4" />
-              <div>
-                <p className="text-gray-600">Total Reports</p>
-                <p className="text-2xl font-bold">156</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center">
-              <FaDownload className="text-3xl text-green-500 mr-4" />
-              <div>
-                <p className="text-gray-600">Downloads</p>
-                <p className="text-2xl font-bold">1,234</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center">
-              <FaCalendarAlt className="text-3xl text-purple-500 mr-4" />
-              <div>
-                <p className="text-gray-600">This Month</p>
-                <p className="text-2xl font-bold">23</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center">
-              <FaChartBar className="text-3xl text-orange-500 mr-4" />
-              <div>
-                <p className="text-gray-600">Scheduled</p>
-                <p className="text-2xl font-bold">8</p>
-              </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {manualReports.map((report) => (
+                    <tr key={report._id}>
+                      <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{report.title}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                          {report.type}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                        {new Date(report.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <button
+                          onClick={() => {
+                            setEditingReport(report);
+                            setFormData({ title: report.title, type: report.type, content: report.content });
+                            setShowModal(true);
+                          }}
+                          className="text-green-600 hover:text-green-900"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(report._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {manualReports.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
+                        No custom reports found. Add one to get started.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                {editingReport ? 'Edit Report' : 'Add Custom Report'}
+              </h3>
+              <form onSubmit={handleManualSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Title</label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Type</label>
+                  <select
+                    value={formData.type}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  >
+                    <option value="Administrative">Administrative</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Financial">Financial</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Content</label>
+                  <textarea
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                    rows="4"
+                    required
+                  />
+                </div>
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                  >
+                    {editingReport ? 'Update' : 'Create'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
