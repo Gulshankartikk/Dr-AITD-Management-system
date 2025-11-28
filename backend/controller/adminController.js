@@ -978,6 +978,18 @@ const deleteBook = async (req, res) => {
   }
 };
 
+// Get All Notices - Admin Only
+const getAllNotices = async (req, res) => {
+  try {
+    const notices = await Notices.find({ isActive: true })
+      .populate('courseId', 'courseName courseCode')
+      .sort({ createdAt: -1 });
+    res.json({ success: true, notices });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
 module.exports = {
   adminLogin,
   addCourse,
@@ -1018,5 +1030,7 @@ module.exports = {
   getAllBooks,
   issueBook,
   returnBook,
-  deleteBook
+  returnBook,
+  deleteBook,
+  getAllNotices
 };

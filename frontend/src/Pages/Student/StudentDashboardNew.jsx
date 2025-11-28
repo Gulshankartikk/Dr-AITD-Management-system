@@ -3,12 +3,13 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
 import {
-  FaUser, FaBook, FaClipboardList, FaBell, FaCalendarAlt, FaFileAlt,
-  FaDollarSign, FaChartBar, FaBus, FaHome, FaEnvelope, FaPhone,
-  FaCheckCircle, FaClock, FaExclamationTriangle, FaDownload, FaTimes
+  FaClipboardList, FaFileAlt, FaDollarSign, FaChartBar, FaCalendarAlt,
+  FaBell, FaCheckCircle, FaClock, FaDownload, FaArrowRight
 } from 'react-icons/fa';
 import Cookies from 'js-cookie';
-import BackButton from '../../components/BackButton';
+import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
+import Badge from '../../components/ui/Badge';
+import Button from '../../components/ui/Button';
 
 const StudentDashboardNew = () => {
   const { studentId } = useParams();
@@ -86,9 +87,9 @@ const StudentDashboardNew = () => {
 
   // Derived Data for UI
   const summaryCards = [
-    { title: 'Attendance', value: `${attendanceStats.percentage}%`, icon: FaClipboardList, color: '#10b981', bg: '#d1fae5' },
-    { title: 'Assignments', value: `${assignments.filter(a => a.submissions?.some(s => s.studentId === studentId)).length}/${assignments.length}`, icon: FaFileAlt, color: '#3b82f6', bg: '#dbeafe' },
-    { title: 'Pending Fees', value: fees.reduce((acc, fee) => acc + (fee.status !== 'Paid' ? fee.amount : 0), 0) > 0 ? 'Due' : 'Clear', icon: FaDollarSign, color: '#f59e0b', bg: '#fef3c7' }
+    { title: 'Attendance', value: `${attendanceStats.percentage}%`, icon: FaClipboardList, color: 'text-emerald-600', bg: 'bg-emerald-100' },
+    { title: 'Assignments', value: `${assignments.filter(a => a.submissions?.some(s => s.studentId === studentId)).length}/${assignments.length}`, icon: FaFileAlt, color: 'text-blue-600', bg: 'bg-blue-100' },
+    { title: 'Pending Fees', value: fees.reduce((acc, fee) => acc + (fee.status !== 'Paid' ? fee.amount : 0), 0) > 0 ? 'Due' : 'Clear', icon: FaDollarSign, color: 'text-amber-600', bg: 'bg-amber-100' }
   ];
 
   const getDayName = (dateStr) => {
@@ -101,149 +102,110 @@ const StudentDashboardNew = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <BackButton />
-      {/* Sidebar */}
-      <div className="w-64 bg-gradient-to-b from-blue-900 to-blue-800 text-white fixed h-full overflow-y-auto hidden md:block">
-        <div className="p-6">
-          {/* Profile Section */}
-          <div className="text-center mb-6">
-            <div className="w-24 h-24 bg-white rounded-full mx-auto mb-3 flex items-center justify-center overflow-hidden">
-              <FaUser className="text-5xl text-blue-900" />
-            </div>
-            <h3 className="font-bold text-lg">{student?.name || 'Student'}</h3>
-            <p className="text-sm text-blue-200">{student?.rollNo || 'ID: --'}</p>
-            <p className="text-xs text-blue-300 mt-1">{student?.courseId?.courseName || 'Course: --'}</p>
-          </div>
-
-          {/* Quick Info */}
-          <div className="bg-blue-800 rounded-lg p-4 mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm">Semester</span>
-              <span className="font-bold">{student?.semester || '1'}</span>
-            </div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm">Section</span>
-              <span className="font-bold">{student?.section || 'A'}</span>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="space-y-2">
-            <Link to={`/student/${studentId}/profile`} className="flex items-center space-x-3 p-3 rounded hover:bg-blue-700 transition">
-              <FaUser />
-              <span>Profile</span>
-            </Link>
-            <Link to={`/student/${studentId}/attendance`} className="flex items-center space-x-3 p-3 rounded hover:bg-blue-700 transition">
-              <FaClipboardList />
-              <span>Attendance</span>
-            </Link>
-            <Link to={`/student/${studentId}/assignments`} className="flex items-center space-x-3 p-3 rounded hover:bg-blue-700 transition">
-              <FaFileAlt />
-              <span>Assignments</span>
-            </Link>
-            <Link to={`/student/${studentId}/materials`} className="flex items-center space-x-3 p-3 rounded hover:bg-blue-700 transition">
-              <FaBook />
-              <span>Study Materials</span>
-            </Link>
-          </nav>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-500">Welcome back, {student?.name}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-gray-500">
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </span>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="ml-0 md:ml-64 flex-1 p-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Student Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {student?.name}!</p>
-        </div>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {summaryCards.map((card, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-md p-6" style={{ borderLeft: `4px solid ${card.color}` }}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm font-medium">{card.title}</p>
-                  <p className="text-3xl font-bold text-gray-800 mt-2">{card.value}</p>
-                </div>
-                <div className="p-4 rounded-full" style={{ backgroundColor: card.bg }}>
-                  <card.icon className="text-2xl" style={{ color: card.color }} />
-                </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {summaryCards.map((card, index) => (
+          <Card key={index} className="border-none shadow-sm">
+            <CardContent className="flex items-center justify-between p-6">
+              <div>
+                <p className="text-sm font-medium text-gray-500">{card.title}</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">{card.value}</p>
               </div>
-            </div>
-          ))}
-        </div>
+              <div className={`p-4 rounded-xl ${card.bg}`}>
+                <card.icon className={`text-2xl ${card.color}`} />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - 2/3 width */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Subject-wise Attendance */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                <FaChartBar className="mr-2 text-blue-600" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Attendance Chart */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <FaChartBar className="text-blue-600" />
                 Subject-wise Attendance
-              </h2>
-              <div className="space-y-3">
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
                 {attendanceStats.subjectWise.length > 0 ? attendanceStats.subjectWise.map((subject, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="font-medium text-gray-700">{subject.name}</span>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-32 bg-gray-200 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full ${subject.status === 'good' ? 'bg-green-500' : 'bg-yellow-500'}`}
-                          style={{ width: subject.attendance }}
-                        ></div>
-                      </div>
-                      <span className={`font-bold ${subject.status === 'good' ? 'text-green-600' : 'text-yellow-600'}`}>
+                  <div key={index} className="space-y-2">
+                    <div className="flex justify-between text-sm font-medium">
+                      <span className="text-gray-700">{subject.name}</span>
+                      <span className={subject.status === 'good' ? 'text-emerald-600' : 'text-amber-600'}>
                         {subject.attendance}
                       </span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2.5">
+                      <div
+                        className={`h-2.5 rounded-full transition-all duration-500 ${subject.status === 'good' ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                        style={{ width: subject.attendance }}
+                      ></div>
                     </div>
                   </div>
                 )) : (
                   <p className="text-gray-500 text-center py-4">No attendance records found.</p>
                 )}
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            {/* Assignments */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                <FaFileAlt className="mr-2 text-blue-600" />
+          {/* Recent Assignments */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <FaFileAlt className="text-blue-600" />
                 Recent Assignments
-              </h2>
-              <div className="space-y-3">
+              </CardTitle>
+              <Link to={`/student/${studentId}/assignments`} className="text-sm text-blue-600 hover:underline">
+                View All
+              </Link>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
                 {assignments.slice(0, 5).map((assignment, index) => {
                   const isSubmitted = assignment.submissions?.some(s => s.studentId === studentId);
                   return (
-                    <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-800">{assignment.title}</h3>
-                        <p className="text-sm text-gray-600">{assignment.subjectId?.subjectName}</p>
-                        <p className="text-xs text-gray-500 mt-1">Due: {new Date(assignment.deadline).toLocaleDateString()}</p>
+                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                      <div className="flex-1 min-w-0 mr-4">
+                        <h4 className="font-semibold text-gray-900 truncate">{assignment.title}</h4>
+                        <p className="text-sm text-gray-500 truncate">{assignment.subjectId?.subjectName}</p>
+                        <p className="text-xs text-gray-400 mt-1">Due: {new Date(assignment.deadline).toLocaleDateString()}</p>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {isSubmitted ? (
-                          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium flex items-center">
-                            <FaCheckCircle className="mr-1" /> Submitted
-                          </span>
-                        ) : (
-                          <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium flex items-center">
-                            <FaClock className="mr-1" /> Pending
-                          </span>
-                        )}
+                      <div className="flex items-center gap-3">
+                        <Badge variant={isSubmitted ? 'success' : 'warning'}>
+                          {isSubmitted ? 'Submitted' : 'Pending'}
+                        </Badge>
                         {assignment.fileUrl && (
                           <button
                             onClick={() => window.open(assignment.fileUrl, '_blank')}
-                            className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            className="p-2 text-gray-500 hover:text-blue-600 transition-colors"
+                            title="Download Attachment"
                           >
                             <FaDownload />
                           </button>
@@ -254,80 +216,86 @@ const StudentDashboardNew = () => {
                 })}
                 {assignments.length === 0 && <p className="text-gray-500 text-center py-4">No assignments available.</p>}
               </div>
-            </div>
+            </CardContent>
+          </Card>
+        </div>
 
-            {/* Weekly Timetable */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                <FaCalendarAlt className="mr-2 text-blue-600" />
-                Today's Schedule ({todayDay})
-              </h2>
-              <div className="space-y-2">
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* Timetable */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FaCalendarAlt className="text-blue-600" />
+                Today's Schedule
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
                 {todaysSchedule.length > 0 ? todaysSchedule.map((slot, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-white rounded-lg border-l-4 border-blue-500">
-                    <div>
-                      <p className="font-semibold text-gray-800">{slot.subjectId?.subjectName}</p>
-                      <p className="text-sm text-gray-600">{slot.timeSlot}</p>
+                  <div key={index} className="flex items-start gap-3 p-3 rounded-lg border border-gray-100">
+                    <div className="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold whitespace-nowrap">
+                      {slot.timeSlot}
                     </div>
-                    <span className="text-sm text-gray-600 bg-white px-3 py-1 rounded-full">{slot.roomNo || 'Room --'}</span>
+                    <div>
+                      <p className="font-medium text-gray-900 text-sm">{slot.subjectId?.subjectName}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Room: {slot.roomNo || 'N/A'}</p>
+                    </div>
                   </div>
                 )) : (
-                  <p className="text-gray-500 text-center py-4">No classes scheduled for today.</p>
+                  <div className="text-center py-6 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                    <p className="text-gray-500 text-sm">No classes today</p>
+                  </div>
                 )}
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          {/* Right Column - 1/3 width */}
-          <div className="space-y-6">
-            {/* Notifications */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                <FaBell className="mr-2 text-blue-600" />
+          {/* Notifications */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FaBell className="text-blue-600" />
                 Notifications
-              </h2>
-              <div className="space-y-3">
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
                 {notices.slice(0, 5).map((notif, index) => (
-                  <div key={index} className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                    <h4 className="font-semibold text-gray-800 text-sm">{notif.title}</h4>
-                    <p className="text-xs text-gray-600 mt-1">{notif.description}</p>
-                    <p className="text-xs text-gray-500 mt-2">{new Date(notif.createdAt).toLocaleDateString()}</p>
+                  <div key={index} className="flex gap-3">
+                    <div className="mt-1 min-w-[8px] h-2 w-2 rounded-full bg-blue-500"></div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900">{notif.title}</h4>
+                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{notif.description}</p>
+                      <p className="text-[10px] text-gray-400 mt-1">{new Date(notif.createdAt).toLocaleDateString()}</p>
+                    </div>
                   </div>
                 ))}
-                {notices.length === 0 && <p className="text-gray-500 text-center py-4">No new notifications.</p>}
+                {notices.length === 0 && <p className="text-gray-500 text-center py-4 text-sm">No new notifications.</p>}
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            {/* Quick Actions */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Quick Actions</h2>
-              <div className="space-y-2">
-                <Link to={`/student/${studentId}/marks`} className="w-full p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition flex items-center justify-center">
-                  <FaFileAlt className="mr-2" /> View Results
+          {/* Quick Actions */}
+          <Card className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-none">
+            <CardContent>
+              <h3 className="font-bold text-lg mb-4">Quick Actions</h3>
+              <div className="space-y-3">
+                <Link to={`/student/${studentId}/fees`}>
+                  <Button variant="secondary" className="w-full justify-between bg-white/10 border-white/20 text-white hover:bg-white/20 mb-3">
+                    <span>Pay Fees</span>
+                    <FaArrowRight size={14} />
+                  </Button>
                 </Link>
-                <Link to={`/student/${studentId}/fees`} className="w-full p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center justify-center">
-                  <FaDollarSign className="mr-2" /> Pay Fees
-                </Link>
-                <Link to={`/student/${studentId}/materials`} className="w-full p-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition flex items-center justify-center">
-                  <FaDownload className="mr-2" /> Study Materials
+                <Link to={`/student/${studentId}/marks`}>
+                  <Button variant="secondary" className="w-full justify-between bg-white/10 border-white/20 text-white hover:bg-white/20">
+                    <span>View Results</span>
+                    <FaArrowRight size={14} />
+                  </Button>
                 </Link>
               </div>
-            </div>
-
-            {/* Footer Cards */}
-            <div className="grid grid-cols-1 gap-4">
-              <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-4 shadow-md">
-                <h3 className="font-bold mb-1">Exam Results</h3>
-                <p className="text-sm">Check your latest performance</p>
-                <Link to={`/student/${studentId}/marks`} className="mt-2 inline-block text-xs bg-white text-green-600 px-3 py-1 rounded-full font-medium">View Now</Link>
-              </div>
-              <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg p-4 shadow-md">
-                <h3 className="font-bold mb-1">Fee Status</h3>
-                <p className="text-sm">Check pending dues</p>
-                <Link to={`/student/${studentId}/fees`} className="mt-2 inline-block text-xs bg-white text-orange-600 px-3 py-1 rounded-full font-medium">Pay Now</Link>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

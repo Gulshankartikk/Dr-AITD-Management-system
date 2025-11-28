@@ -1,310 +1,221 @@
-import React, { useState } from 'react';
-import { FaCalendarAlt, FaPlus, FaClock, FaEdit, FaDownload, FaTimes, FaEye, FaSearch, FaUsers, FaChalkboardTeacher } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaCalendarAlt, FaPlus, FaClock, FaEdit, FaDownload, FaTimes, FaSearch, FaUsers, FaChalkboardTeacher, FaTrash } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
+import axios from 'axios';
+import { BASE_URL } from '../../constants/api';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
+import Button from '../../components/ui/Button';
+import Select from '../../components/ui/Select';
 
 const TimetableManagement = () => {
-  const [selectedCourse, setSelectedCourse] = useState('Computer Science');
+  const [selectedCourse, setSelectedCourse] = useState('');
+  const [selectedSemester, setSelectedSemester] = useState('1');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  
+  const [loading, setLoading] = useState(false);
+
+  const [courses, setCourses] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [teachers, setTeachers] = useState([]);
+  const [timetable, setTimetable] = useState([]);
+
   const timeSlots = ['9:00-10:00', '10:00-11:00', '11:00-12:00', '12:00-1:00', '2:00-3:00', '3:00-4:00', '4:00-5:00'];
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  
-  const [timetableData, setTimetableData] = useState({
-    'Computer Science': {
-      'Monday': [
-        { subject: 'Mathematics', teacher: 'Dr. Gulshan kumar', room: 'Room 101' },
-        { subject: 'Physics', teacher: 'Prof. sandy', room: 'Room 102' },
-        { subject: 'Programming', teacher: 'Dr. pinky', room: 'Lab 1' },
-        { subject: 'Lunch', teacher: '', room: '' },
-        { subject: 'Data Structures', teacher: 'Dr. ankita', room: 'Room 103' },
-        { subject: 'Lab', teacher: 'Dr. aditya', room: 'Lab 1' },
-        { subject: 'Lab', teacher: 'Dr. krishna', room: 'Lab 1' }
-      ],
-      'Tuesday': [
-        { subject: 'English', teacher: 'Ms. ankita', room: 'Room 201' },
-        { subject: 'Mathematics', teacher: 'Dr. Gulshan kumar', room: 'Room 101' },
-        { subject: 'Physics', teacher: 'Prof. sandy', room: 'Room 102' },
-        { subject: 'Lunch', teacher: '', room: '' },
-        { subject: 'Programming', teacher: 'Dr. rajan', room: 'Lab 1' },
-        { subject: 'Workshop', teacher: 'Prof. raju', room: 'Workshop' },
-        { subject: 'Workshop', teacher: 'Prof. dilip', room: 'Workshop' }
-      ],
-      'Wednesday': [
-        { subject: 'Physics', teacher: 'Prof. sandy', room: 'Room 102' },
-        { subject: 'Mathematics', teacher: 'Dr. krishna', room: 'Room 101' },
-        { subject: 'English', teacher: 'Ms. abhishek', room: 'Room 201' },
-        { subject: 'Lunch', teacher: '', room: '' },
-        { subject: 'Database', teacher: 'Prof. aditya', room: 'Room 104' },
-        { subject: 'Lab', teacher: 'Prof. aditya', room: 'Lab 2' },
-        { subject: 'Lab', teacher: 'Prof. aditya', room: 'Lab 2' }
-      ],
-      'Thursday': [
-        { subject: 'Programming', teacher: 'Dr. pinky', room: 'Lab 1' },
-        { subject: 'Physics', teacher: 'Prof. sandy', room: 'Room 102' },
-        { subject: 'Mathematics', teacher: 'Dr. krishna', room: 'Room 101' },
-        { subject: 'Lunch', teacher: '', room: '' },
-        { subject: 'Networks', teacher: 'Dr. aditya', room: 'Room 105' },
-        { subject: 'Theory', teacher: 'Dr. aditya', room: 'Room 105' },
-        { subject: 'Theory', teacher: 'Dr. aditya', room: 'Room 105' }
-      ],
-      'Friday': [
-        { subject: 'Database', teacher: 'Prof. aditya', room: 'Room 104' },
-        { subject: 'English', teacher: 'Ms. abhishek', room: 'Room 201' },
-        { subject: 'Programming', teacher: 'Dr. pinky', room: 'Lab 1' },
-        { subject: 'Lunch', teacher: '', room: '' },
-        { subject: 'Project', teacher: 'All Faculty', room: 'Project Hall' },
-        { subject: 'Project', teacher: 'All Faculty', room: 'Project Hall' },
-        { subject: 'Project', teacher: 'All Faculty', room: 'Project Hall' }
-      ],
-      'Saturday': [
-        { subject: 'Mathematics', teacher: 'Dr. ', room: 'Room 101' },
-        { subject: 'Physics', teacher: 'Prof. sandy', room: 'Room 102' },
-        { subject: 'English', teacher: 'Ms. abhishek', room: 'Room 201' },
-        { subject: 'Lunch', teacher: '', room: '' },
-        { subject: 'Seminar', teacher: 'Guest Faculty', room: 'Auditorium' },
-        { subject: 'Library', teacher: 'Librarian', room: 'Library' },
-        { subject: 'Sports', teacher: 'Sports Teacher', room: 'Ground' }
-      ]
-    }
-  });
-
-  const courses = ['Computer Science', 'Mechanical Engineering', 'Business Administration'];
-  const subjects = ['Mathematics', 'Physics', 'Programming', 'Database', 'Networks', 'English', 'Workshop', 'Lab', 'Project', 'Seminar', 'Library', 'Sports'];
-  const teachers = ['Dr. ', 'Prof. sandy', 'Dr. pinky', 'Prof. raju', 'Prof. dilip', 'Ms. abhishek'];
-  const rooms = ['Room 101', 'Room 102', 'Room 103', 'Room 104', 'Room 105', 'Room 201', 'Lab 1', 'Lab 2', 'Workshop', 'Auditorium', 'Library', 'Ground'];
 
   const [newSlot, setNewSlot] = useState({
-    subject: '', teacher: '', room: '', day: '', time: ''
+    day: '',
+    timeSlot: '',
+    subjectId: '',
+    teacherId: '',
+    roomNo: ''
   });
 
-  const exportTimetable = () => {
-    const csvContent = "data:text/csv;charset=utf-8," + 
-      "Day,Time,Subject,Teacher,Room\n" +
-      days.flatMap(day => 
-        timeSlots.map((time, index) => {
-          const slot = timetableData[selectedCourse]?.[day]?.[index];
-          return `${day},${time},${slot?.subject || ''},${slot?.teacher || ''},${slot?.room || ''}`;
-        })
-      ).join("\n");
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `timetable_${selectedCourse.replace(' ', '_')}_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  useEffect(() => {
+    fetchInitialData();
+  }, []);
+
+  useEffect(() => {
+    if (selectedCourse && selectedSemester) {
+      fetchTimetable();
+    }
+  }, [selectedCourse, selectedSemester]);
+
+  const fetchInitialData = async () => {
+    try {
+      const token = Cookies.get('token');
+      const [coursesRes, teachersRes, subjectsRes] = await Promise.all([
+        axios.get(`${BASE_URL}/api/admin/courses`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${BASE_URL}/api/admin/teachers`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${BASE_URL}/api/admin/subjects`, { headers: { Authorization: `Bearer ${token}` } })
+      ]);
+
+      setCourses(coursesRes.data.courses || []);
+      setTeachers(teachersRes.data.teachers || []);
+      setSubjects(subjectsRes.data.subjects || []);
+
+      if (coursesRes.data.courses.length > 0) {
+        setSelectedCourse(coursesRes.data.courses[0]._id);
+      }
+    } catch (error) {
+      console.error('Error fetching initial data:', error);
+      toast.error('Failed to load initial data');
+    }
   };
 
-  const createSlot = () => {
-    alert('Timetable slot created successfully!');
-    setShowCreateModal(false);
-    setNewSlot({ subject: '', teacher: '', room: '', day: '', time: '' });
+  const fetchTimetable = async () => {
+    setLoading(true);
+    try {
+      const token = Cookies.get('token');
+      const response = await axios.get(`${BASE_URL}/api/admin/timetable`, {
+        params: { courseId: selectedCourse, semester: selectedSemester },
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setTimetable(response.data.timetable || []);
+    } catch (error) {
+      console.error('Error fetching timetable:', error);
+      toast.error('Failed to load timetable');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const editSlot = (day, timeIndex) => {
-    const slot = timetableData[selectedCourse]?.[day]?.[timeIndex];
-    setSelectedSlot({ ...slot, day, timeIndex });
-    setShowEditModal(true);
+  const handleCreateSlot = async () => {
+    if (!newSlot.day || !newSlot.timeSlot || !newSlot.subjectId || !newSlot.teacherId) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+
+    try {
+      const token = Cookies.get('token');
+      await axios.post(`${BASE_URL}/api/admin/timetable`, {
+        ...newSlot,
+        courseId: selectedCourse,
+        semester: selectedSemester
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      toast.success('Slot added successfully');
+      setShowCreateModal(false);
+      setNewSlot({ day: '', timeSlot: '', subjectId: '', teacherId: '', roomNo: '' });
+      fetchTimetable();
+    } catch (error) {
+      console.error('Error creating slot:', error);
+      toast.error(error.response?.data?.msg || 'Failed to create slot');
+    }
   };
 
-  const saveEditedSlot = () => {
-    alert('Timetable slot updated successfully!');
-    setShowEditModal(false);
+  const handleDeleteSlot = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this slot?')) return;
+
+    try {
+      const token = Cookies.get('token');
+      await axios.delete(`${BASE_URL}/api/admin/timetable/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success('Slot deleted successfully');
+      fetchTimetable();
+    } catch (error) {
+      console.error('Error deleting slot:', error);
+      toast.error('Failed to delete slot');
+    }
   };
 
-  const viewSlotDetails = (day, timeIndex) => {
-    const slot = timetableData[selectedCourse]?.[day]?.[timeIndex];
-    setSelectedSlot({ ...slot, day, timeIndex, time: timeSlots[timeIndex] });
-    setShowDetailsModal(true);
+  const getSlot = (day, time) => {
+    return timetable.find(t => t.day === day && t.timeSlot === time);
   };
-
-  const getSlotStats = () => {
-    const allSlots = days.flatMap(day => 
-      timetableData[selectedCourse]?.[day] || []
-    );
-    
-    return {
-      totalClasses: allSlots.filter(slot => slot.subject && slot.subject !== 'Lunch').length,
-      labSessions: allSlots.filter(slot => slot.subject === 'Lab' || slot.subject === 'Workshop').length,
-      freePeriods: allSlots.filter(slot => !slot.subject || slot.subject === '').length,
-      uniqueSubjects: [...new Set(allSlots.map(slot => slot.subject).filter(s => s && s !== 'Lunch'))].length
-    };
-  };
-
-  const stats = getSlotStats();
 
   return (
     <div className="min-h-screen bg-gray-50">
       <AdminHeader />
       <BackButton />
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-800">Timetable Management</h1>
             <p className="text-gray-600">Create and manage class schedules</p>
           </div>
-          <div className="flex space-x-3">
-            <button 
-              onClick={exportTimetable}
-              className="flex items-center space-x-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
-            >
-              <FaDownload />
-              <span>Export PDF</span>
-            </button>
-            <button 
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            >
-              <FaPlus />
-              <span>Add Slot</span>
-            </button>
-          </div>
+          <Button onClick={() => setShowCreateModal(true)} variant="primary">
+            <FaPlus className="mr-2" /> Add Slot
+          </Button>
         </div>
 
-        {/* Course Selection and Search */}
-        <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Filters */}
+        <div className="bg-white p-6 rounded-xl shadow-sm mb-6 border border-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Select Course</label>
-              <select 
+              <label className="block text-sm font-medium text-gray-700 mb-2">Course</label>
+              <select
                 value={selectedCourse}
                 onChange={(e) => setSelectedCourse(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded-lg"
               >
                 {courses.map(course => (
-                  <option key={course} value={course}>{course}</option>
+                  <option key={course._id} value={course._id}>{course.courseName}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
-              <div className="relative">
-                <FaSearch className="absolute left-3 top-3 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search subjects, teachers..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            <div className="flex items-end">
-              <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
-                <FaEdit />
-                <span>Bulk Edit</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center">
-              <FaCalendarAlt className="text-3xl text-blue-500 mr-4" />
-              <div>
-                <p className="text-gray-600">Total Classes</p>
-                <p className="text-2xl font-bold">{stats.totalClasses}</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center">
-              <FaClock className="text-3xl text-green-500 mr-4" />
-              <div>
-                <p className="text-gray-600">Lab Sessions</p>
-                <p className="text-2xl font-bold">{stats.labSessions}</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center">
-              <FaUsers className="text-3xl text-purple-500 mr-4" />
-              <div>
-                <p className="text-gray-600">Subjects</p>
-                <p className="text-2xl font-bold">{stats.uniqueSubjects}</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center">
-              <FaChalkboardTeacher className="text-3xl text-orange-500 mr-4" />
-              <div>
-                <p className="text-gray-600">Free Periods</p>
-                <p className="text-2xl font-bold">{stats.freePeriods}</p>
-              </div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+              <select
+                value={selectedSemester}
+                onChange={(e) => setSelectedSemester(e.target.value)}
+                className="w-full p-2 border rounded-lg"
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
+                  <option key={sem} value={sem}>Semester {sem}</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
 
         {/* Timetable Grid */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="p-4 bg-gray-50 border-b">
-            <h2 className="text-xl font-bold text-gray-800">{selectedCourse} - Weekly Timetable</h2>
-          </div>
-          
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-blue-50">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-r">Time</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 border-r w-32">Time</th>
                   {days.map(day => (
-                    <th key={day} className="px-4 py-3 text-center font-medium text-gray-700 border-r min-w-32">
+                    <th key={day} className="px-4 py-3 text-center font-medium text-gray-500 border-r min-w-[160px]">
                       {day}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
-                {timeSlots.map((time, timeIndex) => (
-                  <tr key={time} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-700 border-r bg-gray-50">
-                      <div className="flex items-center">
-                        <FaClock className="mr-2 text-blue-500" />
+              <tbody className="divide-y divide-gray-200">
+                {timeSlots.map((time) => (
+                  <tr key={time} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium text-gray-900 border-r bg-gray-50/50">
+                      <div className="flex items-center gap-2">
+                        <FaClock className="text-blue-500" />
                         {time}
                       </div>
                     </td>
                     {days.map(day => {
-                      const slot = timetableData[selectedCourse]?.[day]?.[timeIndex];
-                      const isLunch = slot?.subject === 'Lunch';
-                      const isLab = slot?.subject === 'Lab' || slot?.subject === 'Workshop';
-                      const isProject = slot?.subject === 'Project';
-                      
+                      const slot = getSlot(day, time);
                       return (
-                        <td key={day} className="px-2 py-3 border-r text-center">
-                          {slot?.subject && (
-                            <div 
-                              onClick={() => viewSlotDetails(day, timeIndex)}
-                              className={`p-2 rounded text-sm font-medium cursor-pointer hover:opacity-80 ${
-                                isLunch ? 'bg-orange-100 text-orange-800' :
-                                isLab ? 'bg-purple-100 text-purple-800' :
-                                isProject ? 'bg-green-100 text-green-800' :
-                                'bg-blue-100 text-blue-800'
-                              }`}
-                            >
-                              <div className="font-semibold">{slot.subject}</div>
-                              {slot.teacher && (
-                                <div className="text-xs opacity-75">{slot.teacher}</div>
-                              )}
-                              {slot.room && (
-                                <div className="text-xs opacity-75">{slot.room}</div>
-                              )}
+                        <td key={day} className="p-2 border-r text-center align-top h-24">
+                          {slot ? (
+                            <div className="bg-blue-50 p-2 rounded-lg border border-blue-100 h-full flex flex-col justify-between group relative">
+                              <div>
+                                <p className="font-semibold text-blue-900 text-sm">{slot.subjectId?.subjectName || 'Unknown Subject'}</p>
+                                <p className="text-xs text-blue-700 mt-1">{slot.teacherId?.name || 'Unknown Teacher'}</p>
+                                <p className="text-xs text-blue-500 mt-1">{slot.roomNo}</p>
+                              </div>
+                              <button
+                                onClick={() => handleDeleteSlot(slot._id)}
+                                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 transition-opacity"
+                              >
+                                <FaTrash size={12} />
+                              </button>
                             </div>
-                          )}
-                          {!slot?.subject && (
-                            <button
-                              onClick={() => editSlot(day, timeIndex)}
-                              className="w-full h-16 border-2 border-dashed border-gray-300 rounded text-gray-400 hover:border-blue-400 hover:text-blue-400"
-                            >
-                              <FaPlus />
-                            </button>
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center text-gray-300 text-xs">
+                              -
+                            </div>
                           )}
                         </td>
                       );
@@ -316,217 +227,73 @@ const TimetableManagement = () => {
           </div>
         </div>
 
-        {/* Create Slot Modal */}
+        {/* Create Modal */}
         {showCreateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">Add Timetable Slot</h2>
-                <button onClick={() => setShowCreateModal(false)} className="text-gray-500 hover:text-gray-700">
-                  <FaTimes size={24} />
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm">
+            <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-gray-900">Add Class Slot</h2>
+                <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-gray-600">
+                  <FaTimes size={20} />
                 </button>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Day</label>
-                  <select
-                    value={newSlot.day}
-                    onChange={(e) => setNewSlot({...newSlot, day: e.target.value})}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select Day</option>
-                    {days.map(day => (
-                      <option key={day} value={day}>{day}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Time Slot</label>
-                  <select
-                    value={newSlot.time}
-                    onChange={(e) => setNewSlot({...newSlot, time: e.target.value})}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select Time</option>
-                    {timeSlots.map(time => (
-                      <option key={time} value={time}>{time}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                  <select
-                    value={newSlot.subject}
-                    onChange={(e) => setNewSlot({...newSlot, subject: e.target.value})}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select Subject</option>
-                    {subjects.map(subject => (
-                      <option key={subject} value={subject}>{subject}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Teacher</label>
-                  <select
-                    value={newSlot.teacher}
-                    onChange={(e) => setNewSlot({...newSlot, teacher: e.target.value})}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select Teacher</option>
-                    {teachers.map(teacher => (
-                      <option key={teacher} value={teacher}>{teacher}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Room</label>
-                  <select
-                    value={newSlot.room}
-                    onChange={(e) => setNewSlot({...newSlot, room: e.target.value})}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select Room</option>
-                    {rooms.map(room => (
-                      <option key={room} value={room}>{room}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              
-              <div className="flex justify-end space-x-3 mt-6">
-                <button 
-                  onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={createSlot}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                  Add Slot
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* View Details Modal */}
-        {showDetailsModal && selectedSlot && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">Slot Details</h2>
-                <button onClick={() => setShowDetailsModal(false)} className="text-gray-500 hover:text-gray-700">
-                  <FaTimes size={24} />
-                </button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-gray-800 mb-3">Schedule Information</h3>
-                  <p><strong>Day:</strong> {selectedSlot.day}</p>
-                  <p><strong>Time:</strong> {selectedSlot.time}</p>
-                  <p><strong>Subject:</strong> {selectedSlot.subject}</p>
-                </div>
-                
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-gray-800 mb-3">Assignment Details</h3>
-                  <p><strong>Teacher:</strong> {selectedSlot.teacher || 'Not assigned'}</p>
-                  <p><strong>Room:</strong> {selectedSlot.room || 'Not assigned'}</p>
-                  <p><strong>Course:</strong> {selectedCourse}</p>
-                </div>
-              </div>
-              
-              <div className="flex justify-end space-x-3 mt-6">
-                <button 
-                  onClick={() => {
-                    setShowDetailsModal(false);
-                    setShowEditModal(true);
-                  }}
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+              <div className="space-y-4">
+                <Select
+                  label="Day"
+                  value={newSlot.day}
+                  onChange={(e) => setNewSlot({ ...newSlot, day: e.target.value })}
                 >
-                  Edit Slot
-                </button>
-                <button 
-                  onClick={() => setShowDetailsModal(false)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+                  <option value="">Select Day</option>
+                  {days.map(day => <option key={day} value={day}>{day}</option>)}
+                </Select>
 
-        {/* Edit Slot Modal */}
-        {showEditModal && selectedSlot && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">Edit Timetable Slot</h2>
-                <button onClick={() => setShowEditModal(false)} className="text-gray-500 hover:text-gray-700">
-                  <FaTimes size={24} />
-                </button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Select
+                  label="Time Slot"
+                  value={newSlot.timeSlot}
+                  onChange={(e) => setNewSlot({ ...newSlot, timeSlot: e.target.value })}
+                >
+                  <option value="">Select Time</option>
+                  {timeSlots.map(time => <option key={time} value={time}>{time}</option>)}
+                </Select>
+
+                <Select
+                  label="Subject"
+                  value={newSlot.subjectId}
+                  onChange={(e) => setNewSlot({ ...newSlot, subjectId: e.target.value })}
+                >
+                  <option value="">Select Subject</option>
+                  {subjects.filter(s => s.courseId?._id === selectedCourse).map(sub => (
+                    <option key={sub._id} value={sub._id}>{sub.subjectName}</option>
+                  ))}
+                </Select>
+
+                <Select
+                  label="Teacher"
+                  value={newSlot.teacherId}
+                  onChange={(e) => setNewSlot({ ...newSlot, teacherId: e.target.value })}
+                >
+                  <option value="">Select Teacher</option>
+                  {teachers.map(teacher => (
+                    <option key={teacher._id} value={teacher._id}>{teacher.name}</option>
+                  ))}
+                </Select>
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                  <select
-                    value={selectedSlot.subject}
-                    onChange={(e) => setSelectedSlot({...selectedSlot, subject: e.target.value})}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select Subject</option>
-                    {subjects.map(subject => (
-                      <option key={subject} value={subject}>{subject}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Teacher</label>
-                  <select
-                    value={selectedSlot.teacher}
-                    onChange={(e) => setSelectedSlot({...selectedSlot, teacher: e.target.value})}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select Teacher</option>
-                    {teachers.map(teacher => (
-                      <option key={teacher} value={teacher}>{teacher}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Room</label>
-                  <select
-                    value={selectedSlot.room}
-                    onChange={(e) => setSelectedSlot({...selectedSlot, room: e.target.value})}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select Room</option>
-                    {rooms.map(room => (
-                      <option key={room} value={room}>{room}</option>
-                    ))}
-                  </select>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Room Number</label>
+                  <input
+                    type="text"
+                    value={newSlot.roomNo}
+                    onChange={(e) => setNewSlot({ ...newSlot, roomNo: e.target.value })}
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="e.g. 101"
+                  />
                 </div>
               </div>
-              
-              <div className="flex justify-end space-x-3 mt-6">
-                <button 
-                  onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={saveEditedSlot}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                  Save Changes
-                </button>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <Button variant="ghost" onClick={() => setShowCreateModal(false)}>Cancel</Button>
+                <Button variant="primary" onClick={handleCreateSlot}>Save Slot</Button>
               </div>
             </div>
           </div>

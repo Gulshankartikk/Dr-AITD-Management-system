@@ -12,9 +12,11 @@ import {
 import { Provider } from "react-redux";
 import Store from "./app/Store";
 import Layout from "./Layout";
+import RequireAuth from "./components/RequireAuth";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Login from "./Pages/Common/Login";
 import Register from "./Pages/Common/Register";
+import LandingPage from "./Pages/LandingPage";
 
 import AdminRegister from "./Pages/Common/AdminRegister";
 import StudentManagement from "./Pages/admin/StudentManagement";
@@ -26,6 +28,7 @@ import AdminDashboard from "./Pages/admin/AdminDashboardNew";
 import NotificationSummary from "./Pages/admin/NotificationSummary";
 import TeacherSummary from "./Pages/Teacher/TeacherSummary";
 import StudentDashboard from "./Pages/Student/StudentDashboardNew";
+import StudentMarks from "./Pages/Student/StudentMarks";
 import StudentNotes from "./Pages/Student/StudentNotes";
 import StudentMaterials from "./Pages/Student/StudentMaterials";
 import StudentAssignments from "./Pages/Student/StudentAssignments";
@@ -71,67 +74,74 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
       {/* home route */}
-      <Route index element={<Login />} />
+      <Route index element={<LandingPage />} />
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
 
       {/* student routes */}
-      <Route path="student/:studentId">
-        <Route path="dashboard" element={<StudentDashboard />} />
-        <Route path="profile" element={<StudentProfile />} />
-        <Route path="notes" element={<StudentNotes />} />
-        <Route path="materials" element={<StudentMaterials />} />
-        <Route path="assignments" element={<StudentAssignments />} />
-        <Route path="attendance" element={<StudentAttendance />} />
-        <Route path="timetable" element={<StudentTimetable />} />
-        <Route path="notices" element={<StudentNotices />} />
-        <Route path="fees" element={<StudentFees />} />
-        <Route path="leave" element={<StudentLeave />} />
-        <Route path="resources" element={<StudentResources />} />
-        <Route path="updatePassword" element={<UpdatePass />} />
-        <Route path="forgetPassword" element={<ForgetPass />} />
-        <Route path="forgetPassword/verifyotp" element={<VerifyOtp />} />
+      <Route element={<RequireAuth allowedRoles={['admin', 'teacher', 'student']} />}>
+        <Route path="student/:studentId">
+          <Route path="dashboard" element={<StudentDashboard />} />
+          <Route path="profile" element={<StudentProfile />} />
+          <Route path="notes" element={<StudentNotes />} />
+          <Route path="materials" element={<StudentMaterials />} />
+          <Route path="assignments" element={<StudentAssignments />} />
+          <Route path="attendance" element={<StudentAttendance />} />
+          <Route path="timetable" element={<StudentTimetable />} />
+          <Route path="notices" element={<StudentNotices />} />
+          <Route path="fees" element={<StudentFees />} />
+          <Route path="leave" element={<StudentLeave />} />
+          <Route path="resources" element={<StudentResources />} />
+          <Route path="marks" element={<StudentMarks />} />
+          <Route path="updatePassword" element={<UpdatePass />} />
+          <Route path="forgetPassword" element={<ForgetPass />} />
+          <Route path="forgetPassword/verifyotp" element={<VerifyOtp />} />
+        </Route>
       </Route>
       {/* teacher routes */}
-      <Route path="teacher/:id">
-        <Route path="dashboard" element={<TeacherDashboard />} />
-        <Route path="profile" element={<TeacherProfile />} />
-        <Route path="students" element={<StudentList />} />
-        <Route path="summary" element={<TeacherSummary />} />
-        <Route path="attendance" element={<TeacherAttendance />} />
-        <Route path="assignments" element={<TeacherAssignments />} />
-        <Route path="materials" element={<TeacherMaterials />} />
-        <Route path="marks" element={<TeacherMarks />} />
-        <Route path="timetable" element={<TeacherTimetable />} />
-        <Route path="notices" element={<TeacherNotices />} />
-        <Route path="leave" element={<TeacherLeave />} />
-        <Route path="upload" element={<TeacherUpload />} />
-        <Route path="attendance/upload" element={<AttendanceUpload />} />
-        <Route path="updatePassword" element={<UpdatePass />} />
-        <Route path="forgetPassword" element={<ForgetPass />} />
-        <Route path="forgetPassword/verifyotp" element={<VerifyOtp />} />
+      <Route element={<RequireAuth allowedRoles={['admin', 'teacher']} />}>
+        <Route path="teacher/:id">
+          <Route path="dashboard" element={<TeacherDashboard />} />
+          <Route path="profile" element={<TeacherProfile />} />
+          <Route path="students" element={<StudentList />} />
+          <Route path="summary" element={<TeacherSummary />} />
+          <Route path="attendance" element={<TeacherAttendance />} />
+          <Route path="assignments" element={<TeacherAssignments />} />
+          <Route path="materials" element={<TeacherMaterials />} />
+          <Route path="marks" element={<TeacherMarks />} />
+          <Route path="timetable" element={<TeacherTimetable />} />
+          <Route path="notices" element={<TeacherNotices />} />
+          <Route path="leave" element={<TeacherLeave />} />
+          <Route path="upload" element={<TeacherUpload />} />
+          <Route path="attendance/upload" element={<AttendanceUpload />} />
+          <Route path="updatePassword" element={<UpdatePass />} />
+          <Route path="forgetPassword" element={<ForgetPass />} />
+          <Route path="forgetPassword/verifyotp" element={<VerifyOtp />} />
+        </Route>
       </Route>
       {/* admin routes */}
-      <Route path="admin">
-        <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="add-course" element={<AddCourse />} />
-        <Route path="create-teacher" element={<CreateTeacher />} />
-        <Route path="create-student" element={<CreateStudent />} />
-        <Route path="add-subject" element={<AddSubject />} />
-        <Route path="students" element={<StudentManagement />} />
-        <Route path="notifications" element={<NotificationSummary />} />
-        <Route path="teachers" element={<TeacherManagement />} />
-        <Route path="courses" element={<CourseManagement />} />
-        <Route path="fees" element={<FeeManagement />} />
-        <Route path="attendance" element={<AttendanceManagement />} />
-        <Route path="exams" element={<ExamManagement />} />
-        <Route path="library" element={<LibraryManagement />} />
-        <Route path="timetable" element={<TimetableManagement />} />
-        <Route path="reports" element={<ReportsManagement />} />
-        <Route path="settings" element={<SettingsManagement />} />
-        <Route path="notices" element={<NoticesManagement />} />
-        <Route path="upload" element={<AdminUpload />} />
-        <Route path="register" element={<AdminRegister />} />
+      <Route element={<RequireAuth allowedRoles={['admin']} />}>
+        <Route path="admin">
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="add-course" element={<AddCourse />} />
+          <Route path="create-teacher" element={<CreateTeacher />} />
+          <Route path="create-student" element={<CreateStudent />} />
+          <Route path="add-subject" element={<AddSubject />} />
+          <Route path="students" element={<StudentManagement />} />
+          <Route path="notifications" element={<NotificationSummary />} />
+          <Route path="teachers" element={<TeacherManagement />} />
+          <Route path="courses" element={<CourseManagement />} />
+          <Route path="fees" element={<FeeManagement />} />
+          <Route path="attendance" element={<AttendanceManagement />} />
+          <Route path="exams" element={<ExamManagement />} />
+          <Route path="library" element={<LibraryManagement />} />
+          <Route path="timetable" element={<TimetableManagement />} />
+          <Route path="reports" element={<ReportsManagement />} />
+          <Route path="settings" element={<SettingsManagement />} />
+          <Route path="notices" element={<NoticesManagement />} />
+          <Route path="upload" element={<AdminUpload />} />
+          <Route path="register" element={<AdminRegister />} />
+        </Route>
       </Route>
       {/* 404 and unauthorized routes */}
       <Route path="unauthorized" element={<Unauthorized />} />

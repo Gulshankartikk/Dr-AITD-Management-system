@@ -196,6 +196,15 @@ const TeacherManagement = () => {
                             <FaEye />
                           </button>
                           {isAdmin && (
+                            <button
+                              onClick={() => navigate(`/teacher/${teacher._id}/dashboard`)}
+                              className="text-blue-600 hover:text-blue-800 transition-colors"
+                              title="View Dashboard"
+                            >
+                              <FaChalkboardTeacher />
+                            </button>
+                          )}
+                          {isAdmin && (
                             <>
                               <button
                                 onClick={() => handleEdit(teacher)}

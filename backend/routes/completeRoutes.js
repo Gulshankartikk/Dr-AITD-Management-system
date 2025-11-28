@@ -252,6 +252,7 @@ router.delete('/admin/library/books/:id', verifyToken, isAdmin, adminController.
 router.delete('/admin/assignments/:assignmentId', verifyToken, isAdmin, adminController.deleteAssignment);
 router.delete('/admin/notices/:noticeId', verifyToken, isAdmin, adminController.deleteNotice);
 router.delete('/admin/materials/:materialId', verifyToken, isAdmin, adminController.deleteMaterial);
+router.get('/admin/notices', verifyToken, isAdmin, adminController.getAllNotices);
 
 
 // ======================================================
