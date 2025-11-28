@@ -39,10 +39,12 @@ const Sidebar = ({ isOpen, onClose, userRole }) => {
         { icon: Settings, label: 'Settings', path: '/admin/settings' },
       ];
     } else if (userRole === 'teacher') {
-      // Note: Teacher paths need dynamic ID, handling this in the component logic or context is better, 
-      // but for now we'll assume the parent layout handles the ID redirection or we use relative paths if possible.
-      // Since the current structure uses /teacher/:id/..., we might need to extract ID from URL.
-      const teacherId = location.pathname.split('/')[2];
+      let teacherId = location.pathname.split('/')[2];
+      // Fallback if on admin page or invalid ID
+      if (!teacherId || teacherId === 'teachers' || teacherId === 'admin') {
+        teacherId = 'demo-teacher';
+      }
+
       return [
         { icon: LayoutDashboard, label: 'Dashboard', path: `/teacher/${teacherId}/dashboard` },
         { icon: Users, label: 'My Students', path: `/teacher/${teacherId}/students` },
@@ -54,9 +56,15 @@ const Sidebar = ({ isOpen, onClose, userRole }) => {
         { icon: FileText, label: 'Notices', path: `/teacher/${teacherId}/notices` },
       ];
     } else if (userRole === 'student') {
-      const studentId = location.pathname.split('/')[2];
+      let studentId = location.pathname.split('/')[2];
+      // Fallback if on admin page or invalid ID
+      if (!studentId || studentId === 'students' || studentId === 'admin') {
+        studentId = 'demo-student';
+      }
+
       return [
         { icon: LayoutDashboard, label: 'Dashboard', path: `/student/${studentId}/dashboard` },
+        { icon: Library, label: 'Subjects', path: `/student/${studentId}/subjects` },
         { icon: ClipboardCheck, label: 'Attendance', path: `/student/${studentId}/attendance` },
         { icon: BookOpen, label: 'Assignments', path: `/student/${studentId}/assignments` },
         { icon: FileText, label: 'Materials', path: `/student/${studentId}/materials` },

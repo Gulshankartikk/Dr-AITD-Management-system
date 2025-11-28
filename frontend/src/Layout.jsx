@@ -38,6 +38,19 @@ const Layout = () => {
     }
   }, [userRole, viewRole]);
 
+  // Auto-switch viewRole based on URL for Admins
+  React.useEffect(() => {
+    if (userRole === 'admin') {
+      if (location.pathname.startsWith('/student')) {
+        setViewRole('student');
+      } else if (location.pathname.startsWith('/teacher')) {
+        setViewRole('teacher');
+      } else if (location.pathname.startsWith('/admin')) {
+        setViewRole('admin');
+      }
+    }
+  }, [location.pathname, userRole]);
+
   if (isPublicPage) {
     return <Outlet />;
   }

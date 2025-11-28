@@ -37,6 +37,7 @@ import StudentTimetable from "./Pages/Student/StudentTimetable";
 import StudentNotices from "./Pages/Student/StudentNotices";
 import StudentFees from "./Pages/Student/StudentFees";
 import StudentLeave from "./Pages/Student/StudentLeave";
+import StudentSubjects from "./Pages/Student/StudentSubjects";
 import TeacherDashboard from "./Pages/Teacher/TeacherDashboardNew";
 import StudentList from "./Pages/Teacher/StudentList";
 import StudentProfile from "./Pages/Student/StudentProfile";
@@ -91,6 +92,7 @@ const router = createBrowserRouter(
           <Route path="notices" element={<StudentNotices />} />
           <Route path="fees" element={<StudentFees />} />
           <Route path="leave" element={<StudentLeave />} />
+          <Route path="subjects" element={<StudentSubjects />} />
           <Route path="resources" element={<StudentResources />} />
           <Route path="marks" element={<StudentMarks />} />
           <Route path="updatePassword" element={<UpdatePass />} />

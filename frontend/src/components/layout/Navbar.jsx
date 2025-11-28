@@ -19,21 +19,16 @@ const Navbar = ({ onMenuClick, userRole, viewRole, setViewRole }) => {
             </div>
 
             <div className="flex items-center space-x-4">
-                {userRole === 'admin' && (
-                    <div className="hidden md:flex items-center bg-gray-100 rounded-lg p-1">
-                        {['admin', 'teacher', 'student'].map((role) => (
-                            <button
-                                key={role}
-                                onClick={() => setViewRole(role)}
-                                className={`px-3 py-1.5 text-xs font-medium rounded-md capitalize transition-all ${viewRole === role
-                                    ? 'bg-white text-blue-600 shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
-                                    }`}
-                            >
-                                {role}
-                            </button>
-                        ))}
-                    </div>
+                {userRole === 'admin' && viewRole !== 'admin' && (
+                    <button
+                        onClick={() => {
+                            setViewRole('admin');
+                            window.location.href = '/admin/dashboard';
+                        }}
+                        className="px-4 py-2 bg-night-blue text-white text-sm font-medium rounded-lg hover:bg-night-blue-shadow transition-colors shadow-sm"
+                    >
+                        Back to Admin
+                    </button>
                 )}
 
                 <button className="p-2 rounded-full text-gray-500 hover:bg-gray-100 relative">
