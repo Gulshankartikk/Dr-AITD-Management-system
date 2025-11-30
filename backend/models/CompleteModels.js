@@ -95,13 +95,52 @@ const AssignmentSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String },
   deadline: { type: Date, required: true },
-  fileUrl: { type: String },
+  maxMarks: { type: Number },
+  submissionType: { type: String, enum: ['online', 'offline'], default: 'online' },
+  files: [{
+    name: String,
+    url: String,
+    type: String
+  }],
+  fileUrl: { type: String }, // Legacy support
+  isActive: { type: Boolean, default: true },
+  isPublished: { type: Boolean, default: true },
+  tags: [String],
   submissions: [{
     studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student' },
     submissionDate: { type: Date, default: Date.now },
-    fileUrl: { type: String },
-    remarks: { type: String }
+    files: [{ name: String, url: String }],
+    fileUrl: { type: String }, // Legacy support
+    remarks: { type: String },
+    marksObtained: { type: Number }
+  }]
+}, { timestamps: true });
+
+// Learning Resource Schema (Unified)
+const LearningResourceSchema = new mongoose.Schema({
+  teacherId: { type: mongoose.Schema.Types.Mixed, required: true },
+  subjectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject', required: true },
+  title: { type: String, required: true },
+  description: { type: String },
+  type: {
+    type: String,
+    required: true,
+    enum: ['lecture_note', 'video', 'syllabus', 'reference_book', 'paper', 'other']
+  },
+  files: [{
+    name: String,
+    url: String,
+    size: Number,
+    type: String
   }],
+  links: [{
+    title: String,
+    url: String
+  }],
+  tags: [String],
+  version: { type: Number, default: 1 },
+  isPublished: { type: Boolean, default: true },
+  releaseDate: { type: Date, default: Date.now },
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
@@ -264,6 +303,8 @@ const Fee = mongoose.model('Fee', FeeSchema);
 const Report = mongoose.model('Report', ReportSchema);
 const Library = mongoose.model('Library', LibrarySchema);
 
+const LearningResource = mongoose.model('LearningResource', LearningResourceSchema);
+
 module.exports = {
   Course,
   Subject,
@@ -282,5 +323,6 @@ module.exports = {
   Leave,
   Fee,
   Report,
-  Library
+  Library,
+  LearningResource
 };

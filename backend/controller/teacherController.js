@@ -15,7 +15,8 @@ const {
   Notices,
   Timetable,
   Leave,
-  Fee
+  Fee,
+  LearningResource
 } = require('../models/CompleteModels');
 const sendNotification = async (type, data) => {
   try {
@@ -762,6 +763,78 @@ module.exports = {
       const { teacherId } = req.params;
       const leaves = await Leave.find({ userId: teacherId }).sort({ createdAt: -1 });
       res.json({ success: true, leaves });
+    } catch (error) {
+      res.status(500).json({ success: false, msg: error.message });
+    }
+  },
+
+  // ------------------------- LEARNING RESOURCES (NEW) -------------------------
+  addResource: async (req, res) => {
+    try {
+      const { teacherId } = req.params;
+      const { subjectId, title, description, type, links, tags, isPublished } = req.body;
+
+      if (!title || !subjectId || !type) {
+        return res.status(400).json({ success: false, msg: 'Title, subject, and type are required' });
+      }
+
+      const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
+
+      // Handle file upload (single or multiple)
+      let files = [];
+      if (req.file) {
+        files.push({
+          name: req.file.originalname,
+          url: buildFileUrl(req, req.file),
+          size: req.file.size,
+          type: req.file.mimetype
+        });
+      }
+
+      const resource = new LearningResource({
+        teacherId: actualTeacherId,
+        subjectId,
+        title,
+        description,
+        type,
+        files,
+        links: links ? JSON.parse(links) : [],
+        tags: tags ? tags.split(',').map(t => t.trim()) : [],
+        isPublished: isPublished === 'true' || isPublished === true
+      });
+
+      await resource.save();
+      res.status(201).json({ success: true, msg: 'Resource added successfully', resource });
+    } catch (error) {
+      console.error('addResource error:', error);
+      res.status(500).json({ success: false, msg: error.message });
+    }
+  },
+
+  getResources: async (req, res) => {
+    try {
+      const { teacherId } = req.params;
+      const { subjectId, type } = req.query;
+
+      let query = { teacherId, isActive: true };
+      if (subjectId) query.subjectId = subjectId;
+      if (type) query.type = type;
+
+      const resources = await LearningResource.find(query)
+        .populate('subjectId', 'subjectName subjectCode')
+        .sort({ createdAt: -1 });
+
+      res.json({ success: true, resources });
+    } catch (error) {
+      res.status(500).json({ success: false, msg: error.message });
+    }
+  },
+
+  deleteResource: async (req, res) => {
+    try {
+      const { resourceId } = req.params;
+      await LearningResource.findByIdAndUpdate(resourceId, { isActive: false });
+      res.json({ success: true, msg: 'Resource deleted successfully' });
     } catch (error) {
       res.status(500).json({ success: false, msg: error.message });
     }

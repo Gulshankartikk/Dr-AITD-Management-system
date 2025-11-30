@@ -90,6 +90,11 @@ router.get('/teacher/:teacherId/timetable', verifyToken, teacherController.getTi
 router.post('/teacher/:teacherId/leave', verifyToken, teacherController.applyLeave);
 router.get('/teacher/:teacherId/leaves', verifyToken, teacherController.getLeaves);
 
+// Learning Resources (NEW)
+router.post('/teacher/:teacherId/resources', verifyToken, upload.single('file'), teacherController.addResource);
+router.get('/teacher/:teacherId/resources', verifyToken, teacherController.getResources);
+router.delete('/teacher/:teacherId/resources/:resourceId', verifyToken, teacherController.deleteResource);
+
 
 // ======================================================
 //                      STUDENT ROUTES
