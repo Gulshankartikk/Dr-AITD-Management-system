@@ -68,31 +68,42 @@ const studentLogin = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res.status(400).json({ success: false, msg: 'Username and password are required' });
+      return res.status(400).json({ success: false, msg: 'Roll Number and Password are required' });
     }
 
-    // STRICT validation - only accept exact match
-    if (username !== 'student' || password !== 'student123') {
-      return res.status(400).json({ success: false, msg: 'Invalid credentials' });
+    // Find student by Roll Number (username field in login form maps to rollNo here if needed, or we check both)
+    // The user request says "student can own roll number... login"
+    // So we treat 'username' input as Roll Number.
+    const student = await Student.findOne({ rollNo: username }).populate('courseId');
+
+    if (!student) {
+      return res.status(400).json({ success: false, msg: 'Invalid Roll Number or Password' });
     }
 
-    const token = jwt.sign({ id: 'student1', role: 'student' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
+    const isMatch = await bcrypt.compare(password, student.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ success: false, msg: 'Invalid Roll Number or Password' });
+    }
+
+    const token = jwt.sign({ id: student._id, role: 'student' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
     res.cookie('token', token, { httpOnly: true });
 
     return res.json({
       success: true,
       token,
       student: {
-        id: 'student1',
-        name: 'Demo Student',
-        email: 'student@college.edu',
-        rollNo: 'STU001',
-        course: { courseName: 'Computer Science', courseCode: 'CSE' },
+        id: student._id,
+        name: student.name,
+        email: student.email,
+        rollNo: student.rollNo,
+        course: student.courseId,
         role: 'student'
       }
     });
   } catch (error) {
-    res.status(500).json({ success: false, msg: error.message });
+    console.error("Login Error:", error);
+    res.status(500).json({ success: false, msg: 'Internal Server Error' });
   }
 };
 
