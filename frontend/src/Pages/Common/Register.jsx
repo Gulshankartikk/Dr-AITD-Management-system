@@ -73,20 +73,20 @@ const Register = () => {
     <div className="min-h-screen flex bg-white">
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-12 lg:px-24 xl:px-32 relative py-12">
-        <Link to="/" className="absolute top-8 left-8 flex items-center text-gray-500 hover:text-gray-900 transition-colors">
+        <Link to="/" className="absolute top-8 left-8 flex items-center text-text-grey hover:text-navy transition-colors">
           <ArrowLeft size={20} className="mr-2" />
           Back to Home
         </Link>
 
         <div className="mb-8 mt-12 lg:mt-0">
           <div className="flex items-center space-x-2 mb-6">
-            <div className="bg-blue-600 p-2 rounded-lg">
+            <div className="bg-sky-blue p-2 rounded-lg">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">College ERP</span>
+            <span className="text-xl font-bold text-navy">College ERP</span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create an account</h1>
-          <p className="text-gray-600">Start your academic journey with us today.</p>
+          <h1 className="text-3xl font-bold text-navy mb-2">Create an account</h1>
+          <p className="text-text-grey">Start your academic journey with us today.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -164,9 +164,9 @@ const Register = () => {
             Create Account
           </Button>
 
-          <p className="text-center text-sm text-gray-600 mt-4">
+          <p className="text-center text-sm text-text-grey mt-4">
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/login" className="font-medium text-sky-blue hover:text-sky-blue/80">
               Sign in
             </Link>
           </p>
@@ -174,16 +174,16 @@ const Register = () => {
       </div>
 
       {/* Right Side - Image/Decoration */}
-      <div className="hidden lg:block w-1/2 bg-gray-50 relative overflow-hidden">
-        <div className="absolute inset-0 bg-indigo-900/20 backdrop-blur-[1px] z-10"></div>
+      <div className="hidden lg:block w-1/2 bg-background relative overflow-hidden">
+        <div className="absolute inset-0 bg-navy/20 backdrop-blur-[1px] z-10"></div>
         <img
           src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
           alt="Students studying"
           className="w-full h-full object-cover"
         />
-        <div className="absolute bottom-0 left-0 right-0 p-12 z-20 bg-gradient-to-t from-gray-900/90 to-transparent text-white">
+        <div className="absolute bottom-0 left-0 right-0 p-12 z-20 bg-gradient-to-t from-navy/90 to-transparent text-white">
           <h2 className="text-3xl font-bold mb-4">Join Our Community</h2>
-          <p className="text-lg text-gray-200 max-w-md">
+          <p className="text-lg text-soft-grey max-w-md">
             Connect with thousands of students and educators. Experience a modern way of learning and management.
           </p>
         </div>

@@ -96,14 +96,14 @@ const NoticesManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <AdminHeader />
       <BackButton />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">Notices Management</h1>
-            <p className="text-gray-600">Create and manage institutional notices</p>
+            <h1 className="text-3xl font-bold text-navy">Notices Management</h1>
+            <p className="text-text-grey">Create and manage institutional notices</p>
           </div>
           <Button onClick={() => setShowCreateModal(true)} variant="primary">
             <FaPlus className="mr-2" /> Create Notice
@@ -111,48 +111,48 @@ const NoticesManagement = () => {
         </div>
 
         {/* Notices List */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
-          <div className="px-6 py-4 bg-gray-50 border-b">
-            <h2 className="text-xl font-bold text-gray-800">Recent Notices</h2>
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-soft-grey">
+          <div className="px-6 py-4 bg-background border-b border-soft-grey">
+            <h2 className="text-xl font-bold text-navy">Recent Notices</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-background">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Course</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-grey uppercase">Title</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-grey uppercase">Course</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-grey uppercase">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-grey uppercase">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-soft-grey">
                 {notices.length === 0 ? (
                   <tr>
-                    <td colSpan="4" className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan="4" className="px-6 py-8 text-center text-text-grey">
                       No notices found. Create one to get started.
                     </td>
                   </tr>
                 ) : (
                   notices.map((notice) => (
-                    <tr key={notice._id} className="hover:bg-gray-50">
+                    <tr key={notice._id} className="hover:bg-soft-grey/20">
                       <td className="px-6 py-4">
                         <div className="flex items-center">
-                          <FaBell className="text-blue-500 mr-3" />
+                          <FaBell className="text-sky-blue mr-3" />
                           <div>
-                            <p className="font-medium text-gray-900">{notice.title}</p>
-                            <p className="text-sm text-gray-600 truncate max-w-xs">{notice.description}</p>
+                            <p className="font-medium text-navy">{notice.title}</p>
+                            <p className="text-sm text-text-grey truncate max-w-xs">{notice.description}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-text-grey">
                         {notice.courseId?.courseName || 'All Courses'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-text-grey">
                         {new Date(notice.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                        <button onClick={() => openViewModal(notice)} className="text-blue-600 hover:text-blue-900"><FaEye /></button>
-                        <button onClick={() => handleDelete(notice._id)} className="text-red-600 hover:text-red-900"><FaTrash /></button>
+                        <button onClick={() => openViewModal(notice)} className="text-sky-blue hover:text-sky-blue/80"><FaEye /></button>
+                        <button onClick={() => handleDelete(notice._id)} className="text-red-500 hover:text-red-700"><FaTrash /></button>
                       </td>
                     </tr>
                   ))
@@ -164,11 +164,11 @@ const NoticesManagement = () => {
 
         {/* Create Modal */}
         {showCreateModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="fixed inset-0 bg-navy/50 flex items-center justify-center z-50 backdrop-blur-sm">
             <div className="bg-white rounded-xl p-6 w-full max-w-2xl shadow-2xl">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Create New Notice</h2>
-                <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-gray-600">
+                <h2 className="text-2xl font-bold text-navy">Create New Notice</h2>
+                <button onClick={() => setShowCreateModal(false)} className="text-text-grey hover:text-navy">
                   <FaTimes size={24} />
                 </button>
               </div>
@@ -193,13 +193,13 @@ const NoticesManagement = () => {
                 </Select>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <label className="block text-sm font-medium text-navy mb-2">Description</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows="4"
                     placeholder="Enter notice content..."
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-soft-grey rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-blue"
                   />
                 </div>
               </div>
@@ -214,31 +214,31 @@ const NoticesManagement = () => {
 
         {/* View Modal */}
         {showViewModal && selectedNotice && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="fixed inset-0 bg-navy/50 flex items-center justify-center z-50 backdrop-blur-sm">
             <div className="bg-white rounded-xl p-6 w-full max-w-2xl shadow-2xl">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Notice Details</h2>
-                <button onClick={() => setShowViewModal(false)} className="text-gray-400 hover:text-gray-600">
+                <h2 className="text-2xl font-bold text-navy">Notice Details</h2>
+                <button onClick={() => setShowViewModal(false)} className="text-text-grey hover:text-navy">
                   <FaTimes size={24} />
                 </button>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-800">{selectedNotice.title}</h3>
-                  <p className="text-sm text-gray-500">
+                  <h3 className="text-xl font-semibold text-navy">{selectedNotice.title}</h3>
+                  <p className="text-sm text-text-grey">
                     Posted on: {new Date(selectedNotice.createdAt).toLocaleDateString()}
                   </p>
                 </div>
 
                 <div className="flex space-x-4">
-                  <span className="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
+                  <span className="px-3 py-1 text-sm font-semibold rounded-full bg-sky-blue/10 text-sky-blue">
                     {selectedNotice.courseId?.courseName || 'All Courses'}
                   </span>
                 </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                <div className="bg-background p-4 rounded-lg border border-soft-grey">
+                  <p className="text-navy whitespace-pre-wrap leading-relaxed">
                     {selectedNotice.description}
                   </p>
                 </div>

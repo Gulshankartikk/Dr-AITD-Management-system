@@ -32,9 +32,9 @@ const TeacherProfile = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTeacher(response.data.teacher);
-      setEditData({ 
-        name: response.data.teacher?.name || '', 
-        email: response.data.teacher?.email || '', 
+      setEditData({
+        name: response.data.teacher?.name || '',
+        email: response.data.teacher?.email || '',
         phone: response.data.teacher?.phone || '',
         department: response.data.teacher?.department || '',
         designation: response.data.teacher?.designation || ''
@@ -47,9 +47,9 @@ const TeacherProfile = () => {
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
     if (!isEditing) {
-      setEditData({ 
-        name: teacher?.name || '', 
-        email: teacher?.email || '', 
+      setEditData({
+        name: teacher?.name || '',
+        email: teacher?.email || '',
         phone: teacher?.phone || '',
         department: teacher?.department || '',
         designation: teacher?.designation || ''
@@ -116,26 +116,25 @@ const TeacherProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-sky-blue"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <TeacherHeader currentRole="teacher" />
-      
+
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4">
           <BackButton />
-          
+
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-extrabold text-gray-900">Teacher Profile</h1>
+            <h1 className="text-4xl font-extrabold text-navy">Teacher Profile</h1>
             <button
               onClick={handleEditToggle}
-              className="px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg"
-              style={{ backgroundColor: isEditing ? '#c89666' : '#2d545e', color: 'white' }}
+              className={`px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg text-white ${isEditing ? 'bg-sky-blue' : 'bg-navy'}`}
             >
               {isEditing ? 'Cancel' : 'Edit Profile'}
             </button>
@@ -143,72 +142,66 @@ const TeacherProfile = () => {
 
           {/* Personal Information */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <FaUser className="mr-3 text-blue-500" />
+            <h2 className="text-2xl font-bold text-navy mb-6 flex items-center">
+              <FaUser className="mr-3 text-sky-blue" />
               Personal Information
             </h2>
             {isEditing ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block font-bold mb-2 text-sm" style={{ color: '#2d545e' }}>Full Name</label>
+                  <label className="block font-bold mb-2 text-sm text-navy">Full Name</label>
                   <input
                     type="text"
                     name="name"
                     value={editData.name}
                     onChange={handleInputChange}
-                    className="w-full py-3 px-4 rounded-lg border-2 focus:outline-none"
-                    style={{ borderColor: '#e1b382' }}
+                    className="w-full py-3 px-4 rounded-lg border-2 border-soft-grey focus:border-sky-blue focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold mb-2 text-sm" style={{ color: '#2d545e' }}>Email</label>
+                  <label className="block font-bold mb-2 text-sm text-navy">Email</label>
                   <input
                     type="email"
                     name="email"
                     value={editData.email}
                     onChange={handleInputChange}
-                    className="w-full py-3 px-4 rounded-lg border-2 focus:outline-none"
-                    style={{ borderColor: '#e1b382' }}
+                    className="w-full py-3 px-4 rounded-lg border-2 border-soft-grey focus:border-sky-blue focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold mb-2 text-sm" style={{ color: '#2d545e' }}>Phone</label>
+                  <label className="block font-bold mb-2 text-sm text-navy">Phone</label>
                   <input
                     type="tel"
                     name="phone"
                     value={editData.phone}
                     onChange={handleInputChange}
-                    className="w-full py-3 px-4 rounded-lg border-2 focus:outline-none"
-                    style={{ borderColor: '#e1b382' }}
+                    className="w-full py-3 px-4 rounded-lg border-2 border-soft-grey focus:border-sky-blue focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold mb-2 text-sm" style={{ color: '#2d545e' }}>Department</label>
+                  <label className="block font-bold mb-2 text-sm text-navy">Department</label>
                   <input
                     type="text"
                     name="department"
                     value={editData.department}
                     onChange={handleInputChange}
-                    className="w-full py-3 px-4 rounded-lg border-2 focus:outline-none"
-                    style={{ borderColor: '#e1b382' }}
+                    className="w-full py-3 px-4 rounded-lg border-2 border-soft-grey focus:border-sky-blue focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold mb-2 text-sm" style={{ color: '#2d545e' }}>Designation</label>
+                  <label className="block font-bold mb-2 text-sm text-navy">Designation</label>
                   <input
                     type="text"
                     name="designation"
                     value={editData.designation}
                     onChange={handleInputChange}
-                    className="w-full py-3 px-4 rounded-lg border-2 focus:outline-none"
-                    style={{ borderColor: '#e1b382' }}
+                    className="w-full py-3 px-4 rounded-lg border-2 border-soft-grey focus:border-sky-blue focus:outline-none"
                   />
                 </div>
                 <div className="md:col-span-2">
                   <button
                     onClick={handleSaveProfile}
-                    className="w-full py-3 px-6 rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg"
-                    style={{ backgroundColor: '#2d545e', color: 'white' }}
+                    className="w-full py-3 px-6 rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg bg-navy text-white"
                   >
                     Save Changes
                   </button>
@@ -228,80 +221,80 @@ const TeacherProfile = () => {
 
           {/* Teaching Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <StatCard title="Assigned Courses" value={teacher?.assignedCourse?.length || 0} color="blue" />
-            <StatCard title="Assigned Subjects" value={teacher?.assignedSubjects?.length || 0} color="green" />
-            <StatCard title="Total Assignments" value={assignments.length} color="purple" />
-            <StatCard title="Study Materials" value={materials.length} color="orange" />
+            <StatCard title="Assigned Courses" value={teacher?.assignedCourse?.length || 0} color="sky-blue" />
+            <StatCard title="Assigned Subjects" value={teacher?.assignedSubjects?.length || 0} color="navy" />
+            <StatCard title="Total Assignments" value={assignments.length} color="sky-blue" />
+            <StatCard title="Study Materials" value={materials.length} color="navy" />
           </div>
 
           {/* Assigned Courses */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <FaBook className="mr-3 text-blue-500" />
+            <h2 className="text-2xl font-bold text-navy mb-6 flex items-center">
+              <FaBook className="mr-3 text-sky-blue" />
               Assigned Courses
             </h2>
             {teacher?.assignedCourse?.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {teacher.assignedCourse.map((course, index) => (
-                  <div key={index} className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                    <p className="font-bold text-gray-900 text-lg">{course.courseName}</p>
-                    <p className="text-sm font-semibold text-gray-700">Code: {course.courseCode}</p>
-                    <p className="text-sm font-medium text-gray-600">Duration: {course.courseDuration}</p>
+                  <div key={index} className="p-4 bg-sky-blue/10 rounded-lg border-l-4 border-sky-blue">
+                    <p className="font-bold text-navy text-lg">{course.courseName}</p>
+                    <p className="text-sm font-semibold text-text-grey">Code: {course.courseCode}</p>
+                    <p className="text-sm font-medium text-text-grey">Duration: {course.courseDuration}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-600 text-center py-4 font-semibold">No courses assigned</p>
+              <p className="text-text-grey text-center py-4 font-semibold">No courses assigned</p>
             )}
           </div>
 
           {/* Assigned Subjects */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <FaClipboardList className="mr-3 text-green-500" />
+            <h2 className="text-2xl font-bold text-navy mb-6 flex items-center">
+              <FaClipboardList className="mr-3 text-navy" />
               Assigned Subjects
             </h2>
             {teacher?.assignedSubjects?.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {teacher.assignedSubjects.map((subject, index) => (
-                  <div key={index} className="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
-                    <p className="font-bold text-gray-900">{subject.subjectName}</p>
-                    <p className="text-sm font-semibold text-gray-700">Code: {subject.subjectCode}</p>
+                  <div key={index} className="p-4 bg-navy/10 rounded-lg border-l-4 border-navy">
+                    <p className="font-bold text-navy">{subject.subjectName}</p>
+                    <p className="text-sm font-semibold text-text-grey">Code: {subject.subjectCode}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-600 text-center py-4 font-semibold">No subjects assigned</p>
+              <p className="text-text-grey text-center py-4 font-semibold">No subjects assigned</p>
             )}
           </div>
 
           {/* Recent Assignments */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <FaTasks className="mr-3 text-purple-500" />
+            <h2 className="text-2xl font-bold text-navy mb-6 flex items-center">
+              <FaTasks className="mr-3 text-sky-blue" />
               Recent Assignments
             </h2>
             {assignments.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-background">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Title</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Subject</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Deadline</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Submissions</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Title</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Subject</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Deadline</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Submissions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {assignments.slice(0, 5).map((assignment, index) => (
                       <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-900">{assignment.title}</td>
-                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-800">{assignment.subjectId?.subjectName}</td>
-                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-navy">{assignment.title}</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-text-grey">{assignment.subjectId?.subjectName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-text-grey">
                           {new Date(assignment.deadline).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-bold">
+                          <span className="px-3 py-1 bg-sky-blue/10 text-sky-blue rounded-full text-sm font-bold">
                             {assignment.submittedCount || 0}/{assignment.totalStudents || 0}
                           </span>
                         </td>
@@ -311,30 +304,30 @@ const TeacherProfile = () => {
                 </table>
               </div>
             ) : (
-              <p className="text-gray-600 text-center py-4 font-semibold">No assignments created yet</p>
+              <p className="text-text-grey text-center py-4 font-semibold">No assignments created yet</p>
             )}
           </div>
 
           {/* Recent Notices */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <FaBell className="mr-3 text-red-500" />
+            <h2 className="text-2xl font-bold text-navy mb-6 flex items-center">
+              <FaBell className="mr-3 text-navy" />
               Recent Notices
             </h2>
             {notices.length > 0 ? (
               <div className="space-y-4">
                 {notices.slice(0, 5).map((notice, index) => (
-                  <div key={index} className="p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
-                    <p className="font-bold text-gray-900 text-lg">{notice.title}</p>
-                    <p className="text-sm font-semibold text-gray-700 mt-2">{notice.description}</p>
-                    <p className="text-xs font-medium text-gray-600 mt-2">
+                  <div key={index} className="p-4 bg-navy/10 rounded-lg border-l-4 border-navy">
+                    <p className="font-bold text-navy text-lg">{notice.title}</p>
+                    <p className="text-sm font-semibold text-text-grey mt-2">{notice.description}</p>
+                    <p className="text-xs font-medium text-text-grey/70 mt-2">
                       Posted: {new Date(notice.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-600 text-center py-4 font-semibold">No notices posted yet</p>
+              <p className="text-text-grey text-center py-4 font-semibold">No notices posted yet</p>
             )}
           </div>
         </div>
@@ -344,20 +337,23 @@ const TeacherProfile = () => {
 };
 
 const InfoItem = ({ icon, label, value }) => (
-  <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
-    <div className="text-blue-500 text-xl">{icon}</div>
+  <div className="flex items-center space-x-3 p-4 bg-background rounded-lg">
+    <div className="text-sky-blue text-xl">{icon}</div>
     <div>
-      <p className="text-sm font-semibold text-gray-600">{label}</p>
-      <p className="text-lg font-bold text-gray-900">{value || 'N/A'}</p>
+      <p className="text-sm font-semibold text-text-grey">{label}</p>
+      <p className="text-lg font-bold text-navy">{value || 'N/A'}</p>
     </div>
   </div>
 );
 
-const StatCard = ({ title, value, color }) => (
-  <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 border-${color}-500`}>
-    <p className="text-sm font-semibold text-gray-600 mb-2">{title}</p>
-    <p className="text-3xl font-extrabold text-gray-900">{value}</p>
-  </div>
-);
+const StatCard = ({ title, value, color }) => {
+  const borderColor = color === 'sky-blue' ? 'border-sky-blue' : 'border-navy';
+  return (
+    <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${borderColor}`}>
+      <p className="text-sm font-semibold text-text-grey mb-2">{title}</p>
+      <p className="text-3xl font-extrabold text-navy">{value}</p>
+    </div>
+  );
+};
 
 export default TeacherProfile;

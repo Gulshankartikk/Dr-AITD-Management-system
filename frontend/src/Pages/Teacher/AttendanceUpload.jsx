@@ -147,7 +147,7 @@ const AttendanceUpload = ({ teacherId }) => {
       <div className="bg-white rounded-lg shadow-md p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+
             {/* SUBJECT DROPDOWN */}
             <div>
               <label className="block text-sm font-medium mb-2">Subject *</label>
@@ -183,8 +183,8 @@ const AttendanceUpload = ({ teacherId }) => {
           {/* LOADING SPINNER */}
           {loading && (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin h-8 w-8 border-b-2 border-blue-500 rounded-full"></div>
-              <span className="ml-2">Loading students...</span>
+              <div className="animate-spin h-8 w-8 border-b-2 border-sky-blue rounded-full"></div>
+              <span className="ml-2 text-text-grey">Loading students...</span>
             </div>
           )}
 
@@ -197,10 +197,10 @@ const AttendanceUpload = ({ teacherId }) => {
                   Students ({students.length})
                 </h3>
                 <div className="space-x-2">
-                  <button type="button" onClick={markAllPresent} className="px-4 py-2 bg-green-500 text-white rounded-lg">
+                  <button type="button" onClick={markAllPresent} className="px-4 py-2 bg-sky-blue text-white rounded-lg hover:bg-sky-blue/80">
                     Mark All Present
                   </button>
-                  <button type="button" onClick={markAllAbsent} className="px-4 py-2 bg-red-500 text-white rounded-lg">
+                  <button type="button" onClick={markAllAbsent} className="px-4 py-2 bg-navy text-white rounded-lg hover:bg-navy/80">
                     Mark All Absent
                   </button>
                 </div>
@@ -218,11 +218,10 @@ const AttendanceUpload = ({ teacherId }) => {
                       <button
                         type="button"
                         onClick={() => handleAttendanceChange(student._id, 'Present')}
-                        className={`px-3 py-2 rounded-lg ${
-                          attendance[student._id] === 'Present'
-                            ? 'bg-green-500 text-white'
-                            : 'bg-gray-200 text-gray-700'
-                        }`}
+                        className={`px-3 py-2 rounded-lg ${attendance[student._id] === 'Present'
+                            ? 'bg-sky-blue text-white'
+                            : 'bg-soft-grey/20 text-text-grey hover:bg-soft-grey/40'
+                          }`}
                       >
                         <FaCheck className="inline mr-1" /> Present
                       </button>
@@ -230,11 +229,10 @@ const AttendanceUpload = ({ teacherId }) => {
                       <button
                         type="button"
                         onClick={() => handleAttendanceChange(student._id, 'Absent')}
-                        className={`px-3 py-2 rounded-lg ${
-                          attendance[student._id] === 'Absent'
-                            ? 'bg-red-500 text-white'
-                            : 'bg-gray-200 text-gray-700'
-                        }`}
+                        className={`px-3 py-2 rounded-lg ${attendance[student._id] === 'Absent'
+                            ? 'bg-navy text-white'
+                            : 'bg-soft-grey/20 text-text-grey hover:bg-soft-grey/40'
+                          }`}
                       >
                         <FaTimes className="inline mr-1" /> Absent
                       </button>
@@ -247,7 +245,7 @@ const AttendanceUpload = ({ teacherId }) => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center justify-center"
+                className="w-full bg-sky-blue text-white py-3 px-6 rounded-lg hover:bg-sky-blue/80 disabled:opacity-50 flex items-center justify-center"
               >
                 {submitting ? (
                   <>

@@ -137,11 +137,10 @@ const TeacherUpload = ({ teacherId }) => {
   const TabButton = ({ id, label }) => (
     <button
       onClick={() => setActiveTab(id)}
-      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-        activeTab === id
-          ? "bg-blue-500 text-white"
-          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-      }`}
+      className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === id
+        ? "bg-sky-blue text-white"
+        : "bg-background text-text-grey hover:bg-soft-grey/20"
+        }`}
     >
       {label}
     </button>
@@ -215,8 +214,8 @@ const TeacherUpload = ({ teacherId }) => {
               Upload File {activeTab !== "notice" && "*"}
             </label>
 
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <FaFileAlt className="mx-auto text-gray-400 text-3xl mb-2" />
+            <div className="border-2 border-dashed border-soft-grey rounded-lg p-6 text-center">
+              <FaFileAlt className="mx-auto text-text-grey/50 text-3xl mb-2" />
 
               <input
                 ref={fileInputRef}
@@ -228,16 +227,16 @@ const TeacherUpload = ({ teacherId }) => {
                 required={activeTab !== "notice"}
               />
 
-              <label htmlFor="file-upload" className="cursor-pointer text-blue-500 hover:text-blue-700">
+              <label htmlFor="file-upload" className="cursor-pointer text-sky-blue hover:text-sky-blue/80">
                 Click to upload a file
               </label>
 
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-text-grey mt-1">
                 PDF, DOC, DOCX, PPT, PPTX (Max 10MB)
               </p>
 
               {formData.file && (
-                <p className="text-sm text-green-600 mt-2">Selected: {formData.file.name}</p>
+                <p className="text-sm text-sky-blue mt-2">Selected: {formData.file.name}</p>
               )}
             </div>
           </div>
@@ -246,7 +245,7 @@ const TeacherUpload = ({ teacherId }) => {
           <button
             type="submit"
             disabled={uploading}
-            className="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center justify-center"
+            className="w-full bg-sky-blue text-white py-3 px-6 rounded-lg hover:bg-sky-blue/80 disabled:opacity-50 flex items-center justify-center"
           >
             {uploading ? (
               <>
@@ -275,7 +274,7 @@ const Input = ({ label, ...props }) => (
     <label className="block text-sm font-medium mb-2">{label}</label>
     <input
       {...props}
-      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-blue"
     />
   </div>
 );
@@ -286,7 +285,7 @@ const TextArea = ({ label, ...props }) => (
     <textarea
       rows="3"
       {...props}
-      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-blue"
     />
   </div>
 );
@@ -298,7 +297,7 @@ const Select = ({ label, name, value, options, onChange, display }) => (
       name={name}
       value={value}
       onChange={onChange}
-      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-blue"
     >
       <option value="">Select</option>
       {options.map((opt) => (

@@ -46,18 +46,18 @@ const StudentSubjects = () => {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">My Subjects</h1>
-                    <p className="text-gray-500">View and manage your enrolled subjects</p>
+                    <h1 className="text-2xl font-bold text-navy">My Subjects</h1>
+                    <p className="text-text-grey">View and manage your enrolled subjects</p>
                 </div>
             </div>
 
             {subjects.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {subjects.map((subject) => (
-                        <Card key={subject._id} className="hover:shadow-lg transition-shadow duration-300 border-t-4 border-t-blue-500">
+                        <Card key={subject._id} className="hover:shadow-lg transition-shadow duration-300 border-t-4 border-t-sky-blue">
                             <CardHeader>
                                 <div className="flex justify-between items-start">
-                                    <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
+                                    <div className="p-3 bg-sky-blue/10 rounded-lg text-sky-blue">
                                         <FaBook size={24} />
                                     </div>
                                     <Badge variant="primary">{subject.subjectCode}</Badge>
@@ -65,18 +65,18 @@ const StudentSubjects = () => {
                                 <CardTitle className="mt-4 text-xl">{subject.subjectName}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-3 text-sm text-gray-600">
+                                <div className="space-y-3 text-sm text-text-grey">
                                     <div className="flex items-center gap-2">
-                                        <FaChalkboardTeacher className="text-gray-400" />
+                                        <FaChalkboardTeacher className="text-text-grey" />
                                         <span>Sessions: {subject.sessions || 'N/A'}</span>
                                     </div>
                                     {/* Add more subject details here if available */}
                                 </div>
                             </CardContent>
-                            <CardFooter className="flex flex-col gap-2 pt-4 border-t border-gray-100">
+                            <CardFooter className="flex flex-col gap-2 pt-4 border-t border-soft-grey">
                                 <Button
                                     variant="ghost"
-                                    className="w-full justify-between text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                                    className="w-full justify-between text-text-grey hover:text-sky-blue hover:bg-sky-blue/10"
                                     onClick={() => navigate(`/student/${studentId}/materials?subjectId=${subject._id}`)}
                                 >
                                     <span className="flex items-center gap-2"><FaFileAlt /> Study Materials</span>
@@ -84,7 +84,7 @@ const StudentSubjects = () => {
                                 </Button>
                                 <Button
                                     variant="ghost"
-                                    className="w-full justify-between text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                                    className="w-full justify-between text-text-grey hover:text-sky-blue hover:bg-sky-blue/10"
                                     onClick={() => navigate(`/student/${studentId}/assignments?subjectId=${subject._id}`)}
                                 >
                                     <span className="flex items-center gap-2"><FaClipboardList /> Assignments</span>
@@ -95,12 +95,12 @@ const StudentSubjects = () => {
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200">
-                    <div className="bg-gray-50 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center text-gray-400">
+                <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-soft-grey">
+                    <div className="bg-soft-grey/20 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center text-soft-grey">
                         <FaBook size={32} />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900">No Subjects Found</h3>
-                    <p className="text-gray-500 mt-2">You haven't been enrolled in any subjects yet.</p>
+                    <h3 className="text-lg font-medium text-navy">No Subjects Found</h3>
+                    <p className="text-text-grey mt-2">You haven't been enrolled in any subjects yet.</p>
                 </div>
             )}
         </div>

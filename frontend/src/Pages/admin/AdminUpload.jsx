@@ -56,23 +56,23 @@ const AdminUpload = () => {
     try {
       const token = Cookies.get('token');
       const uploadFormData = new FormData();
-      
+
       uploadFormData.append('title', formData.title);
       uploadFormData.append('description', formData.description);
-      
+
       if (activeTab === 'notice') {
         uploadFormData.append('courseId', formData.courseId);
       } else {
         uploadFormData.append('subjectId', formData.subjectId);
       }
-      
+
       if (formData.file) {
         uploadFormData.append('file', formData.file);
       }
 
       // Since admin doesn't have specific upload endpoints, we'll use teacher endpoints
       // In a real system, you'd create admin-specific endpoints
-      const endpoint = activeTab === 'notice' 
+      const endpoint = activeTab === 'notice'
         ? `/api/admin/notices`
         : `/api/admin/materials`;
 
@@ -91,7 +91,7 @@ const AdminUpload = () => {
         subjectId: '',
         file: null
       });
-      
+
       // Reset file input
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput) fileInput.value = '';
@@ -107,11 +107,10 @@ const AdminUpload = () => {
   const TabButton = ({ id, label, icon }) => (
     <button
       onClick={() => setActiveTab(id)}
-      className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
-        activeTab === id
-          ? 'bg-blue-500 text-white'
-          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-      }`}
+      className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === id
+        ? 'bg-sky-blue text-white'
+        : 'bg-background text-navy hover:bg-soft-grey'
+        }`}
     >
       {icon}
       <span className="ml-2">{label}</span>
@@ -119,11 +118,11 @@ const AdminUpload = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <AdminHeader currentRole="admin" />
       <div className="py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-6">Admin Content Upload</h1>
+          <h1 className="text-3xl font-bold mb-6 text-navy">Admin Content Upload</h1>
 
           {/* Tab Navigation */}
           <div className="flex gap-4 mb-6">
@@ -132,29 +131,29 @@ const AdminUpload = () => {
           </div>
 
           {/* Upload Form */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 border border-soft-grey">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Title *</label>
+                <label className="block text-sm font-medium mb-2 text-text-grey">Title *</label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border border-soft-grey rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-blue"
                   placeholder={`Enter ${activeTab} title`}
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Description *</label>
+                <label className="block text-sm font-medium mb-2 text-text-grey">Description *</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   rows="4"
-                  className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border border-soft-grey rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-blue"
                   placeholder={`Enter ${activeTab} description`}
                   required
                 />
@@ -162,12 +161,12 @@ const AdminUpload = () => {
 
               {activeTab === 'notice' ? (
                 <div>
-                  <label className="block text-sm font-medium mb-2">Target Course *</label>
+                  <label className="block text-sm font-medium mb-2 text-text-grey">Target Course *</label>
                   <select
                     name="courseId"
                     value={formData.courseId}
                     onChange={handleInputChange}
-                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 border border-soft-grey rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-blue"
                     required
                   >
                     <option value="">Select Course</option>
@@ -180,12 +179,12 @@ const AdminUpload = () => {
                 </div>
               ) : (
                 <div>
-                  <label className="block text-sm font-medium mb-2">Subject *</label>
+                  <label className="block text-sm font-medium mb-2 text-text-grey">Subject *</label>
                   <select
                     name="subjectId"
                     value={formData.subjectId}
                     onChange={handleInputChange}
-                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 border border-soft-grey rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-blue"
                     required
                   >
                     <option value="">Select Subject</option>
@@ -199,11 +198,11 @@ const AdminUpload = () => {
               )}
 
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-2 text-text-grey">
                   Upload File (Optional)
                 </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <FaFileAlt className="mx-auto text-gray-400 text-3xl mb-2" />
+                <div className="border-2 border-dashed border-soft-grey rounded-lg p-6 text-center">
+                  <FaFileAlt className="mx-auto text-text-grey/50 text-3xl mb-2" />
                   <input
                     type="file"
                     onChange={handleFileChange}
@@ -213,15 +212,15 @@ const AdminUpload = () => {
                   />
                   <label
                     htmlFor="file-upload"
-                    className="cursor-pointer text-blue-500 hover:text-blue-700"
+                    className="cursor-pointer text-sky-blue hover:text-sky-blue/80"
                   >
                     Click to upload file
                   </label>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-text-grey mt-1">
                     PDF, DOC, DOCX, PPT, PPTX, Images (Max 10MB)
                   </p>
                   {formData.file && (
-                    <p className="text-sm text-green-600 mt-2">
+                    <p className="text-sm text-sky-blue mt-2">
                       Selected: {formData.file.name}
                     </p>
                   )}
@@ -231,7 +230,7 @@ const AdminUpload = () => {
               <button
                 type="submit"
                 disabled={uploading}
-                className="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center justify-center"
+                className="w-full bg-sky-blue text-white py-3 px-6 rounded-lg hover:bg-sky-blue/80 disabled:opacity-50 flex items-center justify-center"
               >
                 {uploading ? (
                   <>

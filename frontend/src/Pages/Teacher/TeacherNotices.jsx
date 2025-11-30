@@ -91,8 +91,8 @@ const TeacherNotices = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Notices</h1>
-          <p className="text-gray-500">Manage and post notices for your classes</p>
+          <h1 className="text-2xl font-bold text-navy">My Notices</h1>
+          <p className="text-text-grey">Manage and post notices for your classes</p>
         </div>
         <Button onClick={() => setShowModal(true)}>
           <FaPlus className="mr-2" /> Create Notice
@@ -124,23 +124,23 @@ const TeacherNotices = () => {
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">{notice.title}</h3>
-                  <p className="text-sm text-blue-600 font-medium">
+                  <h3 className="text-xl font-bold text-navy">{notice.title}</h3>
+                  <p className="text-sm text-sky-blue font-medium">
                     Course: {notice.courseId?.courseName || 'All'}
                   </p>
                 </div>
-                <span className="text-sm text-gray-500 flex items-center">
+                <span className="text-sm text-text-grey flex items-center">
                   <FaCalendarAlt className="mr-2" />
                   {new Date(notice.createdAt).toLocaleDateString()}
                 </span>
               </div>
-              <p className="text-gray-700">{notice.description}</p>
+              <p className="text-text-grey">{notice.description}</p>
             </CardContent>
           </Card>
         )) : (
-          <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-            <FaBell className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <p className="text-gray-500 text-lg">No notices found</p>
+          <div className="text-center py-12 bg-background rounded-xl border-2 border-dashed border-soft-grey">
+            <FaBell className="mx-auto h-12 w-12 text-soft-grey mb-4" />
+            <p className="text-text-grey text-lg">No notices found</p>
           </div>
         )}
       </div>
@@ -172,11 +172,11 @@ const TeacherNotices = () => {
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-navy mb-1">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  className="w-full px-3 py-2 border border-soft-grey rounded-lg focus:ring-2 focus:ring-sky-blue focus:border-sky-blue outline-none transition-all"
                   rows="3"
                   required
                 />

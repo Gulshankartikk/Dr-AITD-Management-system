@@ -90,22 +90,22 @@ const CreateTeacher = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <AdminHeader />
       <div className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <BackButton className="mb-6" />
 
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-soft-grey">
             {/* Header Section */}
-            <div className="bg-night-blue px-8 py-6 flex items-center justify-between">
+            <div className="bg-navy px-8 py-6 flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="p-3 bg-sand-tan rounded-lg text-night-blue shadow-lg">
+                <div className="p-3 bg-white/10 rounded-lg text-white shadow-lg">
                   <FaChalkboardTeacher className="text-2xl" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-sand-tan font-oswald tracking-wide">Create Teacher Profile</h1>
-                  <p className="text-gray-300 text-sm mt-1">Add a new faculty member to the system</p>
+                  <h1 className="text-2xl font-bold text-white font-oswald tracking-wide">Create Teacher Profile</h1>
+                  <p className="text-white/80 text-sm mt-1">Add a new faculty member to the system</p>
                 </div>
               </div>
             </div>
@@ -113,162 +113,83 @@ const CreateTeacher = () => {
             {/* Form Section */}
             <form onSubmit={handleSubmit} className="p-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Personal Information */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-night-blue border-b border-gray-200 pb-2 mb-4">
-                    Personal Information
-                  </h3>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <FaUser className="text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-night-blue focus:border-night-blue transition-all"
-                        placeholder="Dr. Gulshan Kumar"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <FaEnvelope className="text-gray-400" />
-                      </div>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-night-blue focus:border-night-blue transition-all"
-                        placeholder="gulshan@gmail.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <FaPhone className="text-gray-400" />
-                      </div>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-night-blue focus:border-night-blue transition-all"
-                        placeholder="+91 98765 43210"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <FaLock className="text-gray-400" />
-                      </div>
-                      <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-night-blue focus:border-night-blue transition-all"
-                        placeholder="••••••••"
-                      />
-                    </div>
-                  </div>
-                </div>
-
                 {/* Academic Information */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-night-blue border-b border-gray-200 pb-2 mb-4">
+                  <h3 className="text-lg font-semibold text-navy border-b border-soft-grey pb-2 mb-4">
                     Academic Details
                   </h3>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                      <label className="block text-sm font-medium text-navy mb-2">Department</label>
                       <input
                         type="text"
                         name="department"
                         value={formData.department}
                         onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-night-blue focus:border-night-blue transition-all"
+                        className="w-full p-3 border border-soft-grey rounded-lg focus:ring-2 focus:ring-sky-blue focus:border-sky-blue transition-all"
                         placeholder="Computer Science"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Designation</label>
+                      <label className="block text-sm font-medium text-navy mb-2">Designation</label>
                       <input
                         type="text"
                         name="designation"
                         value={formData.designation}
                         onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-night-blue focus:border-night-blue transition-all"
+                        className="w-full p-3 border border-soft-grey rounded-lg focus:ring-2 focus:ring-sky-blue focus:border-sky-blue transition-all"
                         placeholder="Assistant Professor"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <FaBook className="inline mr-2 text-night-blue" />
+                    <label className="block text-sm font-medium text-navy mb-2">
+                      <FaBook className="inline mr-2 text-sky-blue" />
                       Assigned Courses
                     </label>
                     <select
                       multiple
                       onChange={(e) => handleMultiSelect(e, 'assignedCourse')}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-night-blue focus:border-night-blue h-32 transition-all"
+                      className="w-full p-3 border border-soft-grey rounded-lg focus:ring-2 focus:ring-sky-blue focus:border-sky-blue h-32 transition-all"
                     >
                       {courses.map(course => (
-                        <option key={course._id} value={course._id} className="p-2 hover:bg-blue-50">
+                        <option key={course._id} value={course._id} className="p-2 hover:bg-sky-blue/10">
                           {course.courseName} ({course.courseCode})
                         </option>
                       ))}
                     </select>
-                    <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
+                    <p className="text-xs text-text-grey mt-1">Hold Ctrl/Cmd to select multiple</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <FaBook className="inline mr-2 text-night-blue" />
+                    <label className="block text-sm font-medium text-navy mb-2">
+                      <FaBook className="inline mr-2 text-sky-blue" />
                       Assigned Subjects
                     </label>
                     <select
                       multiple
                       onChange={(e) => handleMultiSelect(e, 'assignedSubjects')}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-night-blue focus:border-night-blue h-32 transition-all"
+                      className="w-full p-3 border border-soft-grey rounded-lg focus:ring-2 focus:ring-sky-blue focus:border-sky-blue h-32 transition-all"
                     >
                       {subjects.map(subject => (
-                        <option key={subject._id} value={subject._id} className="p-2 hover:bg-blue-50">
+                        <option key={subject._id} value={subject._id} className="p-2 hover:bg-sky-blue/10">
                           {subject.subjectName} ({subject.subjectCode})
                         </option>
                       ))}
                     </select>
-                    <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
+                    <p className="text-xs text-text-grey mt-1">Hold Ctrl/Cmd to select multiple</p>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-end space-x-4 mt-8 pt-6 border-t border-gray-100">
+              <div className="flex items-center justify-end space-x-4 mt-8 pt-6 border-t border-soft-grey">
                 <button
                   type="button"
                   onClick={() => navigate('/admin/teachers')}
-                  className="flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="flex items-center px-6 py-3 bg-soft-grey text-navy rounded-lg hover:bg-soft-grey/80 transition-colors font-medium"
                 >
                   <FaTimes className="mr-2" />
                   Cancel
@@ -276,10 +197,10 @@ const CreateTeacher = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center px-8 py-3 bg-sand-tan text-night-blue-shadow rounded-lg hover:bg-sand-tan-shadow transition-all font-bold shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5"
+                  className="flex items-center px-8 py-3 bg-navy text-white rounded-lg hover:bg-navy/90 transition-all font-bold shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5"
                 >
                   {loading ? (
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-night-blue mr-2"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                   ) : (
                     <FaSave className="mr-2" />
                   )}

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Header = ({ 
-  title, 
-  subtitle, 
-  user, 
-  onLogout, 
-  actions = [], 
+const Header = ({
+  title,
+  subtitle,
+  user,
+  onLogout,
+  actions = [],
   className = '',
   bgColor = 'bg-white'
 }) => {
@@ -17,8 +17,8 @@ const Header = ({
           {/* Left Section */}
           <div className="flex items-center space-x-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
-              {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
+              <h1 className="text-2xl font-bold text-navy">{title}</h1>
+              {subtitle && <p className="text-sm text-text-grey">{subtitle}</p>}
             </div>
           </div>
 
@@ -29,11 +29,10 @@ const Header = ({
               <button
                 key={index}
                 onClick={action.onClick}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                  action.variant === 'primary' 
-                    ? 'bg-blue-500 text-white hover:bg-blue-600'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${action.variant === 'primary'
+                    ? 'bg-sky-blue text-white hover:bg-sky-blue/80'
+                    : 'bg-background text-navy hover:bg-soft-grey'
+                  }`}
               >
                 {action.icon && <action.icon />}
                 <span>{action.label}</span>
@@ -44,12 +43,12 @@ const Header = ({
             {user && (
               <div className="flex items-center space-x-2">
                 <div className="text-right">
-                  <p className="text-sm font-medium text-gray-700">{user.name}</p>
-                  <p className="text-xs text-gray-500">{user.role}</p>
+                  <p className="text-sm font-medium text-navy">{user.name}</p>
+                  <p className="text-xs text-text-grey">{user.role}</p>
                 </div>
                 {user.avatar && (
-                  <img 
-                    src={user.avatar} 
+                  <img
+                    src={user.avatar}
                     alt={user.name}
                     className="w-8 h-8 rounded-full"
                   />

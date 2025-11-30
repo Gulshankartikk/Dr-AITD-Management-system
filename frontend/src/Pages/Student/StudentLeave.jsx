@@ -24,16 +24,15 @@ const StudentLeave = () => {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #2d545e 0%, #12343b 100%)' }}>
+    <div className="min-h-screen bg-background">
       <StudentHeader currentRole="student" />
       <div className="p-6">
         <BackButton className="mb-4" />
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-white">Leave Requests</h1>
+          <h1 className="text-3xl font-bold text-navy">Leave Requests</h1>
           <button
             onClick={() => setShowModal(true)}
-            className="px-6 py-3 rounded-lg text-white font-bold flex items-center gap-2"
-            style={{ backgroundColor: '#e1b382' }}
+            className="px-6 py-3 rounded-lg text-white font-bold flex items-center gap-2 bg-sky-blue hover:bg-sky-blue/90 transition-colors"
           >
             <FaPlus /> Request Leave
           </button>
@@ -45,16 +44,16 @@ const StudentLeave = () => {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold mb-4" style={{ color: '#2d545e' }}>Request Leave</h2>
+        <div className="fixed inset-0 bg-navy/50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl">
+            <h2 className="text-2xl font-bold mb-4 text-navy">Request Leave</h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">Leave Type</label>
+                <label className="block text-sm font-bold mb-2 text-navy">Leave Type</label>
                 <select
                   value={formData.leaveType}
                   onChange={(e) => setFormData({ ...formData, leaveType: e.target.value })}
-                  className="w-full p-3 border rounded-lg"
+                  className="w-full p-3 border border-soft-grey rounded-lg focus:border-sky-blue focus:outline-none"
                   required
                 >
                   {leaveTypes.map(type => (
@@ -63,31 +62,31 @@ const StudentLeave = () => {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">Start Date</label>
+                <label className="block text-sm font-bold mb-2 text-navy">Start Date</label>
                 <input
                   type="date"
                   value={formData.startDate}
                   onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                  className="w-full p-3 border rounded-lg"
+                  className="w-full p-3 border border-soft-grey rounded-lg focus:border-sky-blue focus:outline-none"
                   required
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">End Date</label>
+                <label className="block text-sm font-bold mb-2 text-navy">End Date</label>
                 <input
                   type="date"
                   value={formData.endDate}
                   onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                  className="w-full p-3 border rounded-lg"
+                  className="w-full p-3 border border-soft-grey rounded-lg focus:border-sky-blue focus:outline-none"
                   required
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">Reason</label>
+                <label className="block text-sm font-bold mb-2 text-navy">Reason</label>
                 <textarea
                   value={formData.reason}
                   onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                  className="w-full p-3 border rounded-lg"
+                  className="w-full p-3 border border-soft-grey rounded-lg focus:border-sky-blue focus:outline-none"
                   rows="3"
                   required
                 />
@@ -95,16 +94,14 @@ const StudentLeave = () => {
               <div className="flex gap-4">
                 <button
                   type="submit"
-                  className="flex-1 px-6 py-3 rounded-lg text-white font-bold"
-                  style={{ backgroundColor: '#e1b382' }}
+                  className="flex-1 px-6 py-3 rounded-lg text-white font-bold bg-navy hover:bg-navy/90 transition-colors"
                 >
                   Submit
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-6 py-3 rounded-lg border-2 font-bold"
-                  style={{ borderColor: '#2d545e', color: '#2d545e' }}
+                  className="flex-1 px-6 py-3 rounded-lg border-2 border-navy text-navy font-bold hover:bg-navy/10 transition-colors"
                 >
                   Cancel
                 </button>

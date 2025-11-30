@@ -12,6 +12,12 @@ export default {
         'night-blue-shadow': '#12343b',
         'sand-tan': '#e1b382',
         'sand-tan-shadow': '#c89666',
+        // New Palette
+        'navy': '#1E293B',
+        'sky-blue': '#0EA5E9',
+        'soft-grey': '#CBD5E1',
+        'background': '#F1F5F9',
+        'text-grey': '#475569',
       },
     },
   },

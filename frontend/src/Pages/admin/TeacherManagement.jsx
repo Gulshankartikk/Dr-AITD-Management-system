@@ -121,35 +121,35 @@ const TeacherManagement = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-night-blue"></div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-navy"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <AdminHeader />
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4">
           <BackButton className="mb-4" />
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-night-blue font-oswald tracking-wide">Teacher Management</h1>
-              <p className="text-gray-600 mt-2">Manage all teachers and faculty members</p>
+              <h1 className="text-3xl font-bold text-navy font-oswald tracking-wide">Teacher Management</h1>
+              <p className="text-text-grey mt-2">Manage all teachers and faculty members</p>
             </div>
             {isAdmin && (
               <div className="flex space-x-4">
                 <button
                   onClick={() => navigate('/admin/students')}
-                  className="flex items-center space-x-2 bg-white text-night-blue border border-night-blue px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors font-bold shadow-sm"
+                  className="flex items-center space-x-2 bg-white text-navy border border-navy px-6 py-2 rounded-lg hover:bg-background transition-colors font-bold shadow-sm"
                 >
                   <FaGraduationCap />
                   <span>Manage Students</span>
                 </button>
                 <button
                   onClick={() => navigate('/admin/create-teacher')}
-                  className="flex items-center space-x-2 bg-sand-tan text-night-blue-shadow px-6 py-2 rounded-lg hover:bg-sand-tan-shadow transition-colors font-bold shadow-md"
+                  className="flex items-center space-x-2 bg-sky-blue text-white px-6 py-2 rounded-lg hover:bg-sky-blue/80 transition-colors font-bold shadow-md"
                 >
                   <FaPlus />
                   <span>Add Teacher</span>
@@ -158,47 +158,47 @@ const TeacherManagement = () => {
             )}
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-soft-grey">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-night-blue text-white">
+              <table className="min-w-full divide-y divide-soft-grey">
+                <thead className="bg-background">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-sand-tan">Teacher Details</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-sand-tan">Department</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-sand-tan">Contact</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-sand-tan">Actions</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-grey">Teacher Details</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-grey">Department</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-grey">Contact</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-grey">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-soft-grey">
                   {teachers.map((teacher) => (
-                    <tr key={teacher._id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={teacher._id} className="hover:bg-background transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10 bg-night-blue bg-opacity-10 rounded-full flex items-center justify-center text-night-blue">
+                          <div className="flex-shrink-0 h-10 w-10 bg-navy/10 rounded-full flex items-center justify-center text-navy">
                             <FaChalkboardTeacher />
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-bold text-night-blue">{teacher.name}</div>
-                            <div className="text-xs text-gray-500">{teacher.designation || 'Faculty'}</div>
+                            <div className="text-sm font-bold text-navy">{teacher.name}</div>
+                            <div className="text-xs text-text-grey">{teacher.designation || 'Faculty'}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{teacher.department || 'N/A'}</div>
+                        <div className="text-sm text-navy">{teacher.department || 'N/A'}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{teacher.email}</div>
-                        <div className="text-xs text-gray-500">{teacher.phone}</div>
+                        <div className="text-sm text-navy">{teacher.email}</div>
+                        <div className="text-xs text-text-grey">{teacher.phone}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-3">
-                          <button className="text-night-blue hover:text-night-blue-shadow transition-colors">
+                          <button className="text-navy hover:text-navy/80 transition-colors">
                             <FaEye />
                           </button>
                           {isAdmin && (
                             <button
                               onClick={() => navigate(`/teacher/${teacher._id}/dashboard`)}
-                              className="text-blue-600 hover:text-blue-800 transition-colors"
+                              className="text-sky-blue hover:text-sky-blue/80 transition-colors"
                               title="View Dashboard"
                             >
                               <FaChalkboardTeacher />
@@ -208,7 +208,7 @@ const TeacherManagement = () => {
                             <>
                               <button
                                 onClick={() => handleEdit(teacher)}
-                                className="text-sand-tan-shadow hover:text-sand-tan transition-colors"
+                                className="text-sky-blue hover:text-sky-blue/80 transition-colors"
                               >
                                 <FaEdit />
                               </button>
@@ -233,75 +233,75 @@ const TeacherManagement = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-night-blue-shadow bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-navy/50 overflow-y-auto h-full w-full z-50 flex items-center justify-center backdrop-blur-sm">
           <div className="relative p-8 border w-full max-w-md shadow-2xl rounded-lg bg-white">
-            <h3 className="text-2xl font-bold text-night-blue mb-6 font-oswald">
+            <h3 className="text-2xl font-bold text-navy mb-6 font-oswald">
               {editingTeacher ? 'Edit Teacher' : 'Add New Teacher'}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <label className="block text-sm font-medium text-navy">Name</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-night-blue focus:border-night-blue"
+                  className="mt-1 block w-full border border-soft-grey rounded-md px-3 py-2 focus:ring-sky-blue focus:border-sky-blue"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <label className="block text-sm font-medium text-navy">Email</label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-night-blue focus:border-night-blue"
+                  className="mt-1 block w-full border border-soft-grey rounded-md px-3 py-2 focus:ring-sky-blue focus:border-sky-blue"
                   required
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Phone</label>
+                  <label className="block text-sm font-medium text-navy">Phone</label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-night-blue focus:border-night-blue"
+                    className="mt-1 block w-full border border-soft-grey rounded-md px-3 py-2 focus:ring-sky-blue focus:border-sky-blue"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Department</label>
+                  <label className="block text-sm font-medium text-navy">Department</label>
                   <input
                     type="text"
                     name="department"
                     value={formData.department}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-night-blue focus:border-night-blue"
+                    className="mt-1 block w-full border border-soft-grey rounded-md px-3 py-2 focus:ring-sky-blue focus:border-sky-blue"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Designation</label>
+                <label className="block text-sm font-medium text-navy">Designation</label>
                 <input
                   type="text"
                   name="designation"
                   value={formData.designation}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-night-blue focus:border-night-blue"
+                  className="mt-1 block w-full border border-soft-grey rounded-md px-3 py-2 focus:ring-sky-blue focus:border-sky-blue"
                 />
               </div>
               {!editingTeacher && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Password</label>
+                  <label className="block text-sm font-medium text-navy">Password</label>
                   <input
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-night-blue focus:border-night-blue"
+                    className="mt-1 block w-full border border-soft-grey rounded-md px-3 py-2 focus:ring-sky-blue focus:border-sky-blue"
                     required
                   />
                 </div>
@@ -310,13 +310,13 @@ const TeacherManagement = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+                  className="px-4 py-2 bg-soft-grey text-navy rounded-md hover:bg-soft-grey/80 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-night-blue text-white rounded-md hover:bg-night-blue-shadow transition-colors"
+                  className="px-6 py-2 bg-sky-blue text-white rounded-md hover:bg-sky-blue/80 transition-colors"
                 >
                   {editingTeacher ? 'Update' : 'Create'}
                 </button>

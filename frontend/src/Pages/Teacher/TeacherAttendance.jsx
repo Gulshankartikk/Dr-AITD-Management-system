@@ -102,8 +102,8 @@ const TeacherAttendance = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mark Attendance</h1>
-          <p className="text-gray-500">Record daily attendance for your classes</p>
+          <h1 className="text-2xl font-bold text-navy">Mark Attendance</h1>
+          <p className="text-text-grey">Record daily attendance for your classes</p>
         </div>
       </div>
 
@@ -134,15 +134,15 @@ const TeacherAttendance = () => {
 
           {loading ? (
             <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-blue"></div>
             </div>
           ) : selectedSubject === 'all' ? (
-            <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-              <p className="text-gray-500">Please select a subject to view student list</p>
+            <div className="text-center py-12 bg-background rounded-xl border-2 border-dashed border-soft-grey">
+              <p className="text-text-grey">Please select a subject to view student list</p>
             </div>
           ) : selectedSubject && students.length > 0 ? (
             <form onSubmit={handleSubmit}>
-              <div className="rounded-xl border border-gray-200 overflow-hidden mb-6">
+              <div className="rounded-xl border border-soft-grey overflow-hidden mb-6">
                 <Table>
                   <TableHeader>
                     <tr>
@@ -159,8 +159,8 @@ const TeacherAttendance = () => {
                         <TableCell>
                           <div className="flex justify-center gap-4">
                             <label className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-all ${attendance[student._id] === 'Present'
-                                ? 'bg-emerald-100 text-emerald-700 ring-2 ring-emerald-500'
-                                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                              ? 'bg-sky-blue/10 text-sky-blue ring-2 ring-sky-blue'
+                              : 'bg-background text-text-grey hover:bg-soft-grey/20'
                               }`}>
                               <input
                                 type="radio"
@@ -174,8 +174,8 @@ const TeacherAttendance = () => {
                             </label>
 
                             <label className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-all ${attendance[student._id] === 'Absent'
-                                ? 'bg-red-100 text-red-700 ring-2 ring-red-500'
-                                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                              ? 'bg-red-100 text-red-700 ring-2 ring-red-500'
+                              : 'bg-background text-text-grey hover:bg-soft-grey/20'
                               }`}>
                               <input
                                 type="radio"
@@ -207,8 +207,8 @@ const TeacherAttendance = () => {
               </div>
             </form>
           ) : (
-            <div className="text-center py-12 bg-gray-50 rounded-xl">
-              <p className="text-gray-500">No students found for this subject</p>
+            <div className="text-center py-12 bg-background rounded-xl">
+              <p className="text-text-grey">No students found for this subject</p>
             </div>
           )}
         </CardContent>

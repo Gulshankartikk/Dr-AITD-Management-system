@@ -65,10 +65,10 @@ const TeacherDashboardNew = () => {
   const todaysSchedule = timetable.filter(t => t.day === todayDay);
 
   const summaryCards = [
-    { title: 'Assigned Subjects', value: assignedSubjects.length.toString(), icon: FaBook, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-    { title: 'Classes Today', value: todaysSchedule.length.toString(), icon: FaChalkboardTeacher, color: 'text-blue-600', bg: 'bg-blue-100' },
-    { title: 'Active Assignments', value: assignments.length.toString(), icon: FaTasks, color: 'text-amber-600', bg: 'bg-amber-100' },
-    { title: 'Notices Posted', value: notices.length.toString(), icon: FaBell, color: 'text-purple-600', bg: 'bg-purple-100' }
+    { title: 'Assigned Subjects', value: assignedSubjects.length.toString(), icon: FaBook, color: 'text-sky-blue', bg: 'bg-sky-blue/10' },
+    { title: 'Classes Today', value: todaysSchedule.length.toString(), icon: FaChalkboardTeacher, color: 'text-navy', bg: 'bg-navy/10' },
+    { title: 'Active Assignments', value: assignments.length.toString(), icon: FaTasks, color: 'text-sky-blue', bg: 'bg-sky-blue/10' },
+    { title: 'Notices Posted', value: notices.length.toString(), icon: FaBell, color: 'text-navy', bg: 'bg-navy/10' }
   ];
 
   if (loading) {
@@ -84,8 +84,8 @@ const TeacherDashboardNew = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Teacher Dashboard</h1>
-          <p className="text-gray-500">Welcome back, {teacher?.name || 'Professor'}</p>
+          <h1 className="text-2xl font-bold text-navy">Teacher Dashboard</h1>
+          <p className="text-text-grey">Welcome back, {teacher?.name || 'Professor'}</p>
         </div>
         <div className="flex items-center gap-3">
           <Link to={`/teacher/${id}/materials`}>
@@ -103,8 +103,8 @@ const TeacherDashboardNew = () => {
           <Card key={index} className="border-none shadow-sm">
             <CardContent className="flex items-center justify-between p-6">
               <div>
-                <p className="text-sm font-medium text-gray-500">{card.title}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{card.value}</p>
+                <p className="text-sm font-medium text-text-grey">{card.title}</p>
+                <p className="text-3xl font-bold text-navy mt-2">{card.value}</p>
               </div>
               <div className={`p-4 rounded-xl ${card.bg}`}>
                 <card.icon className={`text-2xl ${card.color}`} />
@@ -121,17 +121,17 @@ const TeacherDashboardNew = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <FaBook className="text-indigo-600" />
+                <FaBook className="text-sky-blue" />
                 Assigned Classes
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {assignedSubjects.length > 0 ? assignedSubjects.map((sub, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                  <div key={index} className="flex items-center justify-between p-4 bg-background rounded-xl hover:bg-soft-grey/20 transition-colors">
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{sub.subjectName}</h4>
-                      <p className="text-sm text-gray-500">Code: {sub.subjectCode}</p>
+                      <h4 className="font-semibold text-navy">{sub.subjectName}</h4>
+                      <p className="text-sm text-text-grey">Code: {sub.subjectCode}</p>
                     </div>
                     <div className="flex items-center gap-6">
                       <div className="flex gap-2">
@@ -149,7 +149,7 @@ const TeacherDashboardNew = () => {
                     </div>
                   </div>
                 )) : (
-                  <p className="text-gray-500 text-center py-4">No subjects assigned.</p>
+                  <p className="text-text-grey text-center py-4">No subjects assigned.</p>
                 )}
               </div>
             </CardContent>
@@ -159,7 +159,7 @@ const TeacherDashboardNew = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <FaTasks className="text-indigo-600" />
+                <FaTasks className="text-sky-blue" />
                 Recent Assignments
               </CardTitle>
               <Link to={`/teacher/${id}/assignments`}>
@@ -171,21 +171,21 @@ const TeacherDashboardNew = () => {
             <CardContent>
               <div className="space-y-4">
                 {assignments.slice(0, 5).map((assignment, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl">
+                  <div key={index} className="flex items-center justify-between p-4 border border-soft-grey rounded-xl">
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{assignment.title}</h4>
-                      <p className="text-sm text-gray-500">{assignment.subjectId?.subjectName}</p>
-                      <p className="text-xs text-gray-400 mt-1">Due: {new Date(assignment.deadline).toLocaleDateString()}</p>
+                      <h4 className="font-semibold text-navy">{assignment.title}</h4>
+                      <p className="text-sm text-text-grey">{assignment.subjectId?.subjectName}</p>
+                      <p className="text-xs text-text-grey/70 mt-1">Due: {new Date(assignment.deadline).toLocaleDateString()}</p>
                     </div>
                     <div className="flex items-center gap-6">
                       <div className="text-center">
-                        <p className="text-xl font-bold text-indigo-600">{assignment.submissions?.length || 0}</p>
-                        <p className="text-xs text-gray-500">Submitted</p>
+                        <p className="text-xl font-bold text-sky-blue">{assignment.submissions?.length || 0}</p>
+                        <p className="text-xs text-text-grey">Submitted</p>
                       </div>
                     </div>
                   </div>
                 ))}
-                {assignments.length === 0 && <p className="text-gray-500 text-center py-4">No active assignments.</p>}
+                {assignments.length === 0 && <p className="text-text-grey text-center py-4">No active assignments.</p>}
               </div>
             </CardContent>
           </Card>
@@ -194,26 +194,26 @@ const TeacherDashboardNew = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <FaCalendarAlt className="text-indigo-600" />
+                <FaCalendarAlt className="text-sky-blue" />
                 Today's Schedule
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {todaysSchedule.length > 0 ? todaysSchedule.map((slot, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-blue-50/50 rounded-lg border-l-4 border-blue-500">
+                  <div key={index} className="flex items-center justify-between p-3 bg-sky-blue/10 rounded-lg border-l-4 border-sky-blue">
                     <div>
-                      <p className="font-semibold text-gray-900">{slot.subjectId?.subjectName}</p>
-                      <p className="text-sm text-gray-600">{slot.timeSlot}</p>
+                      <p className="font-semibold text-navy">{slot.subjectId?.subjectName}</p>
+                      <p className="text-sm text-text-grey">{slot.timeSlot}</p>
                     </div>
                     <div className="text-right">
                       <Badge variant="primary">{slot.courseId?.courseName}</Badge>
-                      <p className="text-xs text-gray-500 mt-1">Room: {slot.roomNo || 'N/A'}</p>
+                      <p className="text-xs text-text-grey mt-1">Room: {slot.roomNo || 'N/A'}</p>
                     </div>
                   </div>
                 )) : (
-                  <div className="text-center py-6 bg-gray-50 rounded-lg border border-dashed border-gray-200">
-                    <p className="text-gray-500 text-sm">No classes today</p>
+                  <div className="text-center py-6 bg-background rounded-lg border border-dashed border-soft-grey">
+                    <p className="text-text-grey text-sm">No classes today</p>
                   </div>
                 )}
               </div>
@@ -227,7 +227,7 @@ const TeacherDashboardNew = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <FaBell className="text-indigo-600" />
+                <FaBell className="text-sky-blue" />
                 Your Notices
               </CardTitle>
             </CardHeader>
@@ -235,15 +235,15 @@ const TeacherDashboardNew = () => {
               <div className="space-y-4">
                 {notices.slice(0, 5).map((notif, index) => (
                   <div key={index} className="flex gap-3">
-                    <div className="mt-1 min-w-[8px] h-2 w-2 rounded-full bg-indigo-500"></div>
+                    <div className="mt-1 min-w-[8px] h-2 w-2 rounded-full bg-sky-blue"></div>
                     <div>
-                      <h4 className="text-sm font-medium text-gray-900">{notif.title}</h4>
-                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{notif.description}</p>
-                      <p className="text-[10px] text-gray-400 mt-1">{new Date(notif.createdAt).toLocaleDateString()}</p>
+                      <h4 className="text-sm font-medium text-navy">{notif.title}</h4>
+                      <p className="text-xs text-text-grey mt-0.5 line-clamp-2">{notif.description}</p>
+                      <p className="text-[10px] text-text-grey/70 mt-1">{new Date(notif.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
                 ))}
-                {notices.length === 0 && <p className="text-gray-500 text-center py-4 text-sm">No notices posted.</p>}
+                {notices.length === 0 && <p className="text-text-grey text-center py-4 text-sm">No notices posted.</p>}
               </div>
             </CardContent>
           </Card>
@@ -257,25 +257,25 @@ const TeacherDashboardNew = () => {
               <div className="space-y-3">
                 <Link to={`/teacher/${id}/attendance`}>
                   <Button variant="secondary" className="w-full justify-start gap-3">
-                    <FaClipboardList className="text-blue-500" />
+                    <FaClipboardList className="text-sky-blue" />
                     Take Attendance
                   </Button>
                 </Link>
                 <Link to={`/teacher/${id}/materials`}>
                   <Button variant="secondary" className="w-full justify-start gap-3">
-                    <FaFileUpload className="text-green-500" />
+                    <FaFileUpload className="text-navy" />
                     Upload Material
                   </Button>
                 </Link>
                 <Link to={`/teacher/${id}/notices`}>
                   <Button variant="secondary" className="w-full justify-start gap-3">
-                    <FaPaperPlane className="text-purple-500" />
+                    <FaPaperPlane className="text-sky-blue" />
                     Post Notice
                   </Button>
                 </Link>
                 <Link to={`/teacher/${id}/marks`}>
                   <Button variant="secondary" className="w-full justify-start gap-3">
-                    <FaEdit className="text-orange-500" />
+                    <FaEdit className="text-navy" />
                     Enter Marks
                   </Button>
                 </Link>
@@ -295,12 +295,12 @@ const TeacherDashboardNew = () => {
                   { label: 'Performance Report', icon: FaChartBar },
                   { label: 'Assignment Report', icon: FaTasks }
                 ].map((report, index) => (
-                  <button key={index} className="w-full p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition flex items-center justify-between text-sm text-gray-700">
+                  <button key={index} className="w-full p-3 bg-background rounded-lg hover:bg-soft-grey/20 transition flex items-center justify-between text-sm text-navy">
                     <span className="flex items-center gap-3">
-                      <report.icon className="text-gray-400" />
+                      <report.icon className="text-text-grey" />
                       {report.label}
                     </span>
-                    <FaDownload className="text-gray-400" />
+                    <FaDownload className="text-text-grey" />
                   </button>
                 ))}
               </div>

@@ -163,7 +163,7 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-background">
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-12 lg:px-24 xl:px-32 relative bg-white shadow-2xl z-10">
         <div className="absolute top-8 left-8">
@@ -175,7 +175,7 @@ const Login = () => {
 
         <div className="mb-8 mt-16 lg:mt-0">
           <div className="flex items-center space-x-3 mb-6">
-            <div className="bg-gradient-to-tr from-blue-600 to-blue-800 p-3 rounded-xl shadow-lg shadow-blue-200">
+            <div className="bg-gradient-to-tr from-sky-blue to-blue-600 p-3 rounded-xl shadow-lg shadow-sky-blue/20">
               <GraduationCap className="h-8 w-8 text-white" />
             </div>
             <div>
@@ -183,8 +183,8 @@ const Login = () => {
               <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Management System</p>
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3 tracking-tight">Welcome Back</h1>
-          <p className="text-gray-600 text-lg">Please sign in to continue to your dashboard.</p>
+          <h1 className="text-4xl font-bold text-navy mb-3 tracking-tight">Welcome Back</h1>
+          <p className="text-text-grey text-lg">Please sign in to continue to your dashboard.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -197,8 +197,8 @@ const Login = () => {
                   type="button"
                   onClick={() => setRole(r)}
                   className={`flex items-center justify-center py-2.5 px-4 rounded-xl text-sm font-semibold capitalize transition-all duration-300 ${role === r
-                    ? 'bg-white text-blue-700 shadow-md transform scale-[1.02]'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
+                    ? 'bg-white text-sky-blue shadow-md transform scale-[1.02]'
+                    : 'text-text-grey hover:text-navy hover:bg-soft-grey/50'
                     }`}
                 >
                   <span className="mr-2">{getRoleIcon(r)}</span>
@@ -254,7 +254,7 @@ const Login = () => {
 
           <Button
             type="submit"
-            className="w-full py-3.5 text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-200 transform transition-all active:scale-[0.98]"
+            className="w-full py-3.5 text-lg font-bold bg-gradient-to-r from-sky-blue to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-sky-blue/20 transform transition-all active:scale-[0.98]"
             isLoading={isLoading}
           >
             Sign in to Dashboard
@@ -263,7 +263,7 @@ const Login = () => {
           {role === 'student' && (
             <p className="text-center text-sm text-gray-600 mt-6">
               Don't have an account?{' '}
-              <Link to="/register" className="font-bold text-blue-600 hover:text-blue-700 hover:underline">
+              <Link to="/register" className="font-bold text-sky-blue hover:text-blue-700 hover:underline">
                 Create an account
               </Link>
             </p>

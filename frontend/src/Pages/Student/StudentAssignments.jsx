@@ -50,63 +50,63 @@ const StudentAssignments = () => {
     if (diffDays < 0) {
       return { status: 'overdue', text: 'Overdue', color: 'bg-red-100 text-red-800' };
     } else if (diffDays <= 3) {
-      return { status: 'urgent', text: `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`, color: 'bg-orange-100 text-orange-800' };
+      return { status: 'urgent', text: `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`, color: 'bg-navy/10 text-navy' };
     } else {
-      return { status: 'normal', text: `Due in ${diffDays} days`, color: 'bg-green-100 text-green-800' };
+      return { status: 'normal', text: `Due in ${diffDays} days`, color: 'bg-sky-blue/10 text-sky-blue' };
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <StudentHeader studentId={studentId} studentName={studentName} />
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-sky-blue"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <StudentHeader studentId={studentId} studentName={studentName} />
       <BackButton />
-      
+
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center space-x-2 mb-6">
-            <FaTasks className="text-3xl text-purple-600" />
-            <h1 className="text-3xl font-bold text-gray-800">My Assignments</h1>
+            <FaTasks className="text-3xl text-navy" />
+            <h1 className="text-3xl font-bold text-navy">My Assignments</h1>
           </div>
 
           {assignments.length === 0 ? (
             <div className="bg-white rounded-lg shadow-md p-8 text-center">
-              <FaTasks className="mx-auto text-6xl text-gray-300 mb-4" />
-              <p className="text-gray-500 text-lg">No assignments available yet.</p>
+              <FaTasks className="mx-auto text-6xl text-soft-grey mb-4" />
+              <p className="text-text-grey text-lg">No assignments available yet.</p>
             </div>
           ) : (
             <div className="grid gap-6">
               {assignments.map((assignment) => {
                 const deadlineInfo = getDeadlineStatus(assignment.deadline);
-                
+
                 return (
-                  <div key={assignment._id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-purple-500">
+                  <div key={assignment._id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-navy">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-xl font-semibold text-gray-800">{assignment.title}</h3>
+                          <h3 className="text-xl font-semibold text-navy">{assignment.title}</h3>
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${deadlineInfo.color}`}>
                             {deadlineInfo.text}
                           </span>
                         </div>
-                        
-                        <p className="text-purple-600 font-medium mb-2">{assignment.subjectId?.subjectName}</p>
-                        
+
+                        <p className="text-navy font-medium mb-2">{assignment.subjectId?.subjectName}</p>
+
                         {assignment.description && (
-                          <p className="text-gray-700 mb-4">{assignment.description}</p>
+                          <p className="text-text-grey mb-4">{assignment.description}</p>
                         )}
-                        
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+
+                        <div className="flex items-center space-x-4 text-sm text-text-grey">
                           <div className="flex items-center space-x-1">
                             <FaUser />
                             <span>By: {assignment.teacherId?.name}</span>
@@ -121,12 +121,12 @@ const StudentAssignments = () => {
                           </div>
                         </div>
                       </div>
-                      
+
                       {assignment.fileUrl && (
                         <div className="flex items-center space-x-2 ml-4">
                           <button
                             onClick={() => window.open(assignment.fileUrl, '_blank')}
-                            className="flex items-center space-x-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                            className="flex items-center space-x-1 px-4 py-2 bg-sky-blue text-white rounded-lg hover:bg-sky-blue/80 transition-colors"
                             title="View Assignment"
                           >
                             <FaEye />
@@ -134,7 +134,7 @@ const StudentAssignments = () => {
                           </button>
                           <button
                             onClick={() => handleDownload(assignment.fileUrl, `${assignment.title}.pdf`)}
-                            className="flex items-center space-x-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                            className="flex items-center space-x-1 px-4 py-2 bg-navy text-white rounded-lg hover:bg-navy/90 transition-colors"
                             title="Download Assignment"
                           >
                             <FaDownload />

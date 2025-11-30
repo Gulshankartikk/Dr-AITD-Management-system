@@ -18,33 +18,33 @@ const StudentTimetable = () => {
   if (loading) return <LoadingSpinner message="Loading timetable..." />;
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #2d545e 0%, #12343b 100%)' }}>
+    <div className="min-h-screen bg-background">
       <StudentHeader currentRole="student" />
       <div className="p-6">
         <BackButton className="mb-4" />
-        <h1 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+        <h1 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
           <FaCalendarAlt /> My Timetable
         </h1>
 
         <div className="bg-white rounded-lg shadow-xl p-6 overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
-              <tr style={{ backgroundColor: '#2d545e' }}>
-                <th className="p-3 text-white border">Time</th>
+              <tr className="bg-navy">
+                <th className="p-3 text-white border border-soft-grey">Time</th>
                 {days.map(day => (
-                  <th key={day} className="p-3 text-white border">{day}</th>
+                  <th key={day} className="p-3 text-white border border-soft-grey">{day}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {timeSlots.map((slot, idx) => (
-                <tr key={slot} style={{ backgroundColor: idx % 2 === 0 ? '#f9f9f9' : 'white' }}>
-                  <td className="p-3 border font-bold" style={{ color: '#2d545e' }}>
+                <tr key={slot} className={idx % 2 === 0 ? 'bg-background' : 'bg-white'}>
+                  <td className="p-3 border border-soft-grey font-bold text-navy">
                     <FaClock className="inline mr-2" />
                     {slot}
                   </td>
                   {days.map(day => (
-                    <td key={`${day}-${slot}`} className="p-3 border text-center text-gray-500">
+                    <td key={`${day}-${slot}`} className="p-3 border border-soft-grey text-center text-text-grey">
                       Free
                     </td>
                   ))}
@@ -52,7 +52,7 @@ const StudentTimetable = () => {
               ))}
             </tbody>
           </table>
-          <p className="text-center text-gray-500 mt-6">No classes scheduled yet</p>
+          <p className="text-center text-text-grey mt-6">No classes scheduled yet</p>
         </div>
       </div>
     </div>

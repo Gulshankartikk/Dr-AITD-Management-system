@@ -43,11 +43,11 @@ const StudentAttendance = () => {
 
     attendanceData.forEach(record => {
       const subjectName = record.subjectId?.subjectName || 'Unknown';
-      
+
       if (!subjectStats[subjectName]) {
         subjectStats[subjectName] = { present: 0, total: 0 };
       }
-      
+
       subjectStats[subjectName].total++;
       if (record.status === 'Present') {
         subjectStats[subjectName].present++;
@@ -75,59 +75,59 @@ const StudentAttendance = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <StudentHeader studentId={studentId} studentName={studentName} />
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-sky-blue"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <StudentHeader studentId={studentId} studentName={studentName} />
       <BackButton />
-      
+
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center space-x-2 mb-6">
-            <FaClipboardList className="text-3xl text-green-600" />
-            <h1 className="text-3xl font-bold text-gray-800">My Attendance</h1>
+            <FaClipboardList className="text-3xl text-sky-blue" />
+            <h1 className="text-3xl font-bold text-navy">My Attendance</h1>
           </div>
 
           {/* Overall Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">Overall Attendance</h3>
-              <div className="text-3xl font-bold text-blue-600">{stats.overall?.percentage}%</div>
-              <p className="text-gray-500">{stats.overall?.present}/{stats.overall?.total} classes</p>
+              <h3 className="text-lg font-semibold text-text-grey mb-2">Overall Attendance</h3>
+              <div className="text-3xl font-bold text-sky-blue">{stats.overall?.percentage}%</div>
+              <p className="text-text-grey">{stats.overall?.present}/{stats.overall?.total} classes</p>
             </div>
-            
+
             <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">Present Days</h3>
-              <div className="text-3xl font-bold text-green-600">{stats.overall?.present}</div>
-              <p className="text-gray-500">Total present</p>
+              <h3 className="text-lg font-semibold text-text-grey mb-2">Present Days</h3>
+              <div className="text-3xl font-bold text-sky-blue">{stats.overall?.present}</div>
+              <p className="text-text-grey">Total present</p>
             </div>
-            
+
             <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">Total Classes</h3>
-              <div className="text-3xl font-bold text-gray-600">{stats.overall?.total}</div>
-              <p className="text-gray-500">Classes attended</p>
+              <h3 className="text-lg font-semibold text-text-grey mb-2">Total Classes</h3>
+              <div className="text-3xl font-bold text-text-grey">{stats.overall?.total}</div>
+              <p className="text-text-grey">Classes attended</p>
             </div>
           </div>
 
           {/* Subject-wise Stats */}
           {Object.keys(stats.subjects || {}).length > 0 && (
             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Subject-wise Attendance</h2>
+              <h2 className="text-xl font-semibold text-navy mb-4">Subject-wise Attendance</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Object.entries(stats.subjects).map(([subject, data]) => (
                   <div key={subject} className="border rounded-lg p-4">
-                    <h3 className="font-medium text-gray-800 mb-2">{subject}</h3>
+                    <h3 className="font-medium text-navy mb-2">{subject}</h3>
                     <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-blue-600">{data.percentage}%</span>
-                      <span className="text-gray-500">{data.present}/{data.total}</span>
+                      <span className="text-2xl font-bold text-sky-blue">{data.percentage}%</span>
+                      <span className="text-text-grey">{data.present}/{data.total}</span>
                     </div>
                   </div>
                 ))}
@@ -137,47 +137,46 @@ const StudentAttendance = () => {
 
           {/* Attendance Records */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Attendance Records</h2>
-            
+            <h2 className="text-xl font-semibold text-navy mb-4">Attendance Records</h2>
+
             {attendance.length === 0 ? (
               <div className="text-center py-8">
-                <FaClipboardList className="mx-auto text-6xl text-gray-300 mb-4" />
-                <p className="text-gray-500 text-lg">No attendance records found.</p>
+                <FaClipboardList className="mx-auto text-6xl text-soft-grey mb-4" />
+                <p className="text-text-grey text-lg">No attendance records found.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full table-auto">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-background">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Date</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Subject</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Teacher</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-text-grey">Date</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-text-grey">Subject</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-text-grey">Status</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-text-grey">Teacher</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-soft-grey">
                     {attendance.map((record) => (
-                      <tr key={record._id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-900">
+                      <tr key={record._id} className="hover:bg-background">
+                        <td className="px-4 py-3 text-sm text-navy">
                           <div className="flex items-center space-x-1">
-                            <FaCalendarAlt className="text-gray-400" />
+                            <FaCalendarAlt className="text-text-grey/50" />
                             <span>{new Date(record.date).toLocaleDateString()}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-900">
+                        <td className="px-4 py-3 text-sm text-navy">
                           {record.subjectId?.subjectName}
                         </td>
                         <td className="px-4 py-3 text-sm">
-                          <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium ${
-                            record.status === 'Present' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
+                          <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium ${record.status === 'Present'
+                            ? 'bg-sky-blue/10 text-sky-blue'
+                            : 'bg-red-100 text-red-800'
+                            }`}>
                             {record.status === 'Present' ? <FaCheck /> : <FaTimes />}
                             <span>{record.status}</span>
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-900">
+                        <td className="px-4 py-3 text-sm text-navy">
                           {record.teacherId?.name}
                         </td>
                       </tr>
@@ -188,8 +187,8 @@ const StudentAttendance = () => {
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

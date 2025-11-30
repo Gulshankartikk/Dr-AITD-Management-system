@@ -127,14 +127,14 @@ const TimetableManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <AdminHeader />
       <BackButton />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">Timetable Management</h1>
-            <p className="text-gray-600">Create and manage class schedules</p>
+            <h1 className="text-3xl font-bold text-navy">Timetable Management</h1>
+            <p className="text-text-grey">Create and manage class schedules</p>
           </div>
           <Button onClick={() => setShowCreateModal(true)} variant="primary">
             <FaPlus className="mr-2" /> Add Slot
@@ -142,10 +142,10 @@ const TimetableManagement = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white p-6 rounded-xl shadow-sm mb-6 border border-gray-100">
+        <div className="bg-white p-6 rounded-xl shadow-sm mb-6 border border-soft-grey">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Course</label>
+              <label className="block text-sm font-medium text-navy mb-2">Course</label>
               <select
                 value={selectedCourse}
                 onChange={(e) => setSelectedCourse(e.target.value)}
@@ -157,7 +157,7 @@ const TimetableManagement = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+              <label className="block text-sm font-medium text-navy mb-2">Semester</label>
               <select
                 value={selectedSemester}
                 onChange={(e) => setSelectedSemester(e.target.value)}
@@ -172,25 +172,25 @@ const TimetableManagement = () => {
         </div>
 
         {/* Timetable Grid */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-soft-grey">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-soft-grey/20">
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500 border-r w-32">Time</th>
+                  <th className="px-4 py-3 text-left font-medium text-text-grey border-r w-32">Time</th>
                   {days.map(day => (
-                    <th key={day} className="px-4 py-3 text-center font-medium text-gray-500 border-r min-w-[160px]">
+                    <th key={day} className="px-4 py-3 text-center font-medium text-text-grey border-r min-w-[160px]">
                       {day}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-soft-grey">
                 {timeSlots.map((time) => (
-                  <tr key={time} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900 border-r bg-gray-50/50">
+                  <tr key={time} className="hover:bg-soft-grey/10">
+                    <td className="px-4 py-3 font-medium text-navy border-r bg-soft-grey/10">
                       <div className="flex items-center gap-2">
-                        <FaClock className="text-blue-500" />
+                        <FaClock className="text-sky-blue" />
                         {time}
                       </div>
                     </td>
@@ -199,11 +199,11 @@ const TimetableManagement = () => {
                       return (
                         <td key={day} className="p-2 border-r text-center align-top h-24">
                           {slot ? (
-                            <div className="bg-blue-50 p-2 rounded-lg border border-blue-100 h-full flex flex-col justify-between group relative">
+                            <div className="bg-sky-blue/10 p-2 rounded-lg border border-sky-blue/20 h-full flex flex-col justify-between group relative">
                               <div>
-                                <p className="font-semibold text-blue-900 text-sm">{slot.subjectId?.subjectName || 'Unknown Subject'}</p>
-                                <p className="text-xs text-blue-700 mt-1">{slot.teacherId?.name || 'Unknown Teacher'}</p>
-                                <p className="text-xs text-blue-500 mt-1">{slot.roomNo}</p>
+                                <p className="font-semibold text-navy text-sm">{slot.subjectId?.subjectName || 'Unknown Subject'}</p>
+                                <p className="text-xs text-sky-blue mt-1">{slot.teacherId?.name || 'Unknown Teacher'}</p>
+                                <p className="text-xs text-sky-blue/80 mt-1">{slot.roomNo}</p>
                               </div>
                               <button
                                 onClick={() => handleDeleteSlot(slot._id)}
@@ -213,7 +213,7 @@ const TimetableManagement = () => {
                               </button>
                             </div>
                           ) : (
-                            <div className="h-full w-full flex items-center justify-center text-gray-300 text-xs">
+                            <div className="h-full w-full flex items-center justify-center text-soft-grey text-xs">
                               -
                             </div>
                           )}
@@ -229,11 +229,11 @@ const TimetableManagement = () => {
 
         {/* Create Modal */}
         {showCreateModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="fixed inset-0 bg-navy/50 flex items-center justify-center z-50 backdrop-blur-sm">
             <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-900">Add Class Slot</h2>
-                <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-gray-600">
+                <h2 className="text-xl font-bold text-navy">Add Class Slot</h2>
+                <button onClick={() => setShowCreateModal(false)} className="text-text-grey hover:text-navy">
                   <FaTimes size={20} />
                 </button>
               </div>
@@ -280,12 +280,12 @@ const TimetableManagement = () => {
                 </Select>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Room Number</label>
+                  <label className="block text-sm font-medium text-navy mb-1">Room Number</label>
                   <input
                     type="text"
                     value={newSlot.roomNo}
                     onChange={(e) => setNewSlot({ ...newSlot, roomNo: e.target.value })}
-                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-sky-blue outline-none"
                     placeholder="e.g. 101"
                   />
                 </div>

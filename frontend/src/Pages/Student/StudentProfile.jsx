@@ -104,8 +104,8 @@ const StudentProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-sky-blue"></div>
       </div>
     );
   }
@@ -115,19 +115,18 @@ const StudentProfile = () => {
     : '0.00';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <StudentHeader studentId={studentId} studentName={student?.name} />
-      
+
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4">
           <BackButton />
-          
+
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-extrabold text-gray-900">Student Profile</h1>
+            <h1 className="text-4xl font-extrabold text-navy">Student Profile</h1>
             <button
               onClick={handleEditToggle}
-              className="px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg"
-              style={{ backgroundColor: isEditing ? '#c89666' : '#2d545e', color: 'white' }}
+              className={`px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg text-white ${isEditing ? 'bg-soft-grey' : 'bg-navy'}`}
             >
               {isEditing ? 'Cancel' : 'Edit Profile'}
             </button>
@@ -135,60 +134,55 @@ const StudentProfile = () => {
 
           {/* Personal Information */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <FaUser className="mr-3 text-blue-500" />
+            <h2 className="text-2xl font-bold text-navy mb-6 flex items-center">
+              <FaUser className="mr-3 text-sky-blue" />
               Personal Information
             </h2>
             {isEditing ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block font-bold mb-2 text-sm" style={{ color: '#2d545e' }}>Full Name</label>
+                  <label className="block font-bold mb-2 text-sm text-navy">Full Name</label>
                   <input
                     type="text"
                     name="name"
                     value={editData.name}
                     onChange={handleInputChange}
-                    className="w-full py-3 px-4 rounded-lg border-2 focus:outline-none"
-                    style={{ borderColor: '#e1b382' }}
+                    className="w-full py-3 px-4 rounded-lg border-2 border-soft-grey focus:border-sky-blue focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold mb-2 text-sm" style={{ color: '#2d545e' }}>Roll Number</label>
+                  <label className="block font-bold mb-2 text-sm text-navy">Roll Number</label>
                   <input
                     type="text"
                     value={student?.rollNo}
                     disabled
-                    className="w-full py-3 px-4 rounded-lg border-2 bg-gray-100"
-                    style={{ borderColor: '#e1b382' }}
+                    className="w-full py-3 px-4 rounded-lg border-2 border-soft-grey bg-background"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold mb-2 text-sm" style={{ color: '#2d545e' }}>Email</label>
+                  <label className="block font-bold mb-2 text-sm text-navy">Email</label>
                   <input
                     type="email"
                     name="email"
                     value={editData.email}
                     onChange={handleInputChange}
-                    className="w-full py-3 px-4 rounded-lg border-2 focus:outline-none"
-                    style={{ borderColor: '#e1b382' }}
+                    className="w-full py-3 px-4 rounded-lg border-2 border-soft-grey focus:border-sky-blue focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold mb-2 text-sm" style={{ color: '#2d545e' }}>Phone</label>
+                  <label className="block font-bold mb-2 text-sm text-navy">Phone</label>
                   <input
                     type="tel"
                     name="phone"
                     value={editData.phone}
                     onChange={handleInputChange}
-                    className="w-full py-3 px-4 rounded-lg border-2 focus:outline-none"
-                    style={{ borderColor: '#e1b382' }}
+                    className="w-full py-3 px-4 rounded-lg border-2 border-soft-grey focus:border-sky-blue focus:outline-none"
                   />
                 </div>
                 <div className="md:col-span-2">
                   <button
                     onClick={handleSaveProfile}
-                    className="w-full py-3 px-6 rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg"
-                    style={{ backgroundColor: '#2d545e', color: 'white' }}
+                    className="w-full py-3 px-6 rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg bg-navy text-white hover:bg-navy/90"
                   >
                     Save Changes
                   </button>
@@ -208,39 +202,38 @@ const StudentProfile = () => {
 
           {/* Academic Overview */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <StatCard title="Overall Attendance" value={`${overallAttendance}%`} color="blue" />
-            <StatCard title="Total Subjects" value={attendance.length} color="green" />
-            <StatCard title="Assignments Submitted" value={assignments.filter(a => a.submissions?.some(s => s.studentId === studentId)).length} color="purple" />
+            <StatCard title="Overall Attendance" value={`${overallAttendance}%`} color="sky-blue" />
+            <StatCard title="Total Subjects" value={attendance.length} color="navy" />
+            <StatCard title="Assignments Submitted" value={assignments.filter(a => a.submissions?.some(s => s.studentId === studentId)).length} color="sky-blue" />
           </div>
 
           {/* Attendance Record */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <FaChartLine className="mr-3 text-green-500" />
+            <h2 className="text-2xl font-bold text-navy mb-6 flex items-center">
+              <FaChartLine className="mr-3 text-sky-blue" />
               Attendance Record
             </h2>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-soft-grey">
+                <thead className="bg-background">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Subject</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Total Classes</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Present</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Absent</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Percentage</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Subject</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Total Classes</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Present</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Absent</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Percentage</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-soft-grey">
                   {attendance.map((record, index) => (
                     <tr key={index}>
-                      <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-900">{record.subjectName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-800">{record.totalClasses}</td>
-                      <td className="px-6 py-4 whitespace-nowrap font-semibold text-green-600">{record.present}</td>
-                      <td className="px-6 py-4 whitespace-nowrap font-semibold text-red-600">{record.absent}</td>
+                      <td className="px-6 py-4 whitespace-nowrap font-semibold text-navy">{record.subjectName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap font-semibold text-text-grey">{record.totalClasses}</td>
+                      <td className="px-6 py-4 whitespace-nowrap font-semibold text-sky-blue">{record.present}</td>
+                      <td className="px-6 py-4 whitespace-nowrap font-semibold text-red-500">{record.absent}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                          parseFloat(record.percentage) >= 75 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
+                        <span className={`px-3 py-1 rounded-full text-sm font-bold ${parseFloat(record.percentage) >= 75 ? 'bg-sky-blue/10 text-sky-blue' : 'bg-red-100 text-red-800'
+                          }`}>
                           {record.percentage}%
                         </span>
                       </td>
@@ -253,27 +246,27 @@ const StudentProfile = () => {
 
           {/* Marks Record */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Academic Performance</h2>
+            <h2 className="text-2xl font-bold text-navy mb-6">Academic Performance</h2>
             {marks.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-soft-grey">
+                  <thead className="bg-background">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Subject</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Exam Type</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Marks Obtained</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Total Marks</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Percentage</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Subject</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Exam Type</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Marks Obtained</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Total Marks</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-text-grey uppercase">Percentage</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-soft-grey">
                     {marks.map((mark, index) => (
                       <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-900">{mark.subjectId?.subjectName}</td>
-                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-800">{mark.examType}</td>
-                        <td className="px-6 py-4 whitespace-nowrap font-bold text-blue-600">{mark.marks}</td>
-                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-800">{mark.totalMarks}</td>
-                        <td className="px-6 py-4 whitespace-nowrap font-bold text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-navy">{mark.subjectId?.subjectName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-text-grey">{mark.examType}</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-bold text-sky-blue">{mark.marks}</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-semibold text-text-grey">{mark.totalMarks}</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-bold text-navy">
                           {((mark.marks / mark.totalMarks) * 100).toFixed(2)}%
                         </td>
                       </tr>
@@ -282,7 +275,7 @@ const StudentProfile = () => {
                 </table>
               </div>
             ) : (
-              <p className="text-gray-600 text-center py-4 font-semibold">No marks recorded yet</p>
+              <p className="text-text-grey text-center py-4 font-semibold">No marks recorded yet</p>
             )}
           </div>
         </div>
@@ -292,19 +285,19 @@ const StudentProfile = () => {
 };
 
 const InfoItem = ({ icon, label, value }) => (
-  <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
-    <div className="text-blue-500 text-xl">{icon}</div>
+  <div className="flex items-center space-x-3 p-4 bg-background rounded-lg">
+    <div className="text-sky-blue text-xl">{icon}</div>
     <div>
-      <p className="text-sm font-semibold text-gray-600">{label}</p>
-      <p className="text-lg font-bold text-gray-900">{value || 'N/A'}</p>
+      <p className="text-sm font-semibold text-text-grey">{label}</p>
+      <p className="text-lg font-bold text-navy">{value || 'N/A'}</p>
     </div>
   </div>
 );
 
 const StatCard = ({ title, value, color }) => (
-  <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 border-${color}-500`}>
-    <p className="text-sm font-semibold text-gray-600 mb-2">{title}</p>
-    <p className="text-3xl font-extrabold text-gray-900">{value}</p>
+  <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${color === 'sky-blue' ? 'border-sky-blue' : color === 'navy' ? 'border-navy' : 'border-soft-grey'}`}>
+    <p className="text-sm font-semibold text-text-grey mb-2">{title}</p>
+    <p className="text-3xl font-extrabold text-navy">{value}</p>
   </div>
 );
 

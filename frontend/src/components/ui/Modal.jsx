@@ -31,16 +31,16 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
             <div
-                className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"
+                className="fixed inset-0 bg-navy/50 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             ></div>
 
             <div className={`relative w-full ${sizes[size]} bg-white rounded-xl shadow-2xl transform transition-all flex flex-col max-h-[90vh]`}>
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                    <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+                <div className="flex items-center justify-between px-6 py-4 border-b border-soft-grey">
+                    <h3 className="text-lg font-semibold text-navy">{title}</h3>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-500 transition-colors p-1 rounded-lg hover:bg-gray-100"
+                        className="text-text-grey hover:text-navy transition-colors p-1 rounded-lg hover:bg-soft-grey/20"
                     >
                         <FaTimes className="w-5 h-5" />
                     </button>

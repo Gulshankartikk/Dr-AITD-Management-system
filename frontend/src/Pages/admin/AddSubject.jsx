@@ -159,22 +159,22 @@ const AddSubject = () => {
 
   if (userRole && userRole !== 'admin') {
     return (
-      <div className="flex flex-col w-full min-h-[100vh] pb-10 items-center justify-center" style={{ background: 'linear-gradient(135deg, #2d545e 0%, #12343b 100%)' }}>
+      <div className="flex flex-col w-full min-h-[100vh] pb-10 items-center justify-center bg-background">
         <div className="bg-white p-8 rounded-lg shadow-xl text-center">
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#2d545e' }}>Access Denied</h2>
-          <p className="text-gray-600 mb-4">Only administrators can add subjects.</p>
-          <p className="text-sm text-gray-500">Please login as admin to access this page.</p>
+          <h2 className="text-2xl font-bold mb-4 text-navy">Access Denied</h2>
+          <p className="text-text-grey mb-4">Only administrators can add subjects.</p>
+          <p className="text-sm text-text-grey/80">Please login as admin to access this page.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col w-full min-h-[100vh] pb-10" style={{ background: 'linear-gradient(135deg, #2d545e 0%, #12343b 100%)' }}>
+    <div className="flex flex-col w-full min-h-[100vh] pb-10 bg-background">
       <BackButton />
 
       <div className="text-white flex items-center justify-center py-11">
-        <h1 className="font-extrabold text-5xl md:text-8xl text-center overflow-hidden" style={{ color: '#c89666' }}>
+        <h1 className="font-extrabold text-5xl md:text-8xl text-center overflow-hidden text-navy">
           Add Subject
         </h1>
       </div>
@@ -182,23 +182,19 @@ const AddSubject = () => {
       <div className="w-full flex justify-center px-5 lg:px-44">
         <form
           method="post"
-          className="bg-white flex flex-col gap-4 justify-evenly py-10 w-full md:w-[50vw] px-10 rounded-xl shadow-xl"
-          style={{ borderTop: '4px solid #c89666' }}
+          className="bg-white flex flex-col gap-4 justify-evenly py-10 w-full md:w-[50vw] px-10 rounded-xl shadow-xl border-t-4 border-sky-blue"
           onSubmit={handleSubmit}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
+              <label className="block font-bold mb-2 text-navy">
                 Subject Name *
               </label>
               <input
                 type="text"
                 name="subject_name"
                 placeholder="e.g., Data Structures"
-                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
-                style={{ borderColor: '#c89666' }}
-                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
-                onBlur={(e) => e.target.style.borderColor = '#c89666'}
+                className="shadow border border-soft-grey rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-sky-blue focus:border-sky-blue transition-colors"
                 value={formData.subject_name}
                 onChange={handleChange}
                 required
@@ -206,17 +202,14 @@ const AddSubject = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
+              <label className="block font-bold mb-2 text-navy">
                 Subject Code *
               </label>
               <input
                 type="text"
                 name="subject_code"
                 placeholder="e.g., CSE201"
-                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
-                style={{ borderColor: '#c89666' }}
-                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
-                onBlur={(e) => e.target.style.borderColor = '#c89666'}
+                className="shadow border border-soft-grey rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-sky-blue focus:border-sky-blue transition-colors"
                 value={formData.subject_code}
                 onChange={handleChange}
                 required
@@ -226,15 +219,12 @@ const AddSubject = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col">
-              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
+              <label className="block font-bold mb-2 text-navy">
                 Subject Type *
               </label>
               <select
                 name="subject_type"
-                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
-                style={{ borderColor: '#c89666' }}
-                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
-                onBlur={(e) => e.target.style.borderColor = '#c89666'}
+                className="shadow border border-soft-grey rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-sky-blue focus:border-sky-blue transition-colors"
                 value={formData.subject_type}
                 onChange={handleChange}
                 required
@@ -246,15 +236,12 @@ const AddSubject = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
+              <label className="block font-bold mb-2 text-navy">
                 Credits *
               </label>
               <select
                 name="credits"
-                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
-                style={{ borderColor: '#c89666' }}
-                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
-                onBlur={(e) => e.target.style.borderColor = '#c89666'}
+                className="shadow border border-soft-grey rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-sky-blue focus:border-sky-blue transition-colors"
                 value={formData.credits}
                 onChange={handleChange}
                 required
@@ -267,15 +254,12 @@ const AddSubject = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
+              <label className="block font-bold mb-2 text-navy">
                 Semester *
               </label>
               <select
                 name="semester"
-                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
-                style={{ borderColor: '#c89666' }}
-                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
-                onBlur={(e) => e.target.style.borderColor = '#c89666'}
+                className="shadow border border-soft-grey rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-sky-blue focus:border-sky-blue transition-colors"
                 value={formData.semester}
                 onChange={handleChange}
                 required
@@ -290,15 +274,12 @@ const AddSubject = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
+              <label className="block font-bold mb-2 text-navy">
                 Branch *
               </label>
               <select
                 name="branch"
-                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
-                style={{ borderColor: '#c89666' }}
-                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
-                onBlur={(e) => e.target.style.borderColor = '#c89666'}
+                className="shadow border border-soft-grey rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-sky-blue focus:border-sky-blue transition-colors"
                 value={formData.branch}
                 onChange={handleChange}
                 required
@@ -311,15 +292,12 @@ const AddSubject = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block font-bold mb-2" style={{ color: '#2d545e' }}>
+              <label className="block font-bold mb-2 text-navy">
                 Assign Teacher (Optional)
               </label>
               <select
                 name="teacher"
-                className="shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none"
-                style={{ borderColor: '#c89666' }}
-                onFocus={(e) => e.target.style.borderColor = '#2d545e'}
-                onBlur={(e) => e.target.style.borderColor = '#c89666'}
+                className="shadow border border-soft-grey rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-sky-blue focus:border-sky-blue transition-colors"
                 value={formData.teacher}
                 onChange={handleChange}
               >
@@ -336,10 +314,7 @@ const AddSubject = () => {
           <div className="flex justify-center mt-6 w-full">
             <button
               type="submit"
-              className="w-full text-white font-bold py-3 px-4 rounded focus:outline-none transition-colors"
-              style={{ backgroundColor: '#2d545e' }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#12343b'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#2d545e'}
+              className="w-full text-white font-bold py-3 px-4 rounded focus:outline-none transition-colors bg-navy hover:bg-navy/90"
             >
               Add Subject
             </button>

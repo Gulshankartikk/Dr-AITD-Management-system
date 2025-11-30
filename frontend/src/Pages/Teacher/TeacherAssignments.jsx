@@ -119,15 +119,15 @@ const TeacherAssignments = () => {
   if (loading) return <LoadingSpinner message="Loading assignments..." />;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <TeacherHeader currentRole="teacher" />
       <div className="p-6 max-w-7xl mx-auto">
         <BackButton className="mb-6" />
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Assignments</h1>
-            <p className="text-gray-500 mt-1">Create and manage student assignments</p>
+            <h1 className="text-3xl font-bold text-navy">My Assignments</h1>
+            <p className="text-text-grey mt-1">Create and manage student assignments</p>
           </div>
           <Button onClick={() => setShowModal(true)} className="flex items-center gap-2">
             <FaPlus /> Create Assignment
@@ -164,20 +164,20 @@ const TeacherAssignments = () => {
                   </Badge>
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{assignment.title}</h3>
-                <p className="text-gray-500 text-sm mb-4 line-clamp-2">{assignment.description}</p>
+                <h3 className="text-xl font-bold text-navy mb-2">{assignment.title}</h3>
+                <p className="text-text-grey text-sm mb-4 line-clamp-2">{assignment.description}</p>
 
-                <div className="space-y-2 text-sm text-gray-600 mb-4">
+                <div className="space-y-2 text-sm text-text-grey mb-4">
                   <div className="flex items-center gap-2">
-                    <FaCalendarAlt className="text-blue-500" />
+                    <FaCalendarAlt className="text-sky-blue" />
                     <span>Due: {new Date(assignment.deadline).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <FaUsers className="text-purple-500" />
+                    <FaUsers className="text-navy" />
                     <span>Total Students: {assignment.totalStudents || 0}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <FaCheckCircle className="text-green-500" />
+                    <FaCheckCircle className="text-sky-blue" />
                     <span>Submitted: {assignment.submittedCount || 0}</span>
                   </div>
                   {assignment.maxMarks && (
@@ -187,14 +187,14 @@ const TeacherAssignments = () => {
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
+                <div className="pt-4 border-t border-soft-grey flex justify-between items-center">
                   <Button variant="outline" size="sm">View Submissions</Button>
                   {assignment.fileUrl && (
                     <a
                       href={assignment.fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-sky-blue hover:text-sky-blue/80"
                     >
                       <FaFileAlt />
                     </a>
@@ -206,8 +206,8 @@ const TeacherAssignments = () => {
         </div>
 
         {assignments.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-200">
-            <p className="text-gray-500 text-lg">No assignments created yet</p>
+          <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-soft-grey">
+            <p className="text-text-grey text-lg">No assignments created yet</p>
           </div>
         )}
       </div>
@@ -216,8 +216,8 @@ const TeacherAssignments = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900">Create New Assignment</h2>
+            <div className="p-6 border-b border-soft-grey">
+              <h2 className="text-xl font-bold text-navy">Create New Assignment</h2>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -244,9 +244,9 @@ const TeacherAssignments = () => {
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-text-grey mb-1">Description</label>
                 <textarea
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-2 rounded-lg border border-soft-grey focus:ring-2 focus:ring-sky-blue outline-none"
                   rows="3"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -280,11 +280,11 @@ const TeacherAssignments = () => {
               </Select>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Attachment (Optional)</label>
+                <label className="block text-sm font-medium text-text-grey mb-1">Attachment (Optional)</label>
                 <input
                   type="file"
                   onChange={handleFileChange}
-                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className="w-full text-sm text-text-grey file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-blue/10 file:text-sky-blue hover:file:bg-sky-blue/20"
                 />
               </div>
 

@@ -80,8 +80,8 @@ const StudentMarks = () => {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">My Results</h1>
-                    <p className="text-gray-500">View your academic performance and grades</p>
+                    <h1 className="text-2xl font-bold text-navy">My Results</h1>
+                    <p className="text-text-grey">View your academic performance and grades</p>
                 </div>
             </div>
 
@@ -121,7 +121,7 @@ const StudentMarks = () => {
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <FaTrophy className="text-yellow-500" />
+                        <FaTrophy className="text-navy" />
                         Performance Report
                     </CardTitle>
                 </CardHeader>
@@ -143,13 +143,13 @@ const StudentMarks = () => {
                                 <TableRow>
                                     <TableCell colSpan="7" className="text-center py-8">
                                         <div className="flex justify-center">
-                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-blue"></div>
                                         </div>
                                     </TableCell>
                                 </TableRow>
                             ) : marks.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan="7" className="text-center py-8 text-gray-500">
+                                    <TableCell colSpan="7" className="text-center py-8 text-text-grey">
                                         No marks records found matching your criteria.
                                     </TableCell>
                                 </TableRow>
@@ -159,20 +159,20 @@ const StudentMarks = () => {
                                     const { grade, color } = getGrade(percentage);
                                     return (
                                         <TableRow key={record._id}>
-                                            <TableCell className="font-medium text-gray-900">
+                                            <TableCell className="font-medium text-navy">
                                                 {record.subjectId?.subjectName || 'Unknown Subject'}
-                                                <div className="text-xs text-gray-500">{record.subjectId?.subjectCode}</div>
+                                                <div className="text-xs text-text-grey">{record.subjectId?.subjectCode}</div>
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="info">{record.examType}</Badge>
                                             </TableCell>
-                                            <TableCell className="font-bold text-gray-900">{record.marks}</TableCell>
-                                            <TableCell className="text-gray-600">{record.totalMarks}</TableCell>
+                                            <TableCell className="font-bold text-navy">{record.marks}</TableCell>
+                                            <TableCell className="text-text-grey">{record.totalMarks}</TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                                                    <div className="w-16 bg-soft-grey rounded-full h-1.5">
                                                         <div
-                                                            className={`h-1.5 rounded-full ${parseFloat(percentage) >= 50 ? 'bg-green-500' : 'bg-red-500'}`}
+                                                            className={`h-1.5 rounded-full ${parseFloat(percentage) >= 50 ? 'bg-sky-blue' : 'bg-red-500'}`}
                                                             style={{ width: `${percentage}%` }}
                                                         ></div>
                                                     </div>
@@ -182,7 +182,7 @@ const StudentMarks = () => {
                                             <TableCell>
                                                 <Badge variant={color}>{grade}</Badge>
                                             </TableCell>
-                                            <TableCell className="text-gray-500 text-sm">
+                                            <TableCell className="text-text-grey text-sm">
                                                 {new Date(record.createdAt).toLocaleDateString()}
                                             </TableCell>
                                         </TableRow>

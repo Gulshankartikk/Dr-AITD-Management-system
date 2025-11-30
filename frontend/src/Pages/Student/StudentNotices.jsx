@@ -34,30 +34,30 @@ const StudentNotices = () => {
   if (loading) return <LoadingSpinner message="Loading notices..." />;
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #2d545e 0%, #12343b 100%)' }}>
+    <div className="min-h-screen bg-background">
       <StudentHeader currentRole="student" />
       <div className="p-6">
         <BackButton className="mb-4" />
-        <h1 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+        <h1 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
           <FaBell /> Notices & Announcements
         </h1>
 
         <div className="grid grid-cols-1 gap-4">
           {notices.length > 0 ? notices.map(notice => (
-            <div key={notice._id} className="bg-white rounded-lg shadow-xl p-6" style={{ borderLeft: '4px solid #e1b382' }}>
+            <div key={notice._id} className="bg-white rounded-lg shadow-xl p-6 border-l-4 border-sky-blue">
               <div className="flex justify-between items-start mb-3">
-                <h3 className="text-xl font-bold" style={{ color: '#2d545e' }}>{notice.title}</h3>
-                <span className="text-sm" style={{ color: '#c89666' }}>
+                <h3 className="text-xl font-bold text-navy">{notice.title}</h3>
+                <span className="text-sm text-text-grey">
                   <FaCalendarAlt className="inline mr-1" />
                   {new Date(notice.createdAt).toLocaleDateString()}
                 </span>
               </div>
-              <p className="text-gray-700">{notice.description}</p>
+              <p className="text-text-grey">{notice.description}</p>
             </div>
           )) : (
             <div className="bg-white rounded-lg shadow-xl p-12 text-center">
-              <FaBell size={48} className="mx-auto mb-4" style={{ color: '#e1b382' }} />
-              <p className="text-gray-500 text-lg">No notices available</p>
+              <FaBell size={48} className="mx-auto mb-4 text-sky-blue" />
+              <p className="text-text-grey text-lg">No notices available</p>
             </div>
           )}
         </div>

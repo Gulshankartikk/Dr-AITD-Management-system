@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const Table = ({ children, className = '' }) => (
-  <div className={`w-full overflow-x-auto rounded-xl border border-gray-200 ${className}`}>
+  <div className={`w-full overflow-x-auto rounded-xl border border-soft-grey ${className}`}>
     <table className="w-full text-left text-sm">
       {children}
     </table>
@@ -9,20 +9,20 @@ export const Table = ({ children, className = '' }) => (
 );
 
 export const TableHeader = ({ children, className = '' }) => (
-  <thead className={`bg-gray-50 border-b border-gray-200 text-gray-500 font-medium uppercase tracking-wider ${className}`}>
+  <thead className={`bg-background border-b border-soft-grey text-text-grey font-medium uppercase tracking-wider ${className}`}>
     {children}
   </thead>
 );
 
 export const TableBody = ({ children, className = '' }) => (
-  <tbody className={`divide-y divide-gray-200 bg-white ${className}`}>
+  <tbody className={`divide-y divide-soft-grey bg-white ${className}`}>
     {children}
   </tbody>
 );
 
 export const TableRow = ({ children, className = '', onClick }) => (
   <tr
-    className={`hover:bg-gray-50 transition-colors ${onClick ? 'cursor-pointer' : ''} ${className}`}
+    className={`hover:bg-background transition-colors ${onClick ? 'cursor-pointer' : ''} ${className}`}
     onClick={onClick}
   >
     {children}
@@ -36,7 +36,7 @@ export const TableHead = ({ children, className = '' }) => (
 );
 
 export const TableCell = ({ children, className = '' }) => (
-  <td className={`px-6 py-4 whitespace-nowrap text-gray-700 ${className}`}>
+  <td className={`px-6 py-4 whitespace-nowrap text-text-grey ${className}`}>
     {children}
   </td>
 );

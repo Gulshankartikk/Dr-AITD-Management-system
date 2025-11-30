@@ -144,11 +144,10 @@ const TeacherSummary = () => {
   const TabButton = ({ id, label, icon, count }) => (
     <button
       onClick={() => setActiveTab(id)}
-      className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
-        activeTab === id
-          ? "bg-green-500 text-white"
-          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-      }`}
+      className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === id
+          ? "bg-sky-blue text-white"
+          : "bg-background text-text-grey hover:bg-soft-grey/20"
+        }`}
     >
       {icon}
       <span className="ml-2">{label}</span>
@@ -160,26 +159,26 @@ const TeacherSummary = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <TeacherHeader currentRole="teacher" />
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-500"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-sky-blue"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <TeacherHeader currentRole="teacher" />
 
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4">
 
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
+          <h1 className="text-4xl font-bold text-navy mb-2">
             My Activity Summary
           </h1>
-          <p className="text-gray-600 mb-8">
+          <p className="text-text-grey mb-8">
             Track your teaching activities and student engagement
           </p>
 
@@ -187,31 +186,31 @@ const TeacherSummary = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
 
             <SummaryCard
-              color="blue"
+              color="sky-blue"
               value={data.assignments.length}
               title="My Assignments"
-              icon={<MdAssignment className="text-blue-500 text-3xl" />}
+              icon={<MdAssignment className="text-sky-blue text-3xl" />}
             />
 
             <SummaryCard
-              color="purple"
+              color="navy"
               value={data.notices.length}
               title="My Notices"
-              icon={<FaBell className="text-purple-500 text-3xl" />}
+              icon={<FaBell className="text-navy text-3xl" />}
             />
 
             <SummaryCard
-              color="orange"
+              color="sky-blue"
               value={data.materials.length}
               title="Materials Uploaded"
-              icon={<FaStickyNote className="text-orange-500 text-3xl" />}
+              icon={<FaStickyNote className="text-sky-blue text-3xl" />}
             />
 
             <SummaryCard
-              color="green"
+              color="navy"
               value={data.attendance.length}
               title="Classes Conducted"
-              icon={<FaClipboardList className="text-green-500 text-3xl" />}
+              icon={<FaClipboardList className="text-navy text-3xl" />}
             />
           </div>
 
@@ -276,11 +275,11 @@ export default TeacherSummary;
 ===================================================================== */
 
 const SummaryCard = ({ title, value, color, icon }) => (
-  <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 border-${color}-500`}>
+  <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 border-sky-blue`}>
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-gray-600 text-sm">{title}</p>
-        <p className="text-3xl font-bold text-gray-800">{value}</p>
+        <p className="text-text-grey text-sm">{title}</p>
+        <p className="text-3xl font-bold text-navy">{value}</p>
       </div>
       {icon}
     </div>
@@ -294,30 +293,30 @@ const AssignmentsTab = ({ data }) => (
     <h2 className="text-2xl font-semibold mb-4">My Assignments</h2>
 
     {data.length === 0 ? (
-      <p className="text-gray-500 text-center py-4">No assignments yet.</p>
+      <p className="text-text-grey text-center py-4">No assignments yet.</p>
     ) : (
       <div className="space-y-4">
         {data.map((a) => (
-          <div key={a._id} className="border rounded-lg p-4 hover:bg-gray-50">
+          <div key={a._id} className="border rounded-lg p-4 hover:bg-soft-grey/20">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-lg">{a.title}</h3>
-                <p className="text-gray-600">
+                <p className="text-text-grey">
                   {a.subjectId.subjectName} ({a.subjectId.subjectCode})
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-text-grey">
                   Due: {new Date(a.deadline).toLocaleDateString()} | Created:{" "}
                   {new Date(a.createdAt).toLocaleDateString()}
                 </p>
               </div>
 
               <div className="text-right">
-                <p className="text-lg font-bold text-blue-600">
+                <p className="text-lg font-bold text-sky-blue">
                   {a.submittedCount}/{a.totalStudents}
                 </p>
-                <p className="text-xs text-gray-500">Submitted</p>
+                <p className="text-xs text-text-grey">Submitted</p>
 
-                <button className="text-blue-500 hover:text-blue-700 text-sm mt-2">
+                <button className="text-sky-blue hover:text-sky-blue/80 text-sm mt-2">
                   View Submissions
                 </button>
               </div>
@@ -334,19 +333,19 @@ const NoticesTab = ({ data }) => (
     <h2 className="text-2xl font-semibold mb-4">My Notices</h2>
 
     {data.length === 0 ? (
-      <p className="text-gray-500 text-center py-4">No notices posted.</p>
+      <p className="text-text-grey text-center py-4">No notices posted.</p>
     ) : (
       data.map((n) => (
-        <div key={n._id} className="border rounded-lg p-4 hover:bg-gray-50">
+        <div key={n._id} className="border rounded-lg p-4 hover:bg-soft-grey/20">
           <h3 className="text-lg font-semibold">{n.title}</h3>
-          <p className="text-gray-600 mt-1">{n.description}</p>
+          <p className="text-text-grey mt-1">{n.description}</p>
 
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-text-grey mt-2">
             Course: {n.courseId.courseName} | Posted:{" "}
             {new Date(n.createdAt).toLocaleDateString()}
           </p>
 
-          <p className="text-purple-600 font-bold mt-2">
+          <p className="text-navy font-bold mt-2">
             {n.studentCount} Students Reached
           </p>
         </div>
@@ -360,15 +359,15 @@ const MaterialsTab = ({ data }) => (
     <h2 className="text-2xl font-semibold mb-4">My Study Materials</h2>
 
     {data.length === 0 ? (
-      <p className="text-gray-500 text-center py-4">No materials uploaded yet.</p>
+      <p className="text-text-grey text-center py-4">No materials uploaded yet.</p>
     ) : (
       data.map((m) => (
-        <div key={m._id} className="border rounded-lg p-4 hover:bg-gray-50">
+        <div key={m._id} className="border rounded-lg p-4 hover:bg-soft-grey/20">
           <h3 className="text-lg font-semibold">{m.title}</h3>
-          <p className="text-gray-600">
+          <p className="text-text-grey">
             {m.subjectId.subjectName} ({m.subjectId.subjectCode})
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-text-grey">
             Uploaded: {new Date(m.createdAt).toLocaleDateString()}
           </p>
 
@@ -377,7 +376,7 @@ const MaterialsTab = ({ data }) => (
               href={m.fileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-orange-500 hover:text-orange-700"
+              className="text-sky-blue hover:text-sky-blue/80"
             >
               <FaDownload size={20} />
             </a>
@@ -393,7 +392,7 @@ const AttendanceTab = ({ data }) => (
     <h2 className="text-2xl font-semibold mb-4">Attendance Summary</h2>
 
     {data.length === 0 ? (
-      <p className="text-gray-500 text-center py-4">No attendance records yet.</p>
+      <p className="text-text-grey text-center py-4">No attendance records yet.</p>
     ) : (
       data.map((rec) => {
         const percent =
@@ -402,33 +401,33 @@ const AttendanceTab = ({ data }) => (
             : 0;
 
         return (
-          <div key={rec._id} className="border rounded-lg p-4 hover:bg-gray-50">
+          <div key={rec._id} className="border rounded-lg p-4 hover:bg-soft-grey/20">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-lg">
                   {rec.subjectId.subjectName}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-text-grey">
                   Date: {new Date(rec.date).toLocaleDateString()}
                 </p>
               </div>
 
               <div className="flex items-center space-x-6">
                 <div className="text-center">
-                  <p className="text-lg font-bold text-green-600">
+                  <p className="text-lg font-bold text-sky-blue">
                     {rec.presentCount}
                   </p>
-                  <p className="text-xs text-gray-500">Present</p>
+                  <p className="text-xs text-text-grey">Present</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-lg font-bold text-red-600">
+                  <p className="text-lg font-bold text-navy">
                     {rec.absentCount}
                   </p>
-                  <p className="text-xs text-gray-500">Absent</p>
+                  <p className="text-xs text-text-grey">Absent</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-lg font-bold text-blue-600">{percent}%</p>
-                  <p className="text-xs text-gray-500">Attendance</p>
+                  <p className="text-lg font-bold text-sky-blue">{percent}%</p>
+                  <p className="text-xs text-text-grey">Attendance</p>
                 </div>
               </div>
             </div>
