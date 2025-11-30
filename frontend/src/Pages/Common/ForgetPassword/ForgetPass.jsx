@@ -4,7 +4,7 @@ import { BASE_URL } from "../../../constants/api"
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import Back from "../../../components/back";
+import BackButton from "../../../components/BackButton";
 
 const ForgetPass = () => {
   const location = useLocation();
@@ -38,11 +38,11 @@ const ForgetPass = () => {
       let res =
         role === "teacher"
           ? await axios.post(`${BASE_URL}/teacher/forgetPassword`, {
-              email,
-            })
+            email,
+          })
           : await axios.post(`${BASE_URL}/student/forgetPassword`, {
-              email,
-            });
+            email,
+          });
 
       if (res.data.success) {
         setEmail("");
@@ -72,7 +72,7 @@ const ForgetPass = () => {
       {/* Form area */}
       <div className="w-screen lg:w-[60%] min-h-screen flex items-center justify-center flex-col gap-5 px-4">
         <div className="mt-5 ms-5 lg:mt-0 lg:ms-0 self-start">
-          <Back targetRoute={"/"} />
+          <BackButton targetRoute={"/"} />
         </div>
 
         {/* Welcome Header */}

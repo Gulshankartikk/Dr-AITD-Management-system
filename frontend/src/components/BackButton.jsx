@@ -2,15 +2,14 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 
-const BackButton = ({ className = '' }) => {
+const BackButton = ({ className = '', targetRoute }) => {
   const navigate = useNavigate();
-  
 
 
   return (
     <div className={`fixed top-4 left-4 z-50 ${className}`}>
       <button
-        onClick={() => navigate(-1)}
+        onClick={() => targetRoute ? navigate(targetRoute) : navigate(-1)}
         className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all transform hover:scale-105 shadow-lg"
         style={{ backgroundColor: '#2d545e', color: 'white' }}
         onMouseEnter={(e) => e.target.style.backgroundColor = '#e1b382'}

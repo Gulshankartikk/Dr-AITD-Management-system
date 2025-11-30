@@ -12,7 +12,8 @@ const {
   Notices,
   Timetable,
   Leave,
-  Fee
+  Fee,
+  LearningResource
 } = require('../models/CompleteModels');
 
 // Student Registration
@@ -575,6 +576,39 @@ module.exports = {
       const { studentId } = req.params;
       const leaves = await Leave.find({ userId: studentId }).sort({ createdAt: -1 });
       res.json({ success: true, leaves });
+    } catch (error) {
+      res.status(500).json({ success: false, msg: error.message });
+    }
+  },
+  getResources: async (req, res) => {
+    try {
+      const { studentId } = req.params;
+      const { subjectId, type } = req.query;
+
+      const student = await Student.findById(studentId);
+      if (!student) {
+        return res.status(404).json({ success: false, msg: 'Student not found' });
+      }
+
+      // Find subjects for the student's course
+      const subjects = await Subject.find({ courseId: student.courseId });
+      const subjectIds = subjects.map(s => s._id);
+
+      let query = {
+        subjectId: { $in: subjectIds },
+        isActive: true,
+        isPublished: true
+      };
+
+      if (subjectId) query.subjectId = subjectId;
+      if (type) query.type = type;
+
+      const resources = await LearningResource.find(query)
+        .populate('subjectId', 'subjectName subjectCode')
+        .populate('teacherId', 'name') // Assuming teacherId stores the ID or object with name
+        .sort({ createdAt: -1 });
+
+      res.json({ success: true, resources });
     } catch (error) {
       res.status(500).json({ success: false, msg: error.message });
     }

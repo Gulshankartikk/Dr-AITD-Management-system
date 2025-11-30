@@ -128,6 +128,7 @@ router.put('/student/:studentId/profile', verifyToken, isAdmin, async (req, res)
 router.get('/student/:studentId/attendance', verifyToken, studentController.getStudentAttendance);
 router.get('/student/:studentId/subjects', verifyToken, studentController.getStudentSubjects);
 router.get('/student/:studentId/notes', verifyToken, studentController.getNotesBySubject);
+router.get('/student/:studentId/resources', verifyToken, studentController.getResources);
 router.get('/student/:studentId/materials', verifyToken, studentController.getStudyMaterials);
 router.get('/student/:studentId/assignments', verifyToken, studentController.getAssignments);
 router.post('/student/:studentId/assignments/:assignmentId/submit', verifyToken, studentController.submitAssignment);
