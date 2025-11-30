@@ -9,7 +9,7 @@ import { addUserDetails } from "../../features/UserSlice";
 import { jwtDecode } from "jwt-decode";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import { GraduationCap, ArrowLeft, Eye, EyeOff, Lock, User, Shield } from "lucide-react";
+import { GraduationCap, ArrowLeft, Eye, EyeOff, Lock, User, Shield, Info } from "lucide-react";
 import collegeImg from "../../assets/dr-ambedkar-institute-of-technology-for-handicapped-kanpur.jpeg.jpg";
 
 const Login = () => {
@@ -126,14 +126,14 @@ const Login = () => {
 
   if (showChangePassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 animate-fade-in">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
           <div className="text-center mb-8">
             <div className="bg-blue-100 p-3 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
               <Lock className="text-blue-600 w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Change Password</h2>
-            <p className="text-gray-500 mt-2">For security, please update your default password.</p>
+            <h2 className="text-2xl font-bold text-navy">Change Password</h2>
+            <p className="text-text-grey mt-2">For security, please update your default password.</p>
           </div>
 
           <form onSubmit={handleChangePassword} className="space-y-6">
@@ -144,6 +144,7 @@ const Login = () => {
               onChange={(e) => setNewPassword(e.target.value)}
               required
               placeholder="Enter new password"
+              className="input-field"
             />
             <Input
               label="Confirm Password"
@@ -152,8 +153,9 @@ const Login = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               placeholder="Confirm new password"
+              className="input-field"
             />
-            <Button type="submit" className="w-full py-3" isLoading={isLoading}>
+            <Button type="submit" className="w-full py-3 btn-primary" isLoading={isLoading}>
               Update Password & Login
             </Button>
           </form>
@@ -163,12 +165,12 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex bg-background font-sans">
       {/* Left Side - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-12 lg:px-24 xl:px-32 relative bg-white shadow-2xl z-10">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-12 lg:px-24 xl:px-32 relative bg-white shadow-2xl z-10 animate-fade-in">
         <div className="absolute top-8 left-8">
-          <Link to="/" className="flex items-center text-gray-500 hover:text-blue-600 transition-colors font-medium">
-            <ArrowLeft size={20} className="mr-2" />
+          <Link to="/" className="flex items-center text-text-grey hover:text-sky-blue transition-colors font-medium group">
+            <ArrowLeft size={20} className="mr-2 group-hover:-translate-x-1 transition-transform" />
             Back to Home
           </Link>
         </div>
@@ -179,8 +181,8 @@ const Login = () => {
               <GraduationCap className="h-8 w-8 text-white" />
             </div>
             <div>
-              <span className="text-2xl font-extrabold text-gray-900 tracking-tight">College ERP</span>
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Management System</p>
+              <span className="text-2xl font-extrabold text-navy tracking-tight">College ERP</span>
+              <p className="text-xs text-text-grey font-medium uppercase tracking-wider">Management System</p>
             </div>
           </div>
           <h1 className="text-4xl font-bold text-navy mb-3 tracking-tight">Welcome Back</h1>
@@ -189,7 +191,7 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Role Selector */}
-          <div className="p-1.5 bg-gray-100/80 rounded-2xl mb-8 border border-gray-200">
+          <div className="p-1.5 bg-gray-50 rounded-2xl mb-8 border border-gray-100">
             <div className="grid grid-cols-3 gap-2">
               {['student', 'teacher', 'admin'].map((r) => (
                 <button
@@ -197,8 +199,8 @@ const Login = () => {
                   type="button"
                   onClick={() => setRole(r)}
                   className={`flex items-center justify-center py-2.5 px-4 rounded-xl text-sm font-semibold capitalize transition-all duration-300 ${role === r
-                    ? 'bg-white text-sky-blue shadow-md transform scale-[1.02]'
-                    : 'text-text-grey hover:text-navy hover:bg-soft-grey/50'
+                    ? 'bg-white text-sky-blue shadow-md transform scale-[1.02] ring-1 ring-gray-100'
+                    : 'text-text-grey hover:text-navy hover:bg-gray-100'
                     }`}
                 >
                   <span className="mr-2">{getRoleIcon(r)}</span>
@@ -216,7 +218,7 @@ const Login = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20"
+              className="input-field"
             />
 
             <div className="relative">
@@ -227,12 +229,12 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20"
+                className="input-field"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-[38px] text-gray-400 hover:text-blue-600 transition-colors"
+                className="absolute right-3 top-[38px] text-gray-400 hover:text-sky-blue transition-colors"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -241,12 +243,12 @@ const Login = () => {
 
           <div className="flex justify-between items-center pt-2">
             <div className="flex items-center">
-              <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">Remember me</label>
+              <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 text-sky-blue focus:ring-sky-blue border-gray-300 rounded" />
+              <label htmlFor="remember-me" className="ml-2 block text-sm text-text-grey">Remember me</label>
             </div>
             <Link
               to="/forgetPassword"
-              className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+              className="text-sm font-semibold text-sky-blue hover:text-blue-700 hover:underline"
             >
               Forgot password?
             </Link>
@@ -254,14 +256,14 @@ const Login = () => {
 
           <Button
             type="submit"
-            className="w-full py-3.5 text-lg font-bold bg-gradient-to-r from-sky-blue to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-sky-blue/20 transform transition-all active:scale-[0.98]"
+            className="w-full py-3.5 text-lg font-bold btn-primary"
             isLoading={isLoading}
           >
             Sign in to Dashboard
           </Button>
 
           {role === 'student' && (
-            <p className="text-center text-sm text-gray-600 mt-6">
+            <p className="text-center text-sm text-text-grey mt-6">
               Don't have an account?{' '}
               <Link to="/register" className="font-bold text-sky-blue hover:text-blue-700 hover:underline">
                 Create an account
@@ -270,15 +272,24 @@ const Login = () => {
           )}
         </form>
 
-        <div className="mt-10 pt-6 border-t border-gray-100 text-center">
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-xl">
+            <Info className="w-5 h-5 text-sky-blue flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-text-grey leading-relaxed">
+              <span className="font-semibold text-navy">Note on Concurrent Logins:</span> To log in as multiple users (e.g., Admin and Student) simultaneously on the same device, please use separate <strong>Incognito/Private</strong> windows or different browsers. This ensures session security and prevents data conflicts.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 text-center">
           <p className="text-xs text-gray-400">© 2024 College ERP System. All rights reserved.</p>
         </div>
       </div>
 
       {/* Right Side - Image/Decoration */}
       <div className="hidden lg:block w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 to-black/60 z-10 mix-blend-multiply"></div>
-        <div className="absolute inset-0 bg-blue-600/10 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-navy/90 to-black/80 z-10 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-sky-blue/20 z-10"></div>
         <img
           src={collegeImg}
           alt="College Campus"

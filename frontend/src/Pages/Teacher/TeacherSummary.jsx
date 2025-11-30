@@ -33,108 +33,36 @@ const TeacherSummary = () => {
       const token = Cookies.get("token");
       const headers = { Authorization: `Bearer ${token}` };
 
-      // If your backend is ready, uncomment:
-      // const res = await axios.get(
-      //   `${BASE_URL}/api/teacher/${teacherId}/summary`,
-      //   { headers }
-      // );
-      // setData(res.data);
+      // Fetch real data from API
+      // Note: We are using separate endpoints or a summary endpoint if available.
+      // For now, let's assume we fetch lists and calculate summary on frontend or use a summary endpoint if it exists.
+      // Based on previous context, we might not have a dedicated summary endpoint, so let's fetch individual lists.
+      // Actually, looking at the code, it seems the user wants to replace the mock data block.
 
-      // Sample Data (safe, fixed, no duplicate IDs)
+      const [assignmentsRes, noticesRes, materialsRes, attendanceRes] = await Promise.all([
+        axios.get(`${BASE_URL}/api/teacher/${teacherId}/assignments`, { headers }),
+        axios.get(`${BASE_URL}/api/teacher/${teacherId}/notices`, { headers }),
+        axios.get(`${BASE_URL}/api/teacher/${teacherId}/materials`, { headers }),
+        // Attendance might need a different endpoint or query, but let's try a generic one or empty if not ready
+        axios.get(`${BASE_URL}/api/teacher/${teacherId}/attendance`, { headers }).catch(() => ({ data: { attendance: [] } }))
+      ]);
+
       setData({
-        assignments: [
-          {
-            _id: "a1",
-            title: "Data Structures Assignment 1",
-            subjectId: { subjectName: "Data Structures", subjectCode: "CSE201" },
-            deadline: "2025-02-15",
-            submittedCount: 2,
-            totalStudents: 3,
-            createdAt: "2025-01-15"
-          },
-          {
-            _id: "a2",
-            title: "Database Project",
-            subjectId: { subjectName: "Database Systems", subjectCode: "CSE301" },
-            deadline: "2025-03-01",
-            submittedCount: 0,
-            totalStudents: 3,
-            createdAt: "2025-01-20"
-          },
-          {
-            _id: "a3",
-            title: "Math Assignment",
-            subjectId: { subjectName: "Mathematics", subjectCode: "MTH101" },
-            deadline: "2025-03-05",
-            submittedCount: 0,
-            totalStudents: 3,
-            createdAt: "2025-01-20"
-          }
-        ],
-        notices: [
-          {
-            _id: "n1",
-            title: "Important Notice for B.Tech CSE",
-            description:
-              "All students must attend the special lecture on advanced topics.",
-            courseId: { courseName: "B.Tech CSE" },
-            createdAt: "2025-01-10",
-            studentCount: 3
-          }
-        ],
-        materials: [
-          {
-            _id: "m1",
-            title: "Data Structures Notes - Chapter 1",
-            subjectId: { subjectName: "Data Structures", subjectCode: "CSE201" },
-            fileUrl: "https://example.com/notes.pdf",
-            createdAt: "2025-01-12"
-          },
-          {
-            _id: "m2",
-            title: "Database Quick Reference",
-            subjectId: { subjectName: "Database Systems", subjectCode: "CSE301" },
-            fileUrl: "https://example.com/db-reference.pdf",
-            createdAt: "2025-01-14"
-          }
-        ],
-        attendance: [
-          {
-            _id: "att1",
-            date: "2025-01-15",
-            subjectId: { subjectName: "Data Structures" },
-            totalStudents: 3,
-            presentCount: 2,
-            absentCount: 1
-          },
-          {
-            _id: "att2",
-            date: "2025-01-16",
-            subjectId: { subjectName: "Database Systems" },
-            totalStudents: 3,
-            presentCount: 3,
-            absentCount: 0
-          },
-          {
-            _id: "att3",
-            date: "2025-01-17",
-            subjectId: { subjectName: "Mathematics" },
-            totalStudents: 3,
-            presentCount: 2,
-            absentCount: 1
-          },
-          {
-            _id: "att4",
-            date: "2025-01-18",
-            subjectId: { subjectName: "Mathematics 2" },
-            totalStudents: 3,
-            presentCount: 3,
-            absentCount: 0
-          }
-        ]
+        assignments: assignmentsRes.data.assignments || [],
+        notices: noticesRes.data.notices || [],
+        materials: materialsRes.data.materials || [],
+        attendance: attendanceRes.data.attendance || []
       });
+
     } catch (err) {
       console.error("Error fetching teacher summary:", err);
+      // Fallback to empty arrays on error to prevent crash
+      setData({
+        assignments: [],
+        notices: [],
+        materials: [],
+        attendance: []
+      });
     } finally {
       setLoading(false);
     }

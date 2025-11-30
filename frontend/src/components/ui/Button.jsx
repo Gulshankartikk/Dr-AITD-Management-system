@@ -8,20 +8,20 @@ const Button = ({
   isLoading = false,
   ...props
 }) => {
-  const baseStyles = "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]";
 
   const variants = {
-    primary: "bg-sky-blue text-white hover:bg-sky-blue/90 focus:ring-sky-blue shadow-sm hover:shadow",
-    secondary: "bg-white text-text-grey border border-soft-grey hover:bg-background focus:ring-text-grey shadow-sm",
-    danger: "bg-navy text-white hover:bg-navy/90 focus:ring-navy shadow-sm",
-    ghost: "text-text-grey hover:bg-soft-grey/10 hover:text-navy",
-    link: "text-sky-blue hover:underline p-0 h-auto"
+    primary: "bg-sky-blue text-white hover:bg-blue-600 focus:ring-sky-blue shadow-lg shadow-sky-blue/25 hover:shadow-blue-600/30",
+    secondary: "bg-white text-navy border border-gray-200 hover:bg-gray-50 hover:border-gray-300 focus:ring-gray-200 shadow-sm",
+    danger: "bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 shadow-lg shadow-red-500/25",
+    ghost: "text-text-grey hover:bg-gray-100 hover:text-navy",
+    link: "text-sky-blue hover:underline p-0 h-auto shadow-none"
   };
 
   const sizes = {
     sm: "px-3 py-1.5 text-xs",
-    md: "px-4 py-2 text-sm",
-    lg: "px-6 py-3 text-base"
+    md: "px-4 py-2.5 text-sm",
+    lg: "px-6 py-3.5 text-base"
   };
 
   return (
