@@ -1,6 +1,7 @@
 // teacherController.js
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const {
   Teacher,
   Student,
@@ -373,6 +374,10 @@ const addMarks = async (req, res) => {
       return res.status(400).json({ success: false, msg: 'studentId, subjectId, marks and totalMarks are required' });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(studentId) || !mongoose.Types.ObjectId.isValid(subjectId)) {
+      return res.status(400).json({ success: false, msg: 'Invalid student or subject ID' });
+    }
+
     const markRecord = new Marks({ studentId, subjectId, teacherId, marks, totalMarks, examType });
     await markRecord.save();
 
@@ -451,6 +456,10 @@ const addNotes = async (req, res) => {
       return res.status(400).json({ success: false, msg: 'Title and subject are required' });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(subjectId)) {
+      return res.status(400).json({ success: false, msg: 'Invalid subject ID' });
+    }
+
     const fileUrl = buildFileUrl(req, req.file);
 
     const note = new Notes({ teacherId, subjectId, title, fileUrl, description });
@@ -471,6 +480,10 @@ const addStudyMaterial = async (req, res) => {
 
     if (!title || !subjectId) {
       return res.status(400).json({ success: false, msg: 'Title and subject are required' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(subjectId)) {
+      return res.status(400).json({ success: false, msg: 'Invalid subject ID' });
     }
 
     const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
@@ -510,6 +523,10 @@ const addAssignment = async (req, res) => {
 
     if (!title || !subjectId || !deadline) {
       return res.status(400).json({ success: false, msg: 'Title, subject, and deadline are required' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(subjectId)) {
+      return res.status(400).json({ success: false, msg: 'Invalid subject ID' });
     }
 
     const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
@@ -565,6 +582,10 @@ const addNotice = async (req, res) => {
 
     if (!title || !description || !courseId) {
       return res.status(400).json({ success: false, msg: 'Title, description, and course are required' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({ success: false, msg: 'Invalid course ID' });
     }
 
     const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
@@ -819,6 +840,10 @@ module.exports = {
 
       if (!title || !subjectId || !type) {
         return res.status(400).json({ success: false, msg: 'Title, subject, and type are required' });
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(subjectId)) {
+        return res.status(400).json({ success: false, msg: 'Invalid subject ID' });
       }
 
       const actualTeacherId = teacherId === 'admin' ? 'admin' : teacherId;
