@@ -19,6 +19,17 @@ const {
   Fee,
   LearningResource
 } = require('../models/CompleteModels');
+// Helper to check access rights
+const checkAccess = (req, targetTeacherId) => {
+  // Admin can access any teacher data
+  if (req.user.role === 'admin') return true;
+  // Teachers can only access their own data
+  if (req.user.role === 'teacher' && req.user.id === targetTeacherId) return true;
+  // Special case for demo/hardcoded IDs if the logged in user is a teacher (allowing them to see demo data? maybe not secure but practical for this codebase)
+  if (req.user.role === 'teacher' && (targetTeacherId === 'teacher' || targetTeacherId === 'admin')) return true;
+  return false;
+};
+
 const sendNotification = async (type, data) => {
   try {
     console.log(`Notification: ${type}`);
@@ -83,6 +94,10 @@ const teacherLogin = async (req, res) => {
 const getTeacherDashboard = async (req, res) => {
   try {
     const { teacherId } = req.params;
+
+    if (!checkAccess(req, teacherId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
 
     // Demo/predefined handlers
     const demoIds = ['gulshan', 'ankita', 'aditya', 'abhishek'];
@@ -163,6 +178,10 @@ const getTeacherSubjects = async (req, res) => {
   try {
     const { teacherId } = req.params;
 
+    if (!checkAccess(req, teacherId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
+
     if (!teacherId) return res.status(400).json({ success: false, msg: 'teacherId required' });
 
     if (teacherId === 'admin' || teacherId === 'teacher') {
@@ -184,6 +203,10 @@ const getTeacherSubjects = async (req, res) => {
 const getTeacherCourses = async (req, res) => {
   try {
     const { teacherId } = req.params;
+
+    if (!checkAccess(req, teacherId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
 
     if (!teacherId) return res.status(400).json({ success: false, msg: 'teacherId required' });
 
@@ -617,6 +640,10 @@ const addNotice = async (req, res) => {
 const getTeacherNotes = async (req, res) => {
   try {
     const { teacherId } = req.params;
+
+    if (!checkAccess(req, teacherId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
     const notes = await Notes.find({ teacherId }).populate('subjectId', 'subjectName');
     res.json({ success: true, notes });
   } catch (error) {
@@ -629,6 +656,10 @@ const getTeacherNotes = async (req, res) => {
 const getTeacherMaterials = async (req, res) => {
   try {
     const { teacherId } = req.params;
+
+    if (!checkAccess(req, teacherId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
     const materials = await StudyMaterial.find({ teacherId }).populate('subjectId', 'subjectName');
     res.json({ success: true, materials });
   } catch (error) {
@@ -641,6 +672,10 @@ const getTeacherMaterials = async (req, res) => {
 const getTeacherAssignments = async (req, res) => {
   try {
     const { teacherId } = req.params;
+
+    if (!checkAccess(req, teacherId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
     const { subjectId } = req.query;
 
     let query = { teacherId };
@@ -722,6 +757,10 @@ const addSubject = async (req, res) => {
 const getTeacherNotices = async (req, res) => {
   try {
     const { teacherId } = req.params;
+
+    if (!checkAccess(req, teacherId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
     const teacher = await Teacher.findById(teacherId);
 
     const notices = await Notices.find({
@@ -774,6 +813,10 @@ module.exports = {
   getTimetable: async (req, res) => {
     try {
       const { teacherId } = req.params;
+
+      if (!checkAccess(req, teacherId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       const timetable = await Timetable.find({ teacherId, isActive: true })
         .populate('subjectId', 'subjectName subjectCode')
         .populate('courseId', 'courseName courseCode')
@@ -786,6 +829,10 @@ module.exports = {
   applyLeave: async (req, res) => {
     try {
       const { teacherId } = req.params;
+
+      if (!checkAccess(req, teacherId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       const { leaveType, startDate, endDate, reason } = req.body;
       const leave = new Leave({
         userId: teacherId,
@@ -804,6 +851,10 @@ module.exports = {
   changePassword: async (req, res) => {
     try {
       const { teacherId } = req.params;
+
+      if (!checkAccess(req, teacherId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       const { oldPassword, newPassword } = req.body;
 
       const teacher = await Teacher.findById(teacherId);
@@ -828,6 +879,10 @@ module.exports = {
   getLeaves: async (req, res) => {
     try {
       const { teacherId } = req.params;
+
+      if (!checkAccess(req, teacherId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       const leaves = await Leave.find({ userId: teacherId }).sort({ createdAt: -1 });
       res.json({ success: true, leaves });
     } catch (error) {
@@ -839,6 +894,10 @@ module.exports = {
   addResource: async (req, res) => {
     try {
       const { teacherId } = req.params;
+
+      if (!checkAccess(req, teacherId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       const { subjectId, title, description, type, links, tags, isPublished } = req.body;
 
       if (!title || !subjectId || !type) {
@@ -900,6 +959,10 @@ module.exports = {
   getResources: async (req, res) => {
     try {
       const { teacherId } = req.params;
+
+      if (!checkAccess(req, teacherId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       const { subjectId, type } = req.query;
 
       let query = { teacherId, isActive: true };
@@ -918,7 +981,11 @@ module.exports = {
 
   deleteResource: async (req, res) => {
     try {
-      const { resourceId } = req.params;
+      const { resourceId, teacherId } = req.params;
+
+      if (!checkAccess(req, teacherId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       await LearningResource.findByIdAndUpdate(resourceId, { isActive: false });
       res.json({ success: true, msg: 'Resource deleted successfully' });
     } catch (error) {

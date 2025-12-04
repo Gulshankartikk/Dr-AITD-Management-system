@@ -4,18 +4,25 @@ import { FaBook, FaPlus, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
 import Button from '../../components/ui/Button';
+import adminService from '../../services/adminService';
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    // Mock data - replace with actual API call
-    setCourses([
-      { id: 1, name: 'Computer Science', code: 'CS101', duration: '4 Years', students: 120 },
-      { id: 2, name: 'Mechanical Engineering', code: 'ME101', duration: '4 Years', students: 95 },
-      { id: 3, name: 'Business Administration', code: 'BA101', duration: '3 Years', students: 80 }
-    ]);
+    fetchCourses();
   }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const res = await adminService.getCourses();
+      if (res.success) {
+        setCourses(res.courses);
+      }
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">

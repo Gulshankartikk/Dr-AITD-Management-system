@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { BASE_URL } from "../../constants/api"
-import axios from "axios";
+import authService from "../../services/authService";
 import { useNavigate, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useSelector } from "react-redux";
@@ -42,28 +41,7 @@ const UpdatePass = () => {
         newPassword: data.newpass
       };
 
-      let res =
-        role === "teacher"
-          ? await axios.post(
-            `${BASE_URL}/api/teacher/${id}/change-password`,
-            payload,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${Cookies.get("token")}`,
-              },
-            }
-          )
-          : await axios.post(
-            `${BASE_URL}/api/student/${id}/change-password`,
-            payload,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${Cookies.get("token")}`,
-              },
-            }
-          );
+      const res = await authService.updatePassword(data.currpass, data.newpass, id, role);
 
       setData({
         currpass: "",

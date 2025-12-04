@@ -21,6 +21,7 @@ import StudentAchievers from "./Pages/Common/StudentAchievers";
 
 import AdminRegister from "./Pages/Common/AdminRegister";
 import StudentManagement from "./Pages/admin/StudentManagement";
+import SubjectManagement from "./Pages/admin/SubjectManagement";
 import AddSubject from "./Pages/admin/AddSubject";
 import AddCourse from "./Pages/admin/AddCourse";
 import CreateTeacher from "./Pages/admin/CreateTeacher";
@@ -85,6 +86,12 @@ const router = createBrowserRouter(
       <Route path="register" element={<Register />} />
       <Route path="achievers" element={<StudentAchievers />} />
 
+      {/* Public Password Reset Routes */}
+      <Route path="student/forgetPassword" element={<ForgetPass />} />
+      <Route path="teacher/forgetPassword" element={<ForgetPass />} />
+      <Route path="student/:userId/forgetPassword/verifyotp" element={<VerifyOtp />} />
+      <Route path="teacher/:userId/forgetPassword/verifyotp" element={<VerifyOtp />} />
+
       {/* student routes */}
       <Route element={<RequireAuth allowedRoles={['admin', 'teacher', 'student']} />}>
         <Route path="student/:studentId">
@@ -136,6 +143,7 @@ const router = createBrowserRouter(
           <Route path="add-course" element={<AddCourse />} />
           <Route path="create-teacher" element={<CreateTeacher />} />
           <Route path="create-student" element={<CreateStudent />} />
+          <Route path="subjects" element={<SubjectManagement />} />
           <Route path="add-subject" element={<AddSubject />} />
           <Route path="students" element={<StudentManagement />} />
           <Route path="notifications" element={<NotificationSummary />} />

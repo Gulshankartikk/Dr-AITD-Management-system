@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BASE_URL } from "../../../constants/api"
-import axios from "axios";
+import authService from "../../../services/authService";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import BackButton from "../../../components/BackButton";
@@ -37,19 +36,12 @@ const ForgetPass = () => {
     setLoading(true);
 
     try {
-      let res =
-        role === "teacher"
-          ? await axios.post(`${BASE_URL}/teacher/forgetPassword`, {
-            email,
-          })
-          : await axios.post(`${BASE_URL}/student/forgetPassword`, {
-            email,
-          });
+      const res = await authService.forgotPassword(email, role);
 
-      if (res.data.success) {
+      if (res.success) {
         setEmail("");
-        toast.success(res.data.msg);
-        const userId = res.data.userId;
+        toast.success(res.msg);
+        const userId = res.userId;
         role === "teacher"
           ? navigate(`/teacher/${userId}/forgetPassword/verifyotp`)
           : navigate(`/student/${userId}/forgetPassword/verifyotp`);

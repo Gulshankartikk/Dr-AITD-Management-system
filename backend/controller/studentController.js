@@ -16,6 +16,15 @@ const {
   LearningResource
 } = require('../models/CompleteModels');
 
+// Helper to check access rights
+const checkAccess = (req, targetStudentId) => {
+  // Admin and Teacher can access any student data
+  if (req.user.role === 'admin' || req.user.role === 'teacher') return true;
+  // Students can only access their own data
+  if (req.user.role === 'student' && req.user.id === targetStudentId) return true;
+  return false;
+};
+
 // Student Registration
 const studentRegister = async (req, res) => {
   try {
@@ -109,6 +118,10 @@ const studentLogin = async (req, res) => {
 const changePassword = async (req, res) => {
   try {
     const { studentId } = req.params;
+
+    if (!checkAccess(req, studentId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
     const { oldPassword, newPassword } = req.body;
 
     const student = await Student.findById(studentId);
@@ -135,6 +148,10 @@ const changePassword = async (req, res) => {
 const getStudentProfile = async (req, res) => {
   try {
     const { studentId } = req.params;
+
+    if (!checkAccess(req, studentId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
 
     // Handle demo students (including backward compatibility)
     if (studentId === 'demo-student' || studentId === 'admin-student' || studentId === 'student' || studentId === 'student1' || studentId === 'admin') {
@@ -285,6 +302,10 @@ const getStudentSubjects = async (req, res) => {
   try {
     const { studentId } = req.params;
 
+    if (!checkAccess(req, studentId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
+
     const student = await Student.findById(studentId);
     const subjects = await Subject.find({ courseId: student.courseId, isActive: true });
 
@@ -298,6 +319,10 @@ const getStudentSubjects = async (req, res) => {
 const getNotesBySubject = async (req, res) => {
   try {
     const { studentId } = req.params;
+
+    if (!checkAccess(req, studentId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
     const { subjectId } = req.query;
 
     // Handle demo students (including backward compatibility)
@@ -331,6 +356,10 @@ const getNotesBySubject = async (req, res) => {
 const getStudyMaterials = async (req, res) => {
   try {
     const { studentId } = req.params;
+
+    if (!checkAccess(req, studentId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
     const { subjectId } = req.query;
 
     // Handle demo students (including backward compatibility)
@@ -364,6 +393,10 @@ const getStudyMaterials = async (req, res) => {
 const getAssignments = async (req, res) => {
   try {
     const { studentId } = req.params;
+
+    if (!checkAccess(req, studentId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
     const { subjectId } = req.query;
 
     // Handle demo students (including backward compatibility)
@@ -397,6 +430,10 @@ const getAssignments = async (req, res) => {
 const submitAssignment = async (req, res) => {
   try {
     const { studentId, assignmentId } = req.params;
+
+    if (!checkAccess(req, studentId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
     const { fileUrl } = req.body;
 
     const assignment = await Assignments.findById(assignmentId);
@@ -420,6 +457,10 @@ const submitAssignment = async (req, res) => {
 const getStudentMarks = async (req, res) => {
   try {
     const { studentId } = req.params;
+
+    if (!checkAccess(req, studentId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
     const { subjectId, examType } = req.query;
 
     // Handle demo students (including backward compatibility)
@@ -450,6 +491,10 @@ const getNotices = async (req, res) => {
   try {
     const { studentId } = req.params;
 
+    if (!checkAccess(req, studentId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
+
     const student = await Student.findById(studentId);
     const notices = await Notices.find({ courseId: student.courseId, isActive: true })
       .populate('teacherId', 'name')
@@ -465,6 +510,10 @@ const getNotices = async (req, res) => {
 const getStudentDashboard = async (req, res) => {
   try {
     const { studentId } = req.params;
+
+    if (!checkAccess(req, studentId)) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
 
     // Handle admin access (including backward compatibility)
     if (studentId === 'admin-student' || studentId === 'admin') {
@@ -532,6 +581,10 @@ module.exports = {
   getTimetable: async (req, res) => {
     try {
       const { studentId } = req.params;
+
+      if (!checkAccess(req, studentId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       const student = await Student.findById(studentId);
       const timetable = await Timetable.find({ courseId: student.courseId, isActive: true })
         .populate('subjectId', 'subjectName subjectCode')
@@ -545,6 +598,10 @@ module.exports = {
   getFees: async (req, res) => {
     try {
       const { studentId } = req.params;
+
+      if (!checkAccess(req, studentId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       const fees = await Fee.find({ studentId, isActive: true }).sort({ dueDate: 1 });
       res.json({ success: true, fees });
     } catch (error) {
@@ -554,6 +611,10 @@ module.exports = {
   applyLeave: async (req, res) => {
     try {
       const { studentId } = req.params;
+
+      if (!checkAccess(req, studentId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       const { leaveType, startDate, endDate, reason } = req.body;
       const leave = new Leave({
         userId: studentId,
@@ -572,6 +633,10 @@ module.exports = {
   getLeaves: async (req, res) => {
     try {
       const { studentId } = req.params;
+
+      if (!checkAccess(req, studentId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       const leaves = await Leave.find({ userId: studentId }).sort({ createdAt: -1 });
       res.json({ success: true, leaves });
     } catch (error) {
@@ -581,6 +646,10 @@ module.exports = {
   getResources: async (req, res) => {
     try {
       const { studentId } = req.params;
+
+      if (!checkAccess(req, studentId)) {
+        return res.status(403).json({ success: false, msg: 'Access denied' });
+      }
       const { subjectId, type } = req.query;
 
       const student = await Student.findById(studentId);

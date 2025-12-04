@@ -31,7 +31,7 @@ const Sidebar = ({ isOpen, onClose, userRole }) => {
         { icon: Users, label: 'Students', path: '/admin/students' },
         { icon: GraduationCap, label: 'Teachers', path: '/admin/teachers' },
         { icon: BookOpen, label: 'Courses', path: '/admin/courses' },
-        { icon: Library, label: 'Subjects', path: '/admin/add-subject' },
+        { icon: Library, label: 'Subjects', path: '/admin/subjects' },
         { icon: CreditCard, label: 'Fees', path: '/admin/fees' },
         { icon: ClipboardCheck, label: 'Attendance', path: '/admin/attendance' },
         { icon: Calendar, label: 'Timetable', path: '/admin/timetable' },

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BASE_URL } from "../../../constants/api"
-import axios from "axios";
+import authService from "../../../services/authService";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Input from "../../../components/ui/Input";
@@ -36,23 +35,14 @@ const VerifyOtp = () => {
     setLoading(true);
 
     try {
-      let res =
-        role === "teacher"
-          ? await axios.post(
-            `${BASE_URL}/teacher/resetPassword`,
-            { userId, otp: String(otp), password }
-          )
-          : await axios.post(
-            `${BASE_URL}/student/resetPassword`,
-            { userId, otp: String(otp), password }
-          );
+      const res = await authService.resetPassword(userId, otp, password, role);
 
-      console.log(res.data);
+      console.log(res);
 
-      if (res.data.success) {
+      if (res.success) {
         setOtp("");
         setPassword("");
-        toast.success(res.data.msg);
+        toast.success(res.msg);
         navigate("/");
       }
     } catch (err) {

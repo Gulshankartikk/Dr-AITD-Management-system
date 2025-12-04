@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { BASE_URL } from "../../constants/api";
+import authService from "../../services/authService";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
@@ -34,15 +34,9 @@ const Login = () => {
     setIsLoading(true);
     try {
       // UNIFIED AUTH ENDPOINT
-      const endpoint = "/api/auth/login";
+      const response = await authService.login({ username, password }, role);
 
-      const response = await axios.post(`${BASE_URL}${endpoint}`, {
-        username,
-        password,
-        role, // Pass role to the unified controller
-      });
-
-      const { token, user } = response.data; // Response now returns 'user' object
+      const { token, user } = response; // Response now returns 'user' object
 
       // Check for forced password change (only for students)
       if (role === 'student' && user && user.passwordChanged === false) {
@@ -98,11 +92,7 @@ const Login = () => {
 
     try {
       setIsLoading(true);
-      await axios.post(
-        `${BASE_URL}/api/student/${tempStudentId}/change-password`,
-        { oldPassword: password, newPassword },
-        { headers: { Authorization: `Bearer ${tempToken}` } }
-      );
+      await authService.updatePassword(password, newPassword, tempStudentId, 'student');
 
       toast.success("Password updated successfully!");
       setShowChangePassword(false);
@@ -243,7 +233,7 @@ const Login = () => {
               <label htmlFor="remember-me" className="ml-2 block text-sm text-text-secondary">Remember me</label>
             </div>
             <Link
-              to="/forgetPassword"
+              to={role === 'teacher' ? "/teacher/forgetPassword" : "/student/forgetPassword"}
               className="text-sm font-semibold text-primary hover:text-primary-hover hover:underline"
             >
               Forgot password?
