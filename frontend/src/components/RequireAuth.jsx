@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 
 const RequireAuth = ({ allowedRoles }) => {
     const location = useLocation();
-    const token = Cookies.get('token');
+    const token = Cookies.get('token') || localStorage.getItem('token');
 
     let userRole = null;
     if (token) {

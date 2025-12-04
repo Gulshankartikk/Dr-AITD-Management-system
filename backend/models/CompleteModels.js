@@ -77,6 +77,9 @@ const TeacherSchema = new mongoose.Schema({
   assignedCourse: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
   assignedSubjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' }],
 
+  otp: { type: String },
+  otpExpiry: { type: Date },
+
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
@@ -109,6 +112,8 @@ const StudentSchema = new mongoose.Schema({
 
   isDemo: { type: Boolean, default: false },
   passwordChanged: { type: Boolean, default: false },
+  otp: { type: String },
+  otpExpiry: { type: Date },
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
@@ -230,7 +235,9 @@ const AdminSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   username: { type: String, unique: true, sparse: true },
   password: { type: String, required: true },
-  role: { type: String, default: 'admin' }
+  role: { type: String, default: 'admin' },
+  otp: { type: String },
+  otpExpiry: { type: Date }
 }, { timestamps: true });
 
 // Notification Schema
@@ -244,6 +251,46 @@ const NotificationSchema = new mongoose.Schema({
   entityId: { type: mongoose.Schema.Types.ObjectId },
   entityType: { type: String }
 }, { timestamps: true });
+
+const bcrypt = require('bcrypt');
+
+// ... (previous schemas)
+
+// Pre-save hook for Student
+StudentSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Pre-save hook for Teacher
+TeacherSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Pre-save hook for Admin
+AdminSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Create models
 const Course = mongoose.model('Course', CourseSchema);

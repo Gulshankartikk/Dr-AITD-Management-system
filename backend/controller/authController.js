@@ -111,5 +111,131 @@ const logout = (req, res) => {
 
 module.exports = {
     login,
-    logout
+    logout,
+    forgotPassword,
+    verifyOtp,
+    resetPassword
+};
+
+// Email Transporter
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+const forgotPassword = async (req, res, next) => {
+    try {
+        const { email, role } = req.body;
+        if (!email || !role) {
+            const error = new Error('Email and role are required');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        let user;
+        if (role === 'student') {
+            user = await Student.findOne({ email });
+        } else if (role === 'teacher') {
+            user = await Teacher.findOne({ email });
+        } else if (role === 'admin') {
+            user = await Admin.findOne({ email });
+        }
+
+        if (!user) {
+            const error = new Error('User not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // Generate OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        user.otp = otp;
+        user.otpExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+        await user.save();
+
+        // Send Email
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Password Reset OTP',
+            text: `Your OTP for password reset is: ${otp}`
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+        } catch (emailError) {
+            console.error('Email send failed:', emailError);
+            // For dev/demo, log the OTP
+            console.log(`OTP for ${email}: ${otp}`);
+        }
+
+        res.status(200).json({ success: true, msg: 'OTP sent to email', userId: user._id });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const verifyOtp = async (req, res, next) => {
+    try {
+        const { userId, otp, role } = req.body;
+
+        let user;
+        if (role === 'student') user = await Student.findById(userId);
+        else if (role === 'teacher') user = await Teacher.findById(userId);
+        else if (role === 'admin') user = await Admin.findById(userId);
+
+        if (!user) {
+            const error = new Error('User not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        if (user.otp !== otp || user.otpExpiry < Date.now()) {
+            const error = new Error('Invalid or expired OTP');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        res.status(200).json({ success: true, msg: 'OTP verified' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const resetPassword = async (req, res, next) => {
+    try {
+        const { userId, password, otp, role } = req.body;
+
+        let user;
+        if (role === 'student') user = await Student.findById(userId);
+        else if (role === 'teacher') user = await Teacher.findById(userId);
+        else if (role === 'admin') user = await Admin.findById(userId);
+
+        if (!user) {
+            const error = new Error('User not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // Verify OTP again to be sure
+        if (!otp || user.otp !== otp || user.otpExpiry < Date.now()) {
+            const error = new Error('Invalid or expired OTP');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        // Password will be hashed by pre-save hook
+        user.password = password;
+        user.otp = undefined;
+        user.otpExpiry = undefined;
+        await user.save();
+
+        res.status(200).json({ success: true, msg: 'Password reset successfully' });
+    } catch (error) {
+        next(error);
+    }
 };

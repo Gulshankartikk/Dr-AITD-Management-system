@@ -112,9 +112,8 @@ const addTeacher = async (req, res) => {
   try {
     const { name, email, phone, password, assignedCourse, assignedSubjects } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const teacher = new Teacher({
-      name, email, phone, password: hashedPassword, assignedCourse, assignedSubjects
+      name, email, phone, password, assignedCourse, assignedSubjects
     });
     await teacher.save();
 
@@ -129,9 +128,8 @@ const addStudent = async (req, res) => {
   try {
     const { name, email, phone, rollNo, password, courseId, semester } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const student = new Student({
-      name, email, phone, rollNo, password: hashedPassword, courseId, semester
+      name, email, phone, rollNo, password, courseId, semester
     });
     await student.save();
 

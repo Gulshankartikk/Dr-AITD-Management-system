@@ -39,13 +39,11 @@ const seedDemoStudents = async () => {
         ];
 
         for (const data of demoStudents) {
-            const hashedPassword = await bcrypt.hash(data.password, 10);
-
             let student = await Student.findOne({ rollNo: data.rollNo });
 
             if (student) {
                 // Reset demo student
-                student.password = hashedPassword;
+                student.password = data.password;
                 student.isDemo = true;
                 student.passwordChanged = false; // Force password change
                 student.name = data.name;
@@ -59,7 +57,7 @@ const seedDemoStudents = async () => {
                     name: data.name,
                     email: data.email,
                     rollNo: data.rollNo,
-                    password: hashedPassword,
+                    password: data.password,
                     courseId: course._id,
                     isDemo: true,
                     passwordChanged: false,

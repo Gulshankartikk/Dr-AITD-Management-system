@@ -12,7 +12,8 @@ const VerifyOtp = () => {
 
   const pathParts = location.pathname.split("/");
   const firstPart = pathParts[1];
-  console.log(firstPart);
+  const userId = pathParts[2];
+  console.log(firstPart, userId);
 
   const [role, setRole] = useState("");
 
@@ -38,12 +39,12 @@ const VerifyOtp = () => {
       let res =
         role === "teacher"
           ? await axios.post(
-            `${BASE_URL}/teacher/forgetPassword/verifyotp`,
-            { opt: Number(otp), password }
+            `${BASE_URL}/teacher/resetPassword`,
+            { userId, otp: String(otp), password }
           )
           : await axios.post(
-            `${BASE_URL}/student/forgetPassword/verifyotp`,
-            { otp: Number(otp), password }
+            `${BASE_URL}/student/resetPassword`,
+            { userId, otp: String(otp), password }
           );
 
       console.log(res.data);

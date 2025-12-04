@@ -28,6 +28,16 @@ router.post('/admin/login', (req, res, next) => { req.body.role = 'admin'; authC
 router.post('/teacher/login', (req, res, next) => { req.body.role = 'teacher'; authController.login(req, res, next); });
 router.post('/student/login', (req, res, next) => { req.body.role = 'student'; authController.login(req, res, next); });
 
+// Password Reset Routes
+router.post('/student/forgetPassword', (req, res, next) => { req.body.role = 'student'; authController.forgotPassword(req, res, next); });
+router.post('/teacher/forgetPassword', (req, res, next) => { req.body.role = 'teacher'; authController.forgotPassword(req, res, next); });
+
+router.post('/student/verifyOtp', (req, res, next) => { req.body.role = 'student'; authController.verifyOtp(req, res, next); });
+router.post('/teacher/verifyOtp', (req, res, next) => { req.body.role = 'teacher'; authController.verifyOtp(req, res, next); });
+
+router.post('/student/resetPassword', (req, res, next) => { req.body.role = 'student'; authController.resetPassword(req, res, next); });
+router.post('/teacher/resetPassword', (req, res, next) => { req.body.role = 'teacher'; authController.resetPassword(req, res, next); });
+
 
 // ======================================================
 //                      TEACHER ROUTES

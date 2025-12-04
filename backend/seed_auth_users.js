@@ -11,38 +11,36 @@ const seedAuthUsers = async () => {
         console.log('MongoDB Connected');
 
         // 1. Seed Admin
-        const adminPassword = await bcrypt.hash('admin123', 10);
         let admin = await Admin.findOne({ username: 'admin' });
         if (!admin) {
             await Admin.create({
                 name: 'Administrator',
                 email: 'admin@college.edu',
                 username: 'admin',
-                password: adminPassword,
+                password: 'admin123',
                 role: 'admin'
             });
             console.log('Admin account created: admin / admin123');
         } else {
-            admin.password = adminPassword;
+            admin.password = 'admin123';
             await admin.save();
             console.log('Admin password updated');
         }
 
         // 2. Seed Teacher
-        const teacherPassword = await bcrypt.hash('teacher123', 10);
         let teacher = await Teacher.findOne({ username: 'teacher' });
         if (!teacher) {
             await Teacher.create({
                 name: 'Demo Teacher',
                 email: 'teacher@college.edu',
                 username: 'teacher',
-                password: teacherPassword,
+                password: 'teacher123',
                 department: 'CSE',
                 designation: 'Professor'
             });
             console.log('Teacher account created: teacher / teacher123');
         } else {
-            teacher.password = teacherPassword;
+            teacher.password = 'teacher123';
             await teacher.save();
             console.log('Teacher password updated');
         }

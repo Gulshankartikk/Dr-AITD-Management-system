@@ -49,9 +49,10 @@ const ForgetPass = () => {
       if (res.data.success) {
         setEmail("");
         toast.success(res.data.msg);
+        const userId = res.data.userId;
         role === "teacher"
-          ? navigate(`/teacher/${id}/forgetPassword/verifyotp`)
-          : navigate(`/student/${id}/forgetPassword/verifyotp`);
+          ? navigate(`/teacher/${userId}/forgetPassword/verifyotp`)
+          : navigate(`/student/${userId}/forgetPassword/verifyotp`);
       }
     } catch (err) {
       console.log("Something went wrong", err);

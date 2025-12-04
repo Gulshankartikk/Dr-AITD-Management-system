@@ -34,13 +34,12 @@ const studentRegister = async (req, res) => {
     // Generate username from email
     const username = email.split('@')[0];
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const student = new Student({
       name,
       email,
       username,
       phone,
-      password: hashedPassword,
+      password,
       rollNo,
       courseId
     });
@@ -122,8 +121,7 @@ const changePassword = async (req, res) => {
       return res.status(400).json({ success: false, msg: 'Incorrect old password' });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    student.password = hashedPassword;
+    student.password = newPassword;
     student.passwordChanged = true;
     await student.save();
 

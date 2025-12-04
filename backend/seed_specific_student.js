@@ -12,12 +12,11 @@ const seedStudent = async () => {
 
         const rollNo = '2301660100001';
         const password = 'student1';
-        const hashedPassword = await bcrypt.hash(password, 10);
 
         let student = await Student.findOne({ rollNo });
 
         if (student) {
-            student.password = hashedPassword;
+            student.password = password;
             await student.save();
             console.log(`Updated password for student ${rollNo}`);
         } else {
@@ -37,7 +36,7 @@ const seedStudent = async () => {
                 email: 'teststudent@example.com',
                 username: rollNo, // Using rollNo as username for consistency if needed, though login uses rollNo query now
                 rollNo: rollNo,
-                password: hashedPassword,
+                password: password,
                 courseId: course._id,
                 phone: '1234567890'
             });
