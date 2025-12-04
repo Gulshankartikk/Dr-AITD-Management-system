@@ -57,16 +57,16 @@ const CourseManagement = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {courses.map((course) => (
-                    <tr key={course.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={course._id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <FaBook className="text-primary mr-3" />
-                          <span className="font-medium text-secondary">{course.name}</span>
+                          <span className="font-medium text-secondary">{course.courseName}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{course.code}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{course.duration}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{course.students}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{course.courseCode}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{course.courseDuration}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{course.students || 0}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                         <button className="text-primary hover:text-primary/80"><FaEye /></button>
                         <button className="text-primary hover:text-primary/80"><FaEdit /></button>

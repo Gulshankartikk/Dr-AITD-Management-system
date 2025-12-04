@@ -19,8 +19,10 @@ const login = async (req, res, next) => {
 
         // 1. Find User based on Role
         if (role === 'student') {
-            // Students log in with Roll Number (mapped to username in frontend)
-            user = await Student.findOne({ rollNo: username }).populate('courseId');
+            // Students log in with Roll Number OR Email
+            user = await Student.findOne({
+                $or: [{ rollNo: username }, { email: username }]
+            }).populate('courseId');
         } else if (role === 'teacher') {
             // Teachers log in with Email or Username
             user = await Teacher.findOne({

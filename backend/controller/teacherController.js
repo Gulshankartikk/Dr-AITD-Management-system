@@ -917,7 +917,7 @@ module.exports = {
           name: req.file.originalname,
           url: buildFileUrl(req, req.file),
           size: req.file.size,
-          type: req.file.mimetype
+          fileType: req.file.mimetype
         });
       }
 

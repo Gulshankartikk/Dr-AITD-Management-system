@@ -164,77 +164,29 @@ router.get('/admin/dashboard', verifyToken, isAdmin, adminController.getDashboar
 // ======================================================
 
 // Students
-router.get('/admin/students', verifyToken, async (req, res) => {
-  try {
-    const { Student } = require('../models/CompleteModels');
-    const students = await Student.find({ isActive: true }).populate('courseId', 'courseName courseCode');
-    res.json({ success: true, students });
-  } catch (error) {
-    res.status(500).json({ success: false, msg: error.message });
-  }
-});
+router.get('/admin/students', verifyToken, adminController.getAllStudents);
 router.post('/admin/students', verifyToken, isAdmin, adminController.addStudent);
 router.put('/admin/students/:studentId', verifyToken, isAdmin, adminController.updateStudent);
 router.delete('/admin/students/:studentId', verifyToken, isAdmin, adminController.deleteStudent);
 router.get('/admin/students/:studentId', verifyToken, adminController.getStudentDetails);
 
 // Teachers
-router.get('/admin/teachers', verifyToken, async (req, res) => {
-  try {
-    const { Teacher } = require('../models/CompleteModels');
-    const teachers = await Teacher.find({ isActive: true });
-    res.json({ success: true, teachers });
-  } catch (error) {
-    res.status(500).json({ success: false, msg: error.message });
-  }
-});
+router.get('/admin/teachers', verifyToken, adminController.getAllTeachers);
 router.post('/admin/teachers', verifyToken, isAdmin, adminController.addTeacher);
 router.put('/admin/teachers/:teacherId', verifyToken, isAdmin, adminController.updateTeacher);
 router.delete('/admin/teachers/:teacherId', verifyToken, isAdmin, adminController.deleteTeacher);
 router.get('/admin/teachers/:teacherId', verifyToken, isAdmin, adminController.getTeacherDetails);
 
 // Courses (public read, admin write)
-router.get('/courses', async (req, res) => {
-  try {
-    const { Course } = require('../models/CompleteModels');
-    const courses = await Course.find({ isActive: true });
-    res.json({ success: true, courses });
-  } catch (error) {
-    res.status(500).json({ success: false, msg: error.message });
-  }
-});
-router.get('/admin/courses', verifyToken, async (req, res) => {
-  try {
-    const { Course } = require('../models/CompleteModels');
-    const courses = await Course.find({ isActive: true });
-    res.json({ success: true, courses });
-  } catch (error) {
-    res.status(500).json({ success: false, msg: error.message });
-  }
-});
+router.get('/courses', adminController.getAllCourses);
+router.get('/admin/courses', verifyToken, adminController.getAllCourses);
 router.post('/admin/courses', verifyToken, isAdmin, adminController.addCourse);
 router.put('/admin/courses/:courseId', verifyToken, isAdmin, adminController.updateCourse);
 router.delete('/admin/courses/:courseId', verifyToken, isAdmin, adminController.deleteCourse);
 
 // Subjects (public read, admin write)
-router.get('/subjects', async (req, res) => {
-  try {
-    const { Subject } = require('../models/CompleteModels');
-    const subjects = await Subject.find({}).populate('courseId', 'courseName courseCode').populate('teacherId', 'name email');
-    res.json({ success: true, subjects });
-  } catch (error) {
-    res.status(500).json({ success: false, msg: error.message });
-  }
-});
-router.get('/admin/subjects', verifyToken, async (req, res) => {
-  try {
-    const { Subject } = require('../models/CompleteModels');
-    const subjects = await Subject.find({}).populate('courseId', 'courseName courseCode').populate('teacherId', 'name email');
-    res.json({ success: true, subjects });
-  } catch (error) {
-    res.status(500).json({ success: false, msg: error.message });
-  }
-});
+router.get('/subjects', adminController.getAllSubjects);
+router.get('/admin/subjects', verifyToken, adminController.getAllSubjects);
 router.post('/admin/subjects', verifyToken, isAdmin, adminController.addSubject);
 router.post('/subjects/add', verifyToken, isAdmin, adminController.addSubject);
 router.delete('/admin/subjects/:subjectId', verifyToken, isAdmin, adminController.deleteSubject);

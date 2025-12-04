@@ -611,7 +611,9 @@ const getComprehensiveAttendanceReport = async (req, res) => {
 // Get All Students
 const getAllStudents = async (req, res) => {
   try {
-    const students = await Student.find({ isActive: true }).populate('courseId', 'courseName courseCode');
+    const students = await Student.find({ isActive: true })
+      .populate('courseId', 'courseName courseCode')
+      .sort({ createdAt: -1 }); // Sort by newest first
     res.json({ success: true, students });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -621,8 +623,33 @@ const getAllStudents = async (req, res) => {
 // Get All Teachers
 const getAllTeachers = async (req, res) => {
   try {
-    const teachers = await Teacher.find({ isActive: true });
+    const teachers = await Teacher.find({ isActive: true })
+      .sort({ createdAt: -1 }); // Sort by newest first
     res.json({ success: true, teachers });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Get All Courses
+const getAllCourses = async (req, res) => {
+  try {
+    const courses = await Course.find({ isActive: true })
+      .sort({ createdAt: -1 });
+    res.json({ success: true, courses });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Get All Subjects
+const getAllSubjects = async (req, res) => {
+  try {
+    const subjects = await Subject.find({ isActive: true }) // Ensure we only get active subjects if that flag exists, or just all
+      .populate('courseId', 'courseName courseCode')
+      .populate('teacherId', 'name email')
+      .sort({ createdAt: -1 });
+    res.json({ success: true, subjects });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
   }
@@ -1052,5 +1079,7 @@ module.exports = {
   returnBook,
   deleteBook,
   getAllNotices,
-  updateCourse
+  updateCourse,
+  getAllCourses,
+  getAllSubjects
 };

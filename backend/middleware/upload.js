@@ -26,7 +26,7 @@ const fileFilter = (req, file, cb) => {
 
   if (!allowedExtensions.includes(ext)) {
     req.fileValidationError = "Invalid file type";
-    return cb(null, false);  
+    return cb(null, false);
   }
 
   cb(null, true);
@@ -35,7 +35,7 @@ const fileFilter = (req, file, cb) => {
 // Multer Instance ----------------------
 const upload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100 MB
   fileFilter
 });
 

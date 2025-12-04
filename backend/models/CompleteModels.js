@@ -169,7 +169,7 @@ const LearningResourceSchema = new mongoose.Schema({
     name: String,
     url: String,
     size: Number,
-    type: String
+    fileType: String
   }],
   links: [{
     title: String,

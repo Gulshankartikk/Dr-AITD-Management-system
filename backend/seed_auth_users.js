@@ -22,9 +22,10 @@ const seedAuthUsers = async () => {
             });
             console.log('Admin account created: admin / admin123');
         } else {
+            // Ensure password is correct
             admin.password = 'admin123';
             await admin.save();
-            console.log('Admin password updated');
+            console.log('Admin password updated to default');
         }
 
         // 2. Seed Teacher
@@ -40,9 +41,10 @@ const seedAuthUsers = async () => {
             });
             console.log('Teacher account created: teacher / teacher123');
         } else {
+            // Ensure password is correct
             teacher.password = 'teacher123';
             await teacher.save();
-            console.log('Teacher password updated');
+            console.log('Teacher password updated to default');
         }
 
         process.exit(0);

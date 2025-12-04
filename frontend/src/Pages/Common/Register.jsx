@@ -41,6 +41,8 @@ const Register = () => {
     });
   };
 
+  const [registeredStudent, setRegisteredStudent] = useState(null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -51,7 +53,7 @@ const Register = () => {
 
     setIsLoading(true);
     try {
-      await axios.post(`${BASE_URL}/api/student/register`, {
+      const response = await axios.post(`${BASE_URL}/api/student/register`, {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -59,8 +61,8 @@ const Register = () => {
         courseId: formData.courseId
       });
 
-      toast.success("Registration successful! You can now login.");
-      navigate("/login");
+      setRegisteredStudent(response.data.student);
+      toast.success("Registration successful!");
     } catch (error) {
       console.error("Registration error:", error);
       toast.error(error.response?.data?.msg || "Registration failed");
@@ -68,6 +70,34 @@ const Register = () => {
       setIsLoading(false);
     }
   };
+
+  if (registeredStudent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center">
+          <div className="bg-green-100 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+            <GraduationCap className="text-green-600 w-10 h-10" />
+          </div>
+          <h2 className="text-3xl font-bold text-secondary mb-4">Registration Successful!</h2>
+          <p className="text-text-secondary mb-6">
+            Your account has been created. Please note your Roll Number, as you may need it to log in.
+          </p>
+
+          <div className="bg-gray-100 p-4 rounded-lg mb-8">
+            <p className="text-sm text-text-secondary uppercase tracking-wide mb-1">Your Roll Number</p>
+            <p className="text-3xl font-mono font-bold text-primary">{registeredStudent.rollNo}</p>
+          </div>
+
+          <Button
+            onClick={() => navigate("/login")}
+            className="w-full py-3"
+          >
+            Proceed to Login
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-white">
