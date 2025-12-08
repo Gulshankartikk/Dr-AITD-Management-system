@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
-const useAutoLogout = (timeout = 120000) => { // 2 minutes = 120000ms
+const useAutoLogout = (timeout = 1800000) => { // 30 minutes = 1800000ms
   const navigate = useNavigate();
   const timeoutRef = useRef(null);
 
@@ -21,7 +21,7 @@ const useAutoLogout = (timeout = 120000) => { // 2 minutes = 120000ms
 
   useEffect(() => {
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
-    
+
     events.forEach(event => {
       window.addEventListener(event, resetTimer);
     });

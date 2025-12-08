@@ -127,8 +127,8 @@ const CreateTeacher = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="Dr. John Doe"
-                    icon={<FaUser className="text-text-muted" />}
+                    placeholder="Gulshan kartik"
+                    icon={FaUser}
                     required
                   />
 
@@ -138,8 +138,8 @@ const CreateTeacher = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="john.doe@college.edu"
-                    icon={<FaEnvelope className="text-text-muted" />}
+                    placeholder="kartik@gmail.com"
+                    icon={FaEnvelope}
                     required
                   />
 
@@ -150,7 +150,7 @@ const CreateTeacher = () => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="+91 98765 43210"
-                    icon={<FaPhone className="text-text-muted" />}
+                    icon={FaPhone}
                     required
                   />
 
@@ -161,7 +161,7 @@ const CreateTeacher = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Set initial password"
-                    icon={<FaLock className="text-text-muted" />}
+                    icon={FaLock}
                     required
                   />
                 </div>

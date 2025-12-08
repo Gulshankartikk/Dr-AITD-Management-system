@@ -69,7 +69,7 @@ const login = async (req, res, next) => {
         const token = jwt.sign(
             { id: user._id, role: role },
             JWT_SECRET,
-            { expiresIn: '24h' }
+            { expiresIn: '7d' }
         );
 
         // 5. Set Cookie
@@ -77,7 +77,7 @@ const login = async (req, res, next) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
 
         // 6. Prepare Response
