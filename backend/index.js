@@ -24,7 +24,15 @@ const app = express();
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || origin.startsWith('http://localhost:')) {
+      const allowedOrigins = [
+        'http://localhost:5173',
+        'http://localhost:4000',
+        'https://dr-aitd-management-system.vercel.app'
+      ];
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
