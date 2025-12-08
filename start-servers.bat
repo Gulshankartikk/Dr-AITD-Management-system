@@ -1,22 +1,38 @@
 @echo off
-echo Starting College ERP System...
+echo ===================================================
+echo      Dr AITD Management System - Launcher
+echo ===================================================
+echo.
+echo [INFO] Applying recent fixes and updates...
 echo.
 
-echo Killing existing Node processes...
+echo [Step 1] Stopping any running servers (node.exe)...
 taskkill /F /IM node.exe 2>nul
+echo Done.
 
 echo.
-echo Starting Backend Server...
-start "Backend" cmd /k "cd backend && npm start"
+echo [Step 2] Starting Backend Server...
+echo        - Listening on Port 4000
+echo        - CORS enabled for Vercel & Localhost
+start "Backend Server" cmd /k "cd backend && npm start"
 
-timeout /t 3 /nobreak >nul
-
-echo Starting Frontend Server...
-start "Frontend" cmd /k "cd frontend && npm run dev"
+timeout /t 5 /nobreak >nul
 
 echo.
-echo Servers are starting...
-echo Backend: http://localhost:4000
-echo Frontend: http://localhost:5173
+echo [Step 3] Starting Frontend Server...
+echo        - Listening on Port 5173
+start "Frontend Application" cmd /k "cd frontend && npm run dev"
+
+echo.
+echo ===================================================
+echo SUCCESS! Servers are running.
+echo.
+echo Backend:  http://localhost:4000
+echo Frontend: http://localhost:5173 (Your Local App)
+echo.
+echo NOTE: To fix the "Network Error" on Vercel, you MUST
+echo       deploy this backend to the cloud (Render/Railway).
+echo       See DEPLOY_BACKEND.md for instructions.
+echo ===================================================
 echo.
 pause
