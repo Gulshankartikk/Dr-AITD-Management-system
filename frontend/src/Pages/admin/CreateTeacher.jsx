@@ -35,18 +35,27 @@ const CreateTeacher = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/admin/dashboard`);
+      const token = Cookies.get('token');
+      const response = await axios.get(`${BASE_URL}/api/admin/dashboard`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (response.data.success) {
         setCourses(response.data.data.courses);
       }
     } catch (error) {
       console.error('Error fetching courses:', error);
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again.');
+      }
     }
   };
 
   const fetchSubjects = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/admin/dashboard`);
+      const token = Cookies.get('token');
+      const response = await axios.get(`${BASE_URL}/api/admin/dashboard`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (response.data.success) {
         setSubjects(response.data.data.subjects);
       }
