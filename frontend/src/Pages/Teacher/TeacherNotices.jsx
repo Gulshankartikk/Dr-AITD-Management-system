@@ -158,7 +158,7 @@ const TeacherNotices = () => {
               >
                 <option value="">-- Select Course --</option>
                 {subjects.map(subject => (
-                  <option key={subject._id} value={subject.courseId?._id}>
+                  <option key={subject._id} value={subject.courseId?._id || ''}>
                     {subject.courseId?.courseName} - {subject.subjectName}
                   </option>
                 ))}

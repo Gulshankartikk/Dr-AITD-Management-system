@@ -211,6 +211,57 @@ const StudentDashboardNew = () => {
           </div>
         </Card>
       </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer border border-gray-200" onClick={() => navigate(`/student/${studentId}/timetable`)}>
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-primary/10 text-primary">
+              <Clock size={20} />
+            </div>
+            <div>
+              <h4 className="font-semibold text-secondary">Timetable</h4>
+              <p className="text-xs text-text-muted">View Schedule</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer border border-gray-200" onClick={() => navigate(`/student/${studentId}/attendance`)}>
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-success/10 text-success">
+              <CheckCircle size={20} />
+            </div>
+            <div>
+              <h4 className="font-semibold text-secondary">Attendance</h4>
+              <p className="text-xs text-text-muted">Check Status</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer border border-gray-200" onClick={() => navigate(`/student/${studentId}/subjects`)}>
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-indigo-500/10 text-indigo-500">
+              <FileText size={20} />
+            </div>
+            <div>
+              <h4 className="font-semibold text-secondary">My Subjects</h4>
+              <p className="text-xs text-text-muted">View Courses</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer border border-gray-200" onClick={() => navigate(`/student/${studentId}/materials`)}>
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-warning/10 text-warning">
+              <FileText size={20} />
+            </div>
+            <div>
+              <h4 className="font-semibold text-secondary">Resources</h4>
+              <p className="text-xs text-text-muted">Study Materials</p>
+            </div>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 };

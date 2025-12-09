@@ -280,6 +280,12 @@ const TeacherDashboardNew = () => {
                     Upload Material
                   </Button>
                 </Link>
+                <Link to={`/teacher/${id}/resources`}>
+                  <Button variant="outline" className="w-full justify-start gap-3 hover:bg-gray-50">
+                    <FaBook className="text-secondary" />
+                    Learning Resources
+                  </Button>
+                </Link>
                 <Link to={`/teacher/${id}/notices`}>
                   <Button variant="outline" className="w-full justify-start gap-3 hover:bg-gray-50">
                     <FaPaperPlane className="text-primary" />

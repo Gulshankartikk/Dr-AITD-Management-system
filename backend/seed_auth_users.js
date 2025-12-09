@@ -47,6 +47,39 @@ const seedAuthUsers = async () => {
             console.log('Teacher password updated to default');
         }
 
+        // 3. Seed Course (Required for Student)
+        const { Student, Course } = require('./models/CompleteModels');
+        let course = await Course.findOne({ courseCode: 'CSE-DEMO' });
+        if (!course) {
+            course = await Course.create({
+                courseName: "B.Tech Computer Science",
+                courseCode: "CSE-DEMO",
+                courseDuration: "4 Years"
+            });
+            console.log('Course created: CSE-DEMO');
+        }
+
+        // 4. Seed Student
+        let student = await Student.findOne({ rollNo: 'STU2025' });
+        if (!student) {
+            await Student.create({
+                name: 'Demo Student',
+                email: 'student@college.edu',
+                username: 'student',
+                password: 'student123',
+                rollNo: 'STU2025',
+                courseId: course._id,
+                semester: 5,
+                branch: 'CSE'
+            });
+            console.log('Student account created: STU2025 / student123');
+        } else {
+            student.password = 'student123';
+            student.courseId = course._id; // Ensure link
+            await student.save();
+            console.log('Student updated');
+        }
+
         process.exit(0);
     } catch (error) {
         console.error('Error seeding auth users:', error);

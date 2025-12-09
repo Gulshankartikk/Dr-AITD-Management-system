@@ -190,6 +190,26 @@ const AddSubject = () => {
           className="bg-white flex flex-col gap-4 justify-evenly py-10 w-full md:w-[50vw] px-10 rounded-xl shadow-xl border border-gray-200"
           onSubmit={handleSubmit}
         >
+          <div className="grid grid-cols-1 gap-4">
+            <Select
+              label="Select Course *"
+              name="selectedCourse"
+              value={selectedCourse}
+              onChange={(e) => {
+                setSelectedCourse(e.target.value);
+                setFormData(prev => ({ ...prev, selectedCourse: e.target.value }));
+              }}
+              required
+            >
+              <option value="">Select Course</option>
+              {courses.map(course => (
+                <option key={course._id} value={course._id}>
+                  {course.courseName} ({course.courseCode})
+                </option>
+              ))}
+            </Select>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Subject Name *"

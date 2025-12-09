@@ -105,7 +105,11 @@ const getTeacherDashboard = async (req, res) => {
       // Try fetching by username first
       const teacher = await Teacher.findOne({ username: teacherId })
         .populate('assignedCourse', 'courseName courseCode')
-        .populate('assignedSubjects', 'subjectName subjectCode');
+        .populate({
+          path: 'assignedSubjects',
+          select: 'subjectName subjectCode courseId',
+          populate: { path: 'courseId', select: 'courseName courseCode' }
+        });
 
       if (teacher) {
         const assignments = await TeacherSubjectAssignment.find({ teacherId: teacher._id, isActive: true })
@@ -118,7 +122,7 @@ const getTeacherDashboard = async (req, res) => {
 
     if (teacherId === 'teacher') {
       const courses = await Course.find({ isActive: true }).limit(2);
-      const subjects = await Subject.find({ isActive: true }).limit(3);
+      const subjects = await Subject.find({ isActive: true }).limit(3).populate('courseId', 'courseName courseCode');
 
       return res.json({
         success: true,
@@ -156,7 +160,11 @@ const getTeacherDashboard = async (req, res) => {
 
     const teacher = await Teacher.findById(teacherId)
       .populate('assignedCourse', 'courseName courseCode')
-      .populate('assignedSubjects', 'subjectName subjectCode');
+      .populate({
+        path: 'assignedSubjects',
+        select: 'subjectName subjectCode courseId',
+        populate: { path: 'courseId', select: 'courseName courseCode' }
+      });
 
     if (!teacher) {
       return res.status(404).json({ success: false, msg: 'Teacher not found' });
