@@ -18,19 +18,19 @@ const Layout = () => {
 
   const [viewRole, setViewRole] = useState(null);
 
-  // Get user role from token for Sidebar links
-  const getUserRole = () => {
+  // Get user details from token
+  const getUserDetails = () => {
     const token = Cookies.get('token');
-    if (!token) return null;
+    if (!token) return { role: null, userId: null };
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.role;
+      return { role: payload.role, userId: payload.id || payload.user_id };
     } catch (e) {
-      return null;
+      return { role: null, userId: null };
     }
   };
 
-  const userRole = getUserRole();
+  const { role: userRole, userId } = getUserDetails();
 
   // Sync viewRole with userRole and handle Admin view switching
   React.useEffect(() => {
@@ -64,6 +64,8 @@ const Layout = () => {
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         userRole={viewRole || userRole}
+        userId={userId}
+        realRole={userRole}
       />
 
       <div className="flex-1 flex flex-col overflow-hidden">

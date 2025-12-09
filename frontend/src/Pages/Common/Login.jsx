@@ -233,7 +233,7 @@ const Login = () => {
               <label htmlFor="remember-me" className="ml-2 block text-sm text-text-secondary">Remember me</label>
             </div>
             <Link
-              to={role === 'teacher' ? "/teacher/forgetPassword" : "/student/forgetPassword"}
+              to={`/${role}/forgetPassword`}
               className="text-sm font-semibold text-primary hover:text-primary-hover hover:underline"
             >
               Forgot password?

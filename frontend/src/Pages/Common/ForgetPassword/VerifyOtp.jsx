@@ -17,12 +17,14 @@ const VerifyOtp = () => {
   const [role, setRole] = useState("");
 
   useEffect(() => {
-    if (firstPart == "student") {
+    if (firstPart === "student") {
       setRole("student");
-    } else {
+    } else if (firstPart === "teacher") {
       setRole("teacher");
+    } else if (firstPart === "admin") {
+      setRole("admin");
     }
-  }, []);
+  }, [firstPart]);
 
   let navigate = useNavigate();
 

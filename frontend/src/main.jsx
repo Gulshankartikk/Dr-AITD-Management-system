@@ -20,14 +20,14 @@ import LandingPage from "./Pages/LandingPage";
 import StudentAchievers from "./Pages/Common/StudentAchievers";
 
 import AdminRegister from "./Pages/Common/AdminRegister";
-import StudentManagement from "./Pages/admin/StudentManagement";
-import SubjectManagement from "./Pages/admin/SubjectManagement";
-import AddSubject from "./Pages/admin/AddSubject";
-import AddCourse from "./Pages/admin/AddCourse";
-import CreateTeacher from "./Pages/admin/CreateTeacher";
-import CreateStudent from "./Pages/admin/CreateStudent";
-import AdminDashboard from "./Pages/admin/AdminDashboardNew";
-import NotificationSummary from "./Pages/admin/NotificationSummary";
+import StudentManagement from "./Pages/Admin/StudentManagement";
+import SubjectManagement from "./Pages/Admin/SubjectManagement";
+import AddSubject from "./Pages/Admin/AddSubject";
+import AddCourse from "./Pages/Admin/AddCourse";
+import CreateTeacher from "./Pages/Admin/CreateTeacher";
+import CreateStudent from "./Pages/Admin/CreateStudent";
+import AdminDashboard from "./Pages/Admin/AdminDashboardNew";
+import NotificationSummary from "./Pages/Admin/NotificationSummary";
 import TeacherSummary from "./Pages/Teacher/TeacherSummary";
 import StudentDashboard from "./Pages/Student/StudentDashboardNew";
 import StudentMarks from "./Pages/Student/StudentMarks";
@@ -62,17 +62,17 @@ import NotFound from "./Pages/Common/NotFound";
 import Unauthorized from "./Pages/Unauthorized";
 
 // Additional Admin Pages
-import TeacherManagement from "./Pages/admin/TeacherManagement";
-import CourseManagement from "./Pages/admin/CourseManagement";
-import FeeManagement from "./Pages/admin/FeeManagement";
-import AttendanceManagement from "./Pages/admin/AttendanceManagement";
-import ExamManagement from "./Pages/admin/ExamManagement";
-import LibraryManagement from "./Pages/admin/LibraryManagement";
-import TimetableManagement from "./Pages/admin/TimetableManagement";
-import ReportsManagement from "./Pages/admin/ReportsManagement";
-import SettingsManagement from "./Pages/admin/SettingsManagement";
-import NoticesManagement from "./Pages/admin/NoticesManagement";
-import AdminUpload from "./Pages/admin/AdminUpload";
+import TeacherManagement from "./Pages/Admin/TeacherManagement";
+import CourseManagement from "./Pages/Admin/CourseManagement";
+import FeeManagement from "./Pages/Admin/FeeManagement";
+import AttendanceManagement from "./Pages/Admin/AttendanceManagement";
+import ExamManagement from "./Pages/Admin/ExamManagement";
+import LibraryManagement from "./Pages/Admin/LibraryManagement";
+import TimetableManagement from "./Pages/Admin/TimetableManagement";
+import ReportsManagement from "./Pages/Admin/ReportsManagement";
+import SettingsManagement from "./Pages/Admin/SettingsManagement";
+import NoticesManagement from "./Pages/Admin/NoticesManagement";
+import AdminUpload from "./Pages/Admin/AdminUpload";
 import TeacherUpload from "./Pages/Teacher/TeacherUpload";
 import AttendanceUpload from "./Pages/Teacher/AttendanceUpload";
 import StudentResources from "./Pages/Student/StudentResources";
@@ -89,8 +89,10 @@ const router = createBrowserRouter(
       {/* Public Password Reset Routes */}
       <Route path="student/forgetPassword" element={<ForgetPass />} />
       <Route path="teacher/forgetPassword" element={<ForgetPass />} />
+      <Route path="admin/forgetPassword" element={<ForgetPass />} />
       <Route path="student/:userId/forgetPassword/verifyotp" element={<VerifyOtp />} />
       <Route path="teacher/:userId/forgetPassword/verifyotp" element={<VerifyOtp />} />
+      <Route path="admin/:userId/forgetPassword/verifyotp" element={<VerifyOtp />} />
 
       {/* student routes */}
       <Route element={<RequireAuth allowedRoles={['admin', 'teacher', 'student']} />}>

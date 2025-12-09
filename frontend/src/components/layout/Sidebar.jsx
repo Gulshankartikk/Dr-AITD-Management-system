@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import useAutoLogout from '../../hooks/useAutoLogout';
 
-const Sidebar = ({ isOpen, onClose, userRole }) => {
+const Sidebar = ({ isOpen, onClose, userRole, userId, realRole }) => {
   const location = useLocation();
   const logout = useAutoLogout();
 
@@ -39,7 +39,12 @@ const Sidebar = ({ isOpen, onClose, userRole }) => {
         { icon: Settings, label: 'Settings', path: '/admin/settings' },
       ];
     } else if (userRole === 'teacher') {
-      let teacherId = location.pathname.split('/')[2];
+      let teacherId = userId;
+      // If admin is viewing, or if strictly relying on URL is needed (fallback)
+      if (realRole === 'admin' || !teacherId) {
+        teacherId = location.pathname.split('/')[2];
+      }
+
       // Fallback if on admin page or invalid ID
       if (!teacherId || teacherId === 'teachers' || teacherId === 'admin') {
         teacherId = 'demo-teacher';
@@ -57,7 +62,12 @@ const Sidebar = ({ isOpen, onClose, userRole }) => {
         { icon: FileText, label: 'Notices', path: `/teacher/${teacherId}/notices` },
       ];
     } else if (userRole === 'student') {
-      let studentId = location.pathname.split('/')[2];
+      let studentId = userId;
+
+      if (realRole === 'admin' || !studentId) {
+        studentId = location.pathname.split('/')[2];
+      }
+
       // Fallback if on admin page or invalid ID
       if (!studentId || studentId === 'students' || studentId === 'admin') {
         studentId = 'demo-student';

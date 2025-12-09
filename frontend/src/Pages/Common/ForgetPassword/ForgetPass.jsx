@@ -17,12 +17,14 @@ const ForgetPass = () => {
   const [role, setRole] = useState("");
 
   useEffect(() => {
-    if (firstPart == "student") {
+    if (firstPart === "student") {
       setRole("student");
-    } else {
+    } else if (firstPart === "teacher") {
       setRole("teacher");
+    } else if (firstPart === "admin") {
+      setRole("admin");
     }
-  }, []);
+  }, [firstPart]);
 
   let { id } = useParams();
 
@@ -42,9 +44,13 @@ const ForgetPass = () => {
         setEmail("");
         toast.success(res.msg);
         const userId = res.userId;
-        role === "teacher"
-          ? navigate(`/teacher/${userId}/forgetPassword/verifyotp`)
-          : navigate(`/student/${userId}/forgetPassword/verifyotp`);
+        if (role === "teacher") {
+          navigate(`/teacher/${userId}/forgetPassword/verifyotp`);
+        } else if (role === "admin") {
+          navigate(`/admin/${userId}/forgetPassword/verifyotp`);
+        } else {
+          navigate(`/student/${userId}/forgetPassword/verifyotp`);
+        }
       }
     } catch (err) {
       console.log("Something went wrong", err);
