@@ -2,10 +2,10 @@
 
 A comprehensive, modern Enterprise Resource Planning (ERP) solution designed specifically for **Dr AITD**. This system streamlines administrative tasks, empowers teachers with digital tools, and engages students through a unified, user-friendly platform.
 
-![Project Status](https://img.shields.io/badge/Status-Active-success)
+![Project Status](https://img.shields.io/badge/Status-Production%20Ready-success)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 ![Tech Stack](https://img.shields.io/badge/Stack-MERN-yellow)
-![Deployment](https://img.shields.io/badge/Deployment-Render-purple)
+![Architecture](https://img.shields.io/badge/Architecture-MVC%20%2B%20Modular-orange)
 
 ---
 
@@ -38,58 +38,43 @@ A comprehensive, modern Enterprise Resource Planning (ERP) solution designed spe
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Architecture
+
+### Backend (Clean Architecture)
+*   **Runtime**: [Node.js](https://nodejs.org/) & [Express.js](https://expressjs.com/)
+*   **Database**: [MongoDB](https://www.mongodb.com/) (Mongoose ODM)
+*   **Models**: Domain-Driven Design (Users, Academics, Activities, Operations)
+*   **Security**: 
+    *   JWT (JSON Web Tokens) for stateless authentication
+    *   BCrypt for password hashing
+    *   CORS configured for secure cross-origin requests
+*   **File Handling**: Multer for local file storage
 
 ### Frontend
 *   **Framework**: [React.js](https://reactjs.org/) (v18) with [Vite](https://vitejs.dev/)
 *   **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
 *   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 *   **Routing**: [React Router DOM](https://reactrouter.com/)
-*   **HTTP Client**: [Axios](https://axios-http.com/)
-*   **Icons**: [React Icons](https://react-icons.github.io/react-icons/) & [Lucide React](https://lucide.dev/)
-*   **Notifications**: [React Toastify](https://fkhadra.github.io/react-toastify/)
-
-### Backend
-*   **Runtime**: [Node.js](https://nodejs.org/)
-*   **Framework**: [Express.js](https://expressjs.com/)
-*   **Database**: [MongoDB](https://www.mongodb.com/) (with Mongoose ODM)
-*   **Authentication**: JWT (JSON Web Tokens) & BCrypt
-*   **File Handling**: [Multer](https://github.com/expressjs/multer) (Local Storage)
-*   **Security**: CORS, Cookie Parser, Dotenv
+*   **HTTP Client**: Axios with interceptors
 
 ---
 
 ## 🚀 Deployment (Render)
 
-This project is configured for **full-stack deployment on Render** using a Blueprint.
+This project is configured for **One-Click Deployment** on Render using Infrastructure as Code (IaC).
 
-### Prerequisites (Environment Variables)
-You will need to set these in your Render environment:
-*   `MONGO_URL`: Connection string for MongoDB (Atlas).
-*   `JWT_SECRET`: A secure string for token signing.
-
-### One-Click Deployment
 1.  Push this repository to GitHub.
 2.  Log in to [Render](https://render.com).
 3.  Click **New +** -> **Blueprint**.
 4.  Select your repository.
-5.  Render will automatically detect the configuration from `render.yaml`.
-6.  Click **Apply**.
+5.  Render will automatically obtain the configuration from `render.yaml`.
+6.  **Environment Variables**: You will be prompted to enter:
+    *   `MONGO_URL`: Your MongoDB Atlas connection string.
+    *   `JWT_SECRET`: A secure random string.
 
 ---
 
-## 📋 Prerequisites
-
-Before you begin, ensure you have the following installed:
-*   **Node.js** (v18 or higher)
-*   **npm** (Node Package Manager)
-*   **MongoDB** (Local instance or MongoDB Atlas connection string)
-
----
-
-## ⚙️ Installation & Setup
-
-Follow these steps to set up the project locally.
+## ⚙️ Local Installation & Setup
 
 ### 1. Clone the Repository
 ```bash
@@ -98,62 +83,53 @@ cd "Dr AITD Management system"
 ```
 
 ### 2. Backend Setup
-Navigate to the backend directory and install dependencies:
 ```bash
 cd backend
 npm install
 ```
-
-Create a `.env` file in the `backend` directory with the following configuration:
+Create a `.env` file in `backend/` (or use the provided defaults for dev):
 ```env
 PORT=4000
 MONGO_URI=mongodb://127.0.0.1:27017/college-erp
-JWT_SECRET=your_super_secret_key_change_this
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_specific_password
-NODE_ENV=development
+JWT_SECRET=your_local_secret
 ```
 
 ### 3. Frontend Setup
-Navigate to the frontend directory and install dependencies:
 ```bash
 cd ../frontend
 npm install
 ```
 
-### 4. Database Seeding (Optional)
-Populate the database with initial Admin and Teacher accounts:
+### 4. Database Seeding (Recommended)
+Initialize the database with default Admin and Demo accounts:
 ```bash
 cd ../backend
 node seed_auth_users.js
 ```
-*   **Default Admin**: `admin` / `admin123`
-*   **Default Teacher**: `teacher` / `teacher123`
+*   **Admin**: `admin` / `admin123`
+*   **Teacher**: `teacher` / `teacher123`
+*   **Student**: `student` / `student123`
 
 ---
 
-## 🏃‍♂️ Running the Application
+## 🏃‍♂️ Running Locally
 
-### Option 1: Using the Batch Script (Windows)
-Double-click `start-servers.bat` in the root directory to start both servers.
+### Option 1: One-Click Script (Windows)
+Double-click `start-servers.bat` in the root directory.
 
-### Option 2: Manual Start
-
-**Start the Backend Server**
+### Option 2: Manual Terminals
+**Backend:**
 ```bash
 cd backend
 npm start
 ```
-*The server will start on `http://localhost:4000`*
 
-**Start the Frontend Client**
+**Frontend:**
 ```bash
 cd frontend
 npm run dev
 ```
-*The application will run on `http://localhost:5173`*
-
-Access the application by opening your browser and navigating to **`http://localhost:5173`**.
+*Access the app at `http://localhost:5173` (or `5174` if port is busy).*
 
 ---
 
@@ -161,65 +137,38 @@ Access the application by opening your browser and navigating to **`http://local
 
 ```
 Dr AITD Management system/
-├── backend/                # Node.js/Express Server
-│   ├── controller/         # Request logic (Admin, Teacher, Student, Auth)
-│   ├── database/           # DB Connection logic
-│   ├── middleware/         # Auth, Upload, Error handling
-│   ├── models/             # Mongoose Schemas (User, Course, etc.)
-│   ├── routes/             # API Route Definitions
-│   └── uploads/            # Static file storage
+├── backend/
+│   ├── controller/         # Business Logic
+│   ├── database/           # DB Connection
+│   ├── middleware/         # Auth, Upload, Error Handling
+│   ├── models/             # Domain Models (Refactored)
+│   │   ├── Users.js        # Admin, Teacher, Student
+│   │   ├── Academics.js    # Course, Subject, Timetable
+│   │   ├── Activities.js   # Attendance, Marks, Assignments
+│   │   └── ...
+│   ├── routes/             # API Endpoints
+│   └── uploads/            # Static Files
 │
-├── frontend/               # React Client
+├── frontend/
 │   ├── src/
-│   │   ├── components/     # Reusable UI Components
-│   │   ├── features/       # Redux Slices (Auth, User, etc.)
-│   │   ├── Pages/          # Application Pages (Admin, Teacher, Student)
-│   │   ├── services/       # API Integration Services
-│   │   └── App.jsx         # Main App Component
-│   └── public/             # Static Assets
+│   │   ├── components/     # UI Components
+│   │   ├── features/       # Redux Slices
+│   │   ├── Pages/          # Views (Admin, Teacher, Student)
+│   │   └── services/       # API Calls
 │
-├── render.yaml             # Render Deployment Blueprint
-└── README.md               # Project Documentation
+├── render.yaml             # Deployment Blueprint
+└── README.md               # Documentation
 ```
 
 ---
 
-## 🔌 API Documentation (Brief)
-
-The backend exposes a RESTful API. Key endpoints include:
-
-*   **Auth**: `/api/auth/login`, `/api/auth/logout`
-*   **Admin**:
-    *   `/api/admin/students` (CRUD)
-    *   `/api/admin/teachers` (CRUD)
-    *   `/api/admin/courses` (CRUD)
-    *   `/api/admin/reports/*`
-*   **Teacher**:
-    *   `/api/teacher/:id/dashboard`
-    *   `/api/teacher/:id/attendance`
-    *   `/api/teacher/:id/marks`
-*   **Student**:
-    *   `/api/student/:id/dashboard`
-    *   `/api/student/:id/profile`
-    *   `/api/student/:id/results`
-
----
-
 ## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-1.  Fork the repository.
-2.  Create a new branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4.  Push to the branch (`git push origin feature/AmazingFeature`).
-5.  Open a Pull Request.
+1.  Fork the repo and create your branch from `main`.
+2.  If you've added code that should be tested, add tests.
+3.  Ensure the test suite passes.
+4.  Issue that pull request!
 
 ---
 
 ## 📄 License
-
-This project is licensed under the **MIT License**.
-
----
-
-**Developed for Dr AITD**
+MIT License - Developed for **Dr AITD**

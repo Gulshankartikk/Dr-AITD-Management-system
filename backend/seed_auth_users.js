@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const { Teacher, Admin } = require('./models/CompleteModels');
+const { Teacher, Admin } = require('./models');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -48,7 +48,7 @@ const seedAuthUsers = async () => {
         }
 
         // 3. Seed Course (Required for Student)
-        const { Student, Course } = require('./models/CompleteModels');
+        const { Student, Course } = require('./models');
         let course = await Course.findOne({ courseCode: 'CSE-DEMO' });
         if (!course) {
             course = await Course.create({
