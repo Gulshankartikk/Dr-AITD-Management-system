@@ -57,6 +57,7 @@ const buildFileUrl = (req, file) => {
 // NOTE: Teacher registration removed - Teachers are now created by admin only
 
 // ------------------------- TEACHER LOGIN -------------------------
+// ------------------------- TEACHER LOGIN -------------------------
 const teacherLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -65,23 +66,33 @@ const teacherLogin = async (req, res) => {
       return res.status(400).json({ success: false, msg: 'Username and password required' });
     }
 
-    // STRICT validation - only accept exact match
-    if (username !== 'teacher' || password !== 'teacher123') {
+    // Check if teacher exists in DB
+    const teacher = await Teacher.findOne({
+      $or: [{ email: username }, { username: username }]
+    });
+
+    if (!teacher) {
+      return res.status(404).json({ success: false, msg: 'Teacher not found' });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, teacher.password);
+    if (!isMatch) {
       return res.status(400).json({ success: false, msg: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: 'teacher1', role: 'teacher' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
+    const token = jwt.sign({ id: teacher._id, role: 'teacher' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
     res.cookie('token', token, { httpOnly: true });
 
     return res.json({
       success: true,
       token,
       teacher: {
-        id: 'teacher1',
-        name: 'Demo Teacher',
-        email: 'teacher@college.edu',
-        assignedCourse: [],
-        assignedSubjects: [],
+        id: teacher._id,
+        name: teacher.name,
+        email: teacher.email,
+        assignedCourse: teacher.assignedCourse,
+        assignedSubjects: teacher.assignedSubjects,
         role: 'teacher'
       }
     });
