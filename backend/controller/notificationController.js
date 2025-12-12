@@ -1,4 +1,4 @@
-const { Notification } = require('../models/CompleteModels');
+const { Notification } = require('../models');
 
 // Send notification
 const sendNotification = async (type, data) => {

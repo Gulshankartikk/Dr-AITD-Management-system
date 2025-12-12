@@ -13,7 +13,7 @@ const teacherController = require('../controller/teacherController');
 const studentController = require('../controller/studentController');
 
 // ================= MODELS =================
-const { Course, Subject, Teacher, Student } = require('../models/CompleteModels');
+const { Course, Subject, Teacher, Student } = require('../models');
 
 
 // ======================================================
@@ -54,7 +54,7 @@ router.put('/teacher/:teacherId/profile', verifyToken, isAdmin, async (req, res)
   try {
     const { teacherId } = req.params;
     const { name, email, phone, department, designation } = req.body;
-    const { Teacher } = require('../models/CompleteModels');
+    const { Teacher } = require('../models');
 
     const updatedTeacher = await Teacher.findByIdAndUpdate(
       teacherId,
@@ -123,7 +123,7 @@ router.put('/student/:studentId/profile', verifyToken, isAdmin, async (req, res)
   try {
     const { studentId } = req.params;
     const { name, email, phone } = req.body;
-    const { Student } = require('../models/CompleteModels');
+    const { Student } = require('../models');
 
     const updatedStudent = await Student.findByIdAndUpdate(
       studentId,
@@ -155,6 +155,9 @@ router.get('/student/:studentId/timetable', verifyToken, studentController.getTi
 router.get('/student/:studentId/fees', verifyToken, studentController.getFees);
 router.post('/student/:studentId/leave', verifyToken, studentController.applyLeave);
 router.get('/student/:studentId/leaves', verifyToken, studentController.getLeaves);
+
+// Library
+router.get('/student/library/books', verifyToken, adminController.getAllBooks);
 
 
 // ======================================================

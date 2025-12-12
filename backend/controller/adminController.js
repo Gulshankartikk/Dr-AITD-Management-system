@@ -16,7 +16,7 @@ const {
   Report,
   Library,
   Timetable
-} = require('../models/CompleteModels');
+} = require('../models');
 const { sendNotification } = require('./notificationController');
 
 // Admin Login

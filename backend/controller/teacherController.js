@@ -18,7 +18,7 @@ const {
   Leave,
   Fee,
   LearningResource
-} = require('../models/CompleteModels');
+} = require('../models');
 // Helper to check access rights
 const checkAccess = (req, targetTeacherId) => {
   // Admin can access any teacher data

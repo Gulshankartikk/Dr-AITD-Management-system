@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { Student, Teacher, Admin } = require('../models/CompleteModels');
+const { Student, Teacher, Admin } = require('../models');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 

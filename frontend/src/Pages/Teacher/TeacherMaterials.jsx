@@ -63,14 +63,27 @@ const TeacherMaterials = () => {
     e.preventDefault();
     try {
       const token = Cookies.get('token');
+      const uploadData = new FormData();
+      uploadData.append('subjectId', formData.subjectId);
+      uploadData.append('title', formData.title);
+      uploadData.append('description', formData.description);
+      if (formData.file) {
+        uploadData.append('file', formData.file);
+      }
+
       await axios.post(
         `${BASE_URL}/api/teacher/${teacherId}/materials`,
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        uploadData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
       );
       alert('Study material uploaded successfully!');
       setShowModal(false);
-      setFormData({ subjectId: '', title: '', description: '', fileUrl: '' });
+      setFormData({ subjectId: '', title: '', description: '', file: null });
       fetchData();
     } catch (error) {
       console.error('Error uploading material:', error);
@@ -186,13 +199,25 @@ const TeacherMaterials = () => {
                 />
               </div>
 
-              <Input
-                label="File URL"
-                value={formData.fileUrl}
-                onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
-                placeholder="https://example.com/file.pdf"
-                required
-              />
+              {/* File Upload */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  Upload Document *
+                </label>
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx,.ppt,.pptx"
+                  onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
+                  className="block w-full text-sm text-text-secondary
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-primary/10 file:text-primary
+                    hover:file:bg-primary/20
+                  "
+                  required
+                />
+              </div>
 
               <div className="flex gap-3 mt-6">
                 <Button type="button" variant="outline" className="flex-1" onClick={() => setShowModal(false)}>

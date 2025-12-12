@@ -64,7 +64,7 @@ A comprehensive, modern Enterprise Resource Planning (ERP) solution designed spe
 This project is configured for **full-stack deployment on Render** using a Blueprint.
 
 ### Prerequisites (Environment Variables)
-You will need to set access these in your environment:
+You will need to set these in your Render environment:
 *   `MONGO_URL`: Connection string for MongoDB (Atlas).
 *   `JWT_SECRET`: A secure string for token signing.
 
@@ -78,7 +78,16 @@ You will need to set access these in your environment:
 
 ---
 
-## ⚙️ Local Installation & Setup
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed:
+*   **Node.js** (v18 or higher)
+*   **npm** (Node Package Manager)
+*   **MongoDB** (Local instance or MongoDB Atlas connection string)
+
+---
+
+## ⚙️ Installation & Setup
 
 Follow these steps to set up the project locally.
 
@@ -95,11 +104,14 @@ cd backend
 npm install
 ```
 
-Create a `.env` file in the `backend` directory:
+Create a `.env` file in the `backend` directory with the following configuration:
 ```env
 PORT=4000
 MONGO_URI=mongodb://127.0.0.1:27017/college-erp
 JWT_SECRET=your_super_secret_key_change_this
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_specific_password
+NODE_ENV=development
 ```
 
 ### 3. Frontend Setup
@@ -120,25 +132,28 @@ node seed_auth_users.js
 
 ---
 
-## 🏃‍♂️ Running Locally
+## 🏃‍♂️ Running the Application
 
 ### Option 1: Using the Batch Script (Windows)
 Double-click `start-servers.bat` in the root directory to start both servers.
 
 ### Option 2: Manual Start
-**Backend:**
+
+**Start the Backend Server**
 ```bash
 cd backend
 npm start
 ```
-*(Runs on `http://localhost:4000`)*
+*The server will start on `http://localhost:4000`*
 
-**Frontend:**
+**Start the Frontend Client**
 ```bash
 cd frontend
 npm run dev
 ```
-*(Runs on `http://localhost:5173`)*
+*The application will run on `http://localhost:5173`*
+
+Access the application by opening your browser and navigating to **`http://localhost:5173`**.
 
 ---
 
@@ -164,9 +179,40 @@ Dr AITD Management system/
 │   └── public/             # Static Assets
 │
 ├── render.yaml             # Render Deployment Blueprint
-├── DEPLOYMENT_GUIDE.md     # Detailed deployment instructions
 └── README.md               # Project Documentation
 ```
+
+---
+
+## 🔌 API Documentation (Brief)
+
+The backend exposes a RESTful API. Key endpoints include:
+
+*   **Auth**: `/api/auth/login`, `/api/auth/logout`
+*   **Admin**:
+    *   `/api/admin/students` (CRUD)
+    *   `/api/admin/teachers` (CRUD)
+    *   `/api/admin/courses` (CRUD)
+    *   `/api/admin/reports/*`
+*   **Teacher**:
+    *   `/api/teacher/:id/dashboard`
+    *   `/api/teacher/:id/attendance`
+    *   `/api/teacher/:id/marks`
+*   **Student**:
+    *   `/api/student/:id/dashboard`
+    *   `/api/student/:id/profile`
+    *   `/api/student/:id/results`
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+1.  Fork the repository.
+2.  Create a new branch (`git checkout -b feature/AmazingFeature`).
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the branch (`git push origin feature/AmazingFeature`).
+5.  Open a Pull Request.
 
 ---
 
