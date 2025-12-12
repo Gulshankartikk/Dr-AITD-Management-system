@@ -875,8 +875,7 @@ module.exports = {
         return res.status(400).json({ success: false, msg: 'Incorrect old password' });
       }
 
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      teacher.password = hashedPassword;
+      teacher.password = newPassword;
       await teacher.save();
 
       res.json({ success: true, msg: 'Password updated successfully' });

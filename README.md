@@ -5,6 +5,7 @@ A comprehensive, modern Enterprise Resource Planning (ERP) solution designed spe
 ![Project Status](https://img.shields.io/badge/Status-Active-success)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 ![Tech Stack](https://img.shields.io/badge/Stack-MERN-yellow)
+![Deployment](https://img.shields.io/badge/Deployment-Render-purple)
 
 ---
 
@@ -58,16 +59,26 @@ A comprehensive, modern Enterprise Resource Planning (ERP) solution designed spe
 
 ---
 
-## 📋 Prerequisites
+## 🚀 Deployment (Render)
 
-Before you begin, ensure you have the following installed:
-*   **Node.js** (v16 or higher)
-*   **npm** (Node Package Manager)
-*   **MongoDB** (Local instance or MongoDB Atlas connection string)
+This project is configured for **full-stack deployment on Render** using a Blueprint.
+
+### Prerequisites (Environment Variables)
+You will need to set access these in your environment:
+*   `MONGO_URL`: Connection string for MongoDB (Atlas).
+*   `JWT_SECRET`: A secure string for token signing.
+
+### One-Click Deployment
+1.  Push this repository to GitHub.
+2.  Log in to [Render](https://render.com).
+3.  Click **New +** -> **Blueprint**.
+4.  Select your repository.
+5.  Render will automatically detect the configuration from `render.yaml`.
+6.  Click **Apply**.
 
 ---
 
-## ⚙️ Installation & Setup
+## ⚙️ Local Installation & Setup
 
 Follow these steps to set up the project locally.
 
@@ -84,14 +95,11 @@ cd backend
 npm install
 ```
 
-Create a `.env` file in the `backend` directory with the following configuration:
+Create a `.env` file in the `backend` directory:
 ```env
 PORT=4000
 MONGO_URI=mongodb://127.0.0.1:27017/college-erp
 JWT_SECRET=your_super_secret_key_change_this
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_specific_password
-NODE_ENV=development
 ```
 
 ### 3. Frontend Setup
@@ -112,23 +120,25 @@ node seed_auth_users.js
 
 ---
 
-## 🏃‍♂️ Running the Application
+## 🏃‍♂️ Running Locally
 
-### Start the Backend Server
+### Option 1: Using the Batch Script (Windows)
+Double-click `start-servers.bat` in the root directory to start both servers.
+
+### Option 2: Manual Start
+**Backend:**
 ```bash
 cd backend
 npm start
 ```
-*The server will start on `http://localhost:4000`*
+*(Runs on `http://localhost:4000`)*
 
-### Start the Frontend Client
+**Frontend:**
 ```bash
 cd frontend
 npm run dev
 ```
-*The application will run on `http://localhost:5173`*
-
-Access the application by opening your browser and navigating to **`http://localhost:5173`**.
+*(Runs on `http://localhost:5173`)*
 
 ---
 
@@ -153,40 +163,10 @@ Dr AITD Management system/
 │   │   └── App.jsx         # Main App Component
 │   └── public/             # Static Assets
 │
+├── render.yaml             # Render Deployment Blueprint
+├── DEPLOYMENT_GUIDE.md     # Detailed deployment instructions
 └── README.md               # Project Documentation
 ```
-
----
-
-## 🔌 API Documentation (Brief)
-
-The backend exposes a RESTful API. Key endpoints include:
-
-*   **Auth**: `/api/auth/login`, `/api/auth/logout`
-*   **Admin**:
-    *   `/api/admin/students` (CRUD)
-    *   `/api/admin/teachers` (CRUD)
-    *   `/api/admin/courses` (CRUD)
-    *   `/api/admin/reports/*`
-*   **Teacher**:
-    *   `/api/teacher/:id/dashboard`
-    *   `/api/teacher/:id/attendance`
-    *   `/api/teacher/:id/marks`
-*   **Student**:
-    *   `/api/student/:id/dashboard`
-    *   `/api/student/:id/profile`
-    *   `/api/student/:id/results`
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-1.  Fork the repository.
-2.  Create a new branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4.  Push to the branch (`git push origin feature/AmazingFeature`).
-5.  Open a Pull Request.
 
 ---
 
