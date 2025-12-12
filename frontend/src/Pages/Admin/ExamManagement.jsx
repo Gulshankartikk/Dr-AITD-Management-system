@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaClipboardCheck, FaPlus, FaCalendarAlt, FaEdit, FaEye, FaDownload, FaTimes, FaSearch, FaClock, FaUsers } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
 import Input from '../../components/ui/Input';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Button from '../../components/ui/Button';
+import axios from 'axios';
+import { BASE_URL } from '../../constants/api';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
 
 const ExamManagement = () => {
   const [exams, setExams] = useState([
@@ -20,6 +24,31 @@ const ExamManagement = () => {
     { examId: 1, student: 'Jane Smith', rollNo: 'CS002', marks: 92, grade: 'A+', status: 'Pass' },
     { examId: 3, student: 'Mike Johnson', rollNo: 'BA003', marks: 78, grade: 'B+', status: 'Pass' }
   ]);
+
+  const [courses, setCourses] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const token = Cookies.get('token');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const [coursesRes, subjectsRes] = await Promise.all([
+        axios.get(`${BASE_URL}/courses`, { headers }), // Public or protected endpoint
+        axios.get(`${BASE_URL}/subjects`, { headers })
+      ]);
+
+      setCourses(coursesRes.data.courses || []);
+      setSubjects(subjectsRes.data.subjects || []);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      // Fallback or silent fail if endpoints don't exist yet/mock mode
+    }
+  };
 
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -66,7 +95,7 @@ const ExamManagement = () => {
     setExams([...exams, exam]);
     setNewExam({ name: '', course: '', subject: '', date: '', time: '', duration: '', room: '', students: 0 });
     setShowScheduleModal(false);
-    alert('Exam scheduled successfully!');
+    toast.success('Exam scheduled successfully!');
   };
 
   const viewDetails = (exam) => {
@@ -82,7 +111,7 @@ const ExamManagement = () => {
   const saveEditedExam = () => {
     setExams(exams.map(exam => exam.id === selectedExam.id ? selectedExam : exam));
     setShowEditModal(false);
-    alert('Exam updated successfully!');
+    toast.success('Exam updated successfully!');
   };
 
   const viewResults = (exam) => {
@@ -149,7 +178,7 @@ const ExamManagement = () => {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
               <div className="flex items-center">
-                <FaClipboardCheck className="text-3xl text-secondary mr-4" />
+                <FaClipboardCheck className="text-secondary mr-4 text-3xl" />
                 <div>
                   <p className="text-text-secondary">Scheduled</p>
                   <p className="text-2xl font-bold text-secondary">{exams.filter(exam => exam.status === 'Scheduled').length}</p>
@@ -182,12 +211,17 @@ const ExamManagement = () => {
               </div>
               <Select
                 value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
+                onValueChange={setSelectedStatus}
               >
-                <option>All Status</option>
-                <option>Scheduled</option>
-                <option>Completed</option>
-                <option>Cancelled</option>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All Status">All Status</SelectItem>
+                  <SelectItem value="Scheduled">Scheduled</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="Cancelled">Cancelled</SelectItem>
+                </SelectContent>
               </Select>
             </div>
           </div>
@@ -281,18 +315,35 @@ const ExamManagement = () => {
                   <Select
                     label="Course"
                     value={newExam.course}
-                    onChange={(e) => setNewExam({ ...newExam, course: e.target.value })}
+                    onValueChange={(value) => setNewExam({ ...newExam, course: value })}
                   >
-                    <option value="">Select Course</option>
-                    <option>Computer Science</option>
-                    <option>Mechanical Engineering</option>
-                    <option>Business Administration</option>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Course" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {courses.map(course => (
+                        <SelectItem key={course._id} value={course.courseName}>
+                          {course.courseName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
-                  <Input
+                  <Select
                     label="Subject"
                     value={newExam.subject}
-                    onChange={(e) => setNewExam({ ...newExam, subject: e.target.value })}
-                  />
+                    onValueChange={(value) => setNewExam({ ...newExam, subject: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subjects.map(subject => (
+                        <SelectItem key={subject._id} value={subject.subjectName}>
+                          {subject.subjectName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Input
                     label="Date"
                     type="date"
@@ -308,13 +359,17 @@ const ExamManagement = () => {
                   <Select
                     label="Duration"
                     value={newExam.duration}
-                    onChange={(e) => setNewExam({ ...newExam, duration: e.target.value })}
+                    onValueChange={(value) => setNewExam({ ...newExam, duration: value })}
                   >
-                    <option value="">Select Duration</option>
-                    <option>1 hour</option>
-                    <option>2 hours</option>
-                    <option>3 hours</option>
-                    <option>4 hours</option>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Duration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1 hour">1 hour</SelectItem>
+                      <SelectItem value="2 hours">2 hours</SelectItem>
+                      <SelectItem value="3 hours">3 hours</SelectItem>
+                      <SelectItem value="4 hours">4 hours</SelectItem>
+                    </SelectContent>
                   </Select>
                   <Input
                     label="Room"

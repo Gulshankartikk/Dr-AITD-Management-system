@@ -4,10 +4,16 @@ import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import Select from '../../components/ui/Select';
+import Select, { SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/Select';
+import { toast } from 'react-toastify';
 
 const SettingsManagement = () => {
   const [activeTab, setActiveTab] = useState('general');
+
+  const handleSave = () => {
+    // In a real app, this would gather state and submit to API
+    toast.success('Settings saved successfully');
+  };
 
   const tabs = [
     { id: 'general', name: 'General', icon: FaCog },
@@ -28,7 +34,7 @@ const SettingsManagement = () => {
               <h1 className="text-3xl font-bold text-secondary font-heading">System Settings</h1>
               <p className="text-text-secondary">Configure system preferences and settings</p>
             </div>
-            <Button className="flex items-center space-x-2">
+            <Button className="flex items-center space-x-2" onClick={handleSave}>
               <FaSave />
               <span>Save Changes</span>
             </Button>
@@ -66,11 +72,16 @@ const SettingsManagement = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Input
                           label="Institution Name"
-                          defaultValue="College ERP Management System"
+                          defaultValue="DR.AITD Management System"
                         />
-                        <Select label="Academic Year">
-                          <option>2023-2024</option>
-                          <option>2024-2025</option>
+                        <Select label="Academic Year" defaultValue="2023-2024">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Year" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="2023-2024">2023-2024</SelectItem>
+                            <SelectItem value="2024-2025">2024-2025</SelectItem>
+                          </SelectContent>
                         </Select>
                       </div>
                       <div>
@@ -90,7 +101,7 @@ const SettingsManagement = () => {
                         <Input
                           label="Contact Phone"
                           type="tel"
-                          defaultValue="+1 234 567 8900"
+                          defaultValue="+9134 567 8900"
                         />
                       </div>
                     </div>
@@ -121,10 +132,15 @@ const SettingsManagement = () => {
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                         </label>
                       </div>
-                      <Select label="Default User Role">
-                        <option>Student</option>
-                        <option>Teacher</option>
-                        <option>Staff</option>
+                      <Select label="Default User Role" defaultValue="Student">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Student">Student</SelectItem>
+                          <SelectItem value="Teacher">Teacher</SelectItem>
+                          <SelectItem value="Staff">Staff</SelectItem>
+                        </SelectContent>
                       </Select>
                     </div>
                   </div>
@@ -212,10 +228,15 @@ const SettingsManagement = () => {
                     <h2 className="text-xl font-bold text-secondary mb-6 font-heading">System Settings</h2>
                     <div className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Select label="Database Backup Frequency">
-                          <option>Daily</option>
-                          <option>Weekly</option>
-                          <option>Monthly</option>
+                        <Select label="Database Backup Frequency" defaultValue="Daily">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Frequency" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Daily">Daily</SelectItem>
+                            <SelectItem value="Weekly">Weekly</SelectItem>
+                            <SelectItem value="Monthly">Monthly</SelectItem>
+                          </SelectContent>
                         </Select>
                         <Input
                           label="Log Retention (days)"

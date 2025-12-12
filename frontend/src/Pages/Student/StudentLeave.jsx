@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { FaPlus, FaCalendarCheck, FaClock } from 'react-icons/fa';
 import Card, { CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Modal from '../../components/ui/Modal';
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
@@ -13,7 +14,7 @@ import Badge from '../../components/ui/Badge';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 const StudentLeave = () => {
-  const studentId = window.location.pathname.split('/')[2];
+  const { studentId } = useParams();
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -144,10 +145,18 @@ const StudentLeave = () => {
             label="Leave Type"
             name="leaveType"
             value={formData.leaveType}
-            onChange={(e) => setFormData({ ...formData, leaveType: e.target.value })}
-            options={leaveTypes}
+            onValueChange={(value) => setFormData({ ...formData, leaveType: value })}
             required
-          />
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Leave Type" />
+            </SelectTrigger>
+            <SelectContent>
+              {leaveTypes.map(type => (
+                <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="grid grid-cols-2 gap-4">
             <Input
               label="Start Date"

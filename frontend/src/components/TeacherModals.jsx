@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/Select';
 import { FaTimes } from 'react-icons/fa';
 import axios from 'axios';
 import { BASE_URL } from '../constants/api';
@@ -21,10 +22,10 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
   const fetchData = async () => {
     try {
       const token = Cookies.get('token');
-      const subjectsRes = await axios.get(`${BASE_URL}/api/subjects`, { 
-        headers: { Authorization: `Bearer ${token}` } 
+      const subjectsRes = await axios.get(`${BASE_URL}/api/subjects`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       if (subjectsRes.data.success) {
         setSubjects(subjectsRes.data.subjects);
         if (subjectsRes.data.subjects.length > 0) {
@@ -41,15 +42,15 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
   const fetchStudentsBySubject = async (subjectId) => {
     try {
       const token = Cookies.get('token');
-      const subject = subjects.find(s => s._id === subjectId) || 
-                     await axios.get(`${BASE_URL}/api/subjects`, { headers: { Authorization: `Bearer ${token}` } })
-                           .then(res => res.data.subjects.find(s => s._id === subjectId));
-      
+      const subject = subjects.find(s => s._id === subjectId) ||
+        await axios.get(`${BASE_URL}/api/subjects`, { headers: { Authorization: `Bearer ${token}` } })
+          .then(res => res.data.subjects.find(s => s._id === subjectId));
+
       if (subject) {
         const studentsRes = await axios.get(`${BASE_URL}/api/admin/students`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        
+
         if (studentsRes.data.success) {
           const filteredStudents = studentsRes.data.students
             .filter(student => student.courseId._id === subject.courseId)
@@ -68,7 +69,7 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
   };
 
   const handleStatusChange = (studentId, status) => {
-    setStudents(prev => prev.map(student => 
+    setStudents(prev => prev.map(student =>
       student._id === studentId ? { ...student, status } : student
     ));
   };
@@ -110,21 +111,27 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
             <FaTimes size={20} />
           </button>
         </div>
-        
+
         <div className="mb-4">
           <label className="block text-sm font-medium mb-2">Subject</label>
-          <select
-            value={selectedSubject}
-            onChange={(e) => handleSubjectChange(e.target.value)}
-            className="w-full p-2 border rounded-lg mb-4"
-          >
-            {subjects.map(subject => (
-              <option key={subject._id} value={subject._id}>
-                {subject.subjectName} ({subject.subjectCode})
-              </option>
-            ))}
-          </select>
-          
+          <div className="mb-4">
+            <Select
+              value={selectedSubject}
+              onValueChange={handleSubjectChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Subject" />
+              </SelectTrigger>
+              <SelectContent>
+                {subjects.map(subject => (
+                  <SelectItem key={subject._id} value={subject._id}>
+                    {subject.subjectName} ({subject.subjectCode})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <label className="block text-sm font-medium mb-2">Date</label>
           <input
             type="date"
@@ -150,31 +157,28 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  student.status === 'Present' 
-                    ? 'bg-green-100 text-green-800' 
+                <span className={`px-2 py-1 rounded text-xs font-medium ${student.status === 'Present'
+                    ? 'bg-green-100 text-green-800'
                     : 'bg-red-100 text-red-800'
-                }`}>
+                  }`}>
                   {student.status}
                 </span>
                 <div className="flex space-x-2">
-                  <button 
+                  <button
                     onClick={() => handleStatusChange(student._id, 'Present')}
-                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                      student.status === 'Present' 
-                        ? 'bg-green-500 text-white shadow-md' 
+                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${student.status === 'Present'
+                        ? 'bg-green-500 text-white shadow-md'
                         : 'bg-green-100 text-green-700 hover:bg-green-200 border border-green-300'
-                    }`}
+                      }`}
                   >
                     Present
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleStatusChange(student._id, 'Absent')}
-                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                      student.status === 'Absent' 
-                        ? 'bg-red-500 text-white shadow-md' 
+                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${student.status === 'Absent'
+                        ? 'bg-red-500 text-white shadow-md'
                         : 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-300'
-                    }`}
+                      }`}
                   >
                     Absent
                   </button>
@@ -194,7 +198,7 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
 
         <div className="flex justify-end space-x-2 mt-6">
           <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded-lg">Cancel</button>
-          <button 
+          <button
             onClick={handleSave}
             disabled={loading}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50"
@@ -236,10 +240,10 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
       });
       if (response.data.success && response.data.subjects.length > 0) {
         setSubjects(response.data.subjects);
-        setFormData({ 
-          title: '', 
-          description: '', 
-          deadline: '', 
+        setFormData({
+          title: '',
+          description: '',
+          deadline: '',
           subjectId: response.data.subjects[0]._id,
           fileUrl: ''
         });
@@ -278,7 +282,7 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
     setLoading(true);
     try {
       const token = Cookies.get('token');
-      
+
       if (uploadType === 'file') {
         const formDataToSend = new FormData();
         formDataToSend.append('title', formData.title);
@@ -288,7 +292,7 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
         formDataToSend.append('file', file);
 
         await axios.post(`${BASE_URL}/api/teacher/${teacherId}/assignments`, formDataToSend, {
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           }
@@ -320,41 +324,45 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
             <FaTimes size={20} />
           </button>
         </div>
-        
+
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Title</label>
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData({...formData, title: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="w-full p-2 border rounded-lg"
               placeholder="Assignment title"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Subject</label>
-            <select
+            <Select
               value={formData.subjectId}
-              onChange={(e) => setFormData({...formData, subjectId: e.target.value})}
-              className="w-full p-2 border rounded-lg"
+              onValueChange={(value) => setFormData({ ...formData, subjectId: value })}
             >
-              <option value="">Select Subject</option>
-              {subjects.map(subject => (
-                <option key={subject._id} value={subject._id}>
-                  {subject.subjectName} - {subject.subjectCode}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Subject" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Select Subject</SelectItem>
+                {subjects.map(subject => (
+                  <SelectItem key={subject._id} value={subject._id}>
+                    {subject.subjectName} - {subject.subjectCode}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Deadline</label>
             <input
               type="datetime-local"
               value={formData.deadline}
-              onChange={(e) => setFormData({...formData, deadline: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
               className="w-full p-2 border rounded-lg"
             />
           </div>
@@ -391,7 +399,7 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
               <input
                 type="url"
                 value={formData.fileUrl}
-                onChange={(e) => setFormData({...formData, fileUrl: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
                 className="w-full p-2 border rounded-lg"
                 placeholder="https://example.com/assignment.pdf"
               />
@@ -410,12 +418,12 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
               )}
             </div>
           )}
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Description (Optional)</label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="w-full p-2 border rounded-lg h-24"
               placeholder="Assignment description"
             />
@@ -424,7 +432,7 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
 
         <div className="flex justify-end space-x-2 mt-6">
           <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded-lg">Cancel</button>
-          <button 
+          <button
             onClick={handleSubmit}
             disabled={loading}
             className="px-4 py-2 bg-green-500 text-white rounded-lg disabled:opacity-50"
@@ -460,10 +468,10 @@ export const NoticeModal = ({ isOpen, onClose, teacherId }) => {
       });
       if (response.data.success && response.data.courses.length > 0) {
         setCourses(response.data.courses);
-        setFormData({ 
-          title: '', 
-          description: '', 
-          courseId: response.data.courses[0]._id 
+        setFormData({
+          title: '',
+          description: '',
+          courseId: response.data.courses[0]._id
         });
       }
     } catch (error) {
@@ -505,40 +513,44 @@ export const NoticeModal = ({ isOpen, onClose, teacherId }) => {
             <FaTimes size={20} />
           </button>
         </div>
-        
+
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Title</label>
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData({...formData, title: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="w-full p-2 border rounded-lg"
               placeholder="Notice title"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Course</label>
-            <select
+            <Select
               value={formData.courseId}
-              onChange={(e) => setFormData({...formData, courseId: e.target.value})}
-              className="w-full p-2 border rounded-lg"
+              onValueChange={(value) => setFormData({ ...formData, courseId: value })}
             >
-              <option value="">Select Course</option>
-              {courses.map(course => (
-                <option key={course._id} value={course._id}>
-                  {course.courseName} ({course.courseCode})
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Course" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Select Course</SelectItem>
+                {courses.map(course => (
+                  <SelectItem key={course._id} value={course._id}>
+                    {course.courseName} ({course.courseCode})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Description</label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="w-full p-2 border rounded-lg h-32"
               placeholder="Notice description"
             />
@@ -547,7 +559,7 @@ export const NoticeModal = ({ isOpen, onClose, teacherId }) => {
 
         <div className="flex justify-end space-x-2 mt-6">
           <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded-lg">Cancel</button>
-          <button 
+          <button
             onClick={handleSubmit}
             disabled={loading}
             className="px-4 py-2 bg-purple-500 text-white rounded-lg disabled:opacity-50"
@@ -588,9 +600,9 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
       });
       if (response.data.success && response.data.subjects.length > 0) {
         setSubjects(response.data.subjects);
-        setFormData({ 
-          title: '', 
-          description: '', 
+        setFormData({
+          title: '',
+          description: '',
           subjectId: response.data.subjects[0]._id,
           fileUrl: ''
         });
@@ -629,7 +641,7 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
     setLoading(true);
     try {
       const token = Cookies.get('token');
-      
+
       if (uploadType === 'file') {
         const formDataToSend = new FormData();
         formDataToSend.append('title', formData.title);
@@ -638,7 +650,7 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
         formDataToSend.append('file', file);
 
         await axios.post(`${BASE_URL}/api/teacher/${teacherId}/materials`, formDataToSend, {
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           }
@@ -670,33 +682,37 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
             <FaTimes size={20} />
           </button>
         </div>
-        
+
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Title</label>
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData({...formData, title: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="w-full p-2 border rounded-lg"
               placeholder="Material title"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Subject</label>
-            <select
+            <Select
               value={formData.subjectId}
-              onChange={(e) => setFormData({...formData, subjectId: e.target.value})}
-              className="w-full p-2 border rounded-lg"
+              onValueChange={(value) => setFormData({ ...formData, subjectId: value })}
             >
-              <option value="">Select Subject</option>
-              {subjects.map(subject => (
-                <option key={subject._id} value={subject._id}>
-                  {subject.subjectName} - {subject.subjectCode}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Subject" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Select Subject</SelectItem>
+                {subjects.map(subject => (
+                  <SelectItem key={subject._id} value={subject._id}>
+                    {subject.subjectName} - {subject.subjectCode}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
@@ -731,7 +747,7 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
               <input
                 type="url"
                 value={formData.fileUrl}
-                onChange={(e) => setFormData({...formData, fileUrl: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
                 className="w-full p-2 border rounded-lg"
                 placeholder="https://example.com/material.pdf"
               />
@@ -750,12 +766,12 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
               )}
             </div>
           )}
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Description (Optional)</label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="w-full p-2 border rounded-lg h-24"
               placeholder="Material description"
             />
@@ -764,7 +780,7 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
 
         <div className="flex justify-end space-x-2 mt-6">
           <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded-lg">Cancel</button>
-          <button 
+          <button
             onClick={handleSubmit}
             disabled={loading}
             className="px-4 py-2 bg-orange-500 text-white rounded-lg disabled:opacity-50"

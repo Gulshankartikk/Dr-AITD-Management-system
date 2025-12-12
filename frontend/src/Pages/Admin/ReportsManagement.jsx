@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaFileAlt, FaDownload, FaChartBar, FaCalendarAlt, FaUsers, FaDollarSign, FaSpinner, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaFileAlt, FaDownload, FaChartBar, FaCalendarAlt, FaUsers, FaRupeeSign, FaSpinner, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
 import axios from 'axios';
@@ -25,7 +25,7 @@ const ReportsManagement = () => {
 
   const reportTypes = [
     { id: 'attendance', name: 'Attendance Report', icon: FaUsers, color: 'blue', endpoint: '/api/admin/attendance-report' },
-    { id: 'fees', name: 'Fee Collection Report', icon: FaDollarSign, color: 'green', endpoint: '/api/admin/reports/fees' },
+    { id: 'fees', name: 'Fee Collection Report', icon: FaRupeeSign, color: 'green', endpoint: '/api/admin/reports/fees' },
     { id: 'academic', name: 'Academic Performance', icon: FaChartBar, color: 'purple', endpoint: '/api/admin/reports/academic' },
     { id: 'enrollment', name: 'Student Enrollment', icon: FaCalendarAlt, color: 'orange', endpoint: '/api/admin/reports/enrollment' }
   ];

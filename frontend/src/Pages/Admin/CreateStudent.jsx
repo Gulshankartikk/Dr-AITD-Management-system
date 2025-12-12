@@ -7,12 +7,14 @@ import Cookies from 'js-cookie';
 import BackButton from '../../components/BackButton';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 
 const CreateStudent = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [courses, setCourses] = useState([]);
+
+  const [coursesLoading, setCoursesLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -29,13 +31,17 @@ const CreateStudent = () => {
   }, []);
 
   const fetchCourses = async () => {
+    setCoursesLoading(true);
     try {
-      const response = await axios.get(`${BASE_URL}/courses`);
+      const response = await axios.get(`${BASE_URL}/api/courses`);
       if (response.data.success) {
         setCourses(response.data.courses || []);
       }
     } catch (error) {
       console.error('Error fetching courses:', error);
+      toast.error('Failed to load courses');
+    } finally {
+      setCoursesLoading(false);
     }
   };
 
@@ -130,27 +136,43 @@ const CreateStudent = () => {
                   label="Course *"
                   name="courseId"
                   value={formData.courseId}
-                  onChange={handleInputChange}
+                  onValueChange={(value) => handleInputChange({ target: { name: 'courseId', value } })}
                   required
                 >
-                  <option value="">Select Course</option>
-                  {courses.map(course => (
-                    <option key={course._id} value={course._id}>
-                      {course.courseName} ({course.courseCode})
-                    </option>
-                  ))}
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Course" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Select Course</SelectItem>
+                    {coursesLoading ? (
+                      <SelectItem value="loading" disabled>Loading courses...</SelectItem>
+                    ) : courses.length === 0 ? (
+                      <SelectItem value="no-courses" disabled>No courses available</SelectItem>
+                    ) : (
+                      courses.map(course => (
+                        <SelectItem key={course._id} value={course._id}>
+                          {course.courseName} ({course.courseCode})
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
                 </Select>
 
                 <Select
                   label="Semester *"
                   name="semester"
                   value={formData.semester}
-                  onChange={handleInputChange}
+                  onValueChange={(value) => handleInputChange({ target: { name: 'semester', value } })}
                   required
                 >
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
-                    <option key={sem} value={sem}>Semester {sem}</option>
-                  ))}
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Semester" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
+                      <SelectItem key={sem} value={sem}>Semester {sem}</SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
 

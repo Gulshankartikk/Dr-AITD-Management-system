@@ -6,7 +6,7 @@ import { BASE_URL } from '../../constants/api';
 import { FaCalendarAlt, FaCheck, FaTimes, FaSave } from 'react-icons/fa';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Input from '../../components/ui/Input';
 import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
 import Badge from '../../components/ui/Badge';
@@ -113,14 +113,19 @@ const TeacherAttendance = () => {
             <Select
               label="Select Subject"
               value={selectedSubject}
-              onChange={(e) => setSelectedSubject(e.target.value)}
+              onValueChange={setSelectedSubject}
             >
-              <option value="all">-- Select Subject --</option>
-              {subjects.map(subject => (
-                <option key={subject._id} value={subject._id}>
-                  {subject.subjectName} ({subject.subjectCode})
-                </option>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="-- Select Subject --" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">-- Select Subject --</SelectItem>
+                {subjects.map(subject => (
+                  <SelectItem key={subject._id} value={subject._id}>
+                    {subject.subjectName} ({subject.subjectCode})
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
 
             <Input

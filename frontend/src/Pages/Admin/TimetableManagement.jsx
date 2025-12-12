@@ -7,7 +7,7 @@ import { BASE_URL } from '../../constants/api';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import Button from '../../components/ui/Button';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Input from '../../components/ui/Input';
 
 const TimetableManagement = () => {
@@ -15,6 +15,7 @@ const TimetableManagement = () => {
   const [selectedSemester, setSelectedSemester] = useState('1');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const [courses, setCourses] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -43,6 +44,7 @@ const TimetableManagement = () => {
   }, [selectedCourse, selectedSemester]);
 
   const fetchInitialData = async () => {
+    setInitialLoading(true);
     try {
       const token = Cookies.get('token');
       const [coursesRes, teachersRes, subjectsRes] = await Promise.all([
@@ -61,6 +63,8 @@ const TimetableManagement = () => {
     } catch (error) {
       console.error('Error fetching initial data:', error);
       toast.error('Failed to load initial data');
+    } finally {
+      setInitialLoading(false);
     }
   };
 
@@ -149,20 +153,40 @@ const TimetableManagement = () => {
               <Select
                 label="Course"
                 value={selectedCourse}
-                onChange={(e) => setSelectedCourse(e.target.value)}
+                onValueChange={setSelectedCourse}
               >
-                {courses.map(course => (
-                  <option key={course._id} value={course._id}>{course.courseName}</option>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Course" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Select Course</SelectItem>
+                  {initialLoading ? (
+                    <SelectItem value="loading" disabled>Loading courses...</SelectItem>
+                  ) : courses.length === 0 ? (
+                    <SelectItem value="no-courses" disabled>No courses available</SelectItem>
+                  ) : (
+                    courses.map(course => (
+                      <SelectItem key={course._id} value={course._id}>
+                        {course.courseName}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
               </Select>
+
               <Select
                 label="Semester"
                 value={selectedSemester}
-                onChange={(e) => setSelectedSemester(e.target.value)}
+                onValueChange={setSelectedSemester}
               >
-                {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
-                  <option key={sem} value={sem}>Semester {sem}</option>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Semester" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
+                    <SelectItem key={sem} value={String(sem)}>Semester {sem}</SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>
@@ -238,41 +262,61 @@ const TimetableManagement = () => {
                   <Select
                     label="Day"
                     value={newSlot.day}
-                    onChange={(e) => setNewSlot({ ...newSlot, day: e.target.value })}
+                    onValueChange={(value) => setNewSlot({ ...newSlot, day: value })}
                   >
-                    <option value="">Select Day</option>
-                    {days.map(day => <option key={day} value={day}>{day}</option>)}
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Select Day</SelectItem>
+                      {days.map(day => <SelectItem key={day} value={day}>{day}</SelectItem>)}
+                    </SelectContent>
                   </Select>
 
                   <Select
                     label="Time Slot"
                     value={newSlot.timeSlot}
-                    onChange={(e) => setNewSlot({ ...newSlot, timeSlot: e.target.value })}
+                    onValueChange={(value) => setNewSlot({ ...newSlot, timeSlot: value })}
                   >
-                    <option value="">Select Time</option>
-                    {timeSlots.map(time => <option key={time} value={time}>{time}</option>)}
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Time" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Select Time</SelectItem>
+                      {timeSlots.map(time => <SelectItem key={time} value={time}>{time}</SelectItem>)}
+                    </SelectContent>
                   </Select>
 
                   <Select
                     label="Subject"
                     value={newSlot.subjectId}
-                    onChange={(e) => setNewSlot({ ...newSlot, subjectId: e.target.value })}
+                    onValueChange={(value) => setNewSlot({ ...newSlot, subjectId: value })}
                   >
-                    <option value="">Select Subject</option>
-                    {subjects.filter(s => s.courseId?._id === selectedCourse).map(sub => (
-                      <option key={sub._id} value={sub._id}>{sub.subjectName}</option>
-                    ))}
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Select Subject</SelectItem>
+                      {subjects.filter(s => s.courseId?._id === selectedCourse).map(sub => (
+                        <SelectItem key={sub._id} value={sub._id}>{sub.subjectName}</SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
 
                   <Select
                     label="Teacher"
                     value={newSlot.teacherId}
-                    onChange={(e) => setNewSlot({ ...newSlot, teacherId: e.target.value })}
+                    onValueChange={(value) => setNewSlot({ ...newSlot, teacherId: value })}
                   >
-                    <option value="">Select Teacher</option>
-                    {teachers.map(teacher => (
-                      <option key={teacher._id} value={teacher._id}>{teacher.name}</option>
-                    ))}
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Teacher" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Select Teacher</SelectItem>
+                      {teachers.map(teacher => (
+                        <SelectItem key={teacher._id} value={teacher._id}>{teacher.name}</SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
 
                   <Input

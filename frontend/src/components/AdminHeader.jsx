@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSignOutAlt, FaUserShield, FaChalkboardTeacher, FaGraduationCap } from 'react-icons/fa';
+import { FaSignOutAlt, FaUserShield } from 'react-icons/fa';
 import Cookies from 'js-cookie';
 import useAutoLogout from '../hooks/useAutoLogout';
 
@@ -10,14 +10,6 @@ const AdminHeader = ({ currentRole = 'admin' }) => {
 
   const handleLogout = () => {
     logout();
-  };
-
-  const switchRole = (role) => {
-    if (role === 'teacher') {
-      alert('Teacher view would require proper authentication');
-    } else if (role === 'student') {
-      alert('Student view would require proper authentication');
-    }
   };
 
   return (
@@ -38,7 +30,7 @@ const AdminHeader = ({ currentRole = 'admin' }) => {
             <Link to="/admin/students" className="text-gray-300 hover:text-sand-tan font-medium transition-colors">
               Students
             </Link>
-            <Link to="/admin/teachers" className="text-gray-300 hover:text-sand-tan font-medium transition-colors">
+            <Link to="/admin/create-teacher" className="text-gray-300 hover:text-sand-tan font-medium transition-colors">
               Teachers
             </Link>
             <Link to="/admin/courses" className="text-gray-300 hover:text-sand-tan font-medium transition-colors">
@@ -53,26 +45,6 @@ const AdminHeader = ({ currentRole = 'admin' }) => {
           </nav>
 
           <div className="flex items-center space-x-4">
-            {/* Role Switcher */}
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => switchRole('teacher')}
-                className="flex items-center space-x-1 px-3 py-2 text-sm bg-night-blue-shadow text-sand-tan rounded-lg hover:bg-opacity-80 transition-colors border border-sand-tan border-opacity-20"
-                title="Switch to Teacher View"
-              >
-                <FaChalkboardTeacher />
-                <span>Teacher</span>
-              </button>
-              <button
-                onClick={() => switchRole('student')}
-                className="flex items-center space-x-1 px-3 py-2 text-sm bg-night-blue-shadow text-sand-tan rounded-lg hover:bg-opacity-80 transition-colors border border-sand-tan border-opacity-20"
-                title="Switch to Student View"
-              >
-                <FaGraduationCap />
-                <span>Student</span>
-              </button>
-            </div>
-
             <div className="flex items-center space-x-2 text-sand-tan">
               <FaUserShield />
               <span className="text-sm font-medium">Gulshankartikk</span>

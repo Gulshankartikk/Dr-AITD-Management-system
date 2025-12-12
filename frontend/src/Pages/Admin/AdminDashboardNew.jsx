@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
 import {
-  FaUsers, FaChalkboardTeacher, FaBook, FaClipboardList, FaDollarSign,
+  FaUsers, FaChalkboardTeacher, FaBook, FaClipboardList, FaRupeeSign,
   FaBell, FaCalendarAlt, FaChartBar, FaCog, FaFileAlt, FaBookOpen,
   FaClipboardCheck, FaMoneyBillWave, FaUserPlus, FaCheckCircle, FaClock
 } from 'react-icons/fa';
@@ -35,14 +35,58 @@ const AdminDashboardNew = () => {
     }
   };
 
-  // Mock data for comprehensive features
+  // Derived data from backend
+  const stats = dashboardData || {};
+
   const summaryCards = [
-    { title: 'Total Students', value: '1,245', icon: FaUsers, color: 'text-primary', bg: 'bg-primary/10', change: '+12%' },
-    { title: 'Total Teachers', value: '87', icon: FaChalkboardTeacher, color: 'text-secondary', bg: 'bg-secondary/10', change: '+5%' },
-    { title: 'Total Courses', value: '24', icon: FaBook, color: 'text-primary', bg: 'bg-primary/10', change: '+2' },
-    { title: 'Fee Collection', value: '₹45.2L', icon: FaDollarSign, color: 'text-secondary', bg: 'bg-secondary/10', change: '+18%' },
-    { title: 'Attendance Rate', value: '87%', icon: FaClipboardList, color: 'text-primary', bg: 'bg-primary/10', change: '+3%' },
-    { title: 'Active Assignments', value: '156', icon: FaFileAlt, color: 'text-secondary', bg: 'bg-secondary/10', change: '+24' }
+    {
+      title: 'Total Students',
+      value: stats.totalStudents?.toString() || '0',
+      icon: FaUsers,
+      color: 'text-primary',
+      bg: 'bg-primary/10',
+      change: 'Active'
+    },
+    {
+      title: 'Total Teachers',
+      value: stats.totalTeachers?.toString() || '0',
+      icon: FaChalkboardTeacher,
+      color: 'text-secondary',
+      bg: 'bg-secondary/10',
+      change: 'Active'
+    },
+    {
+      title: 'Total Courses',
+      value: stats.totalCourses?.toString() || '0',
+      icon: FaBook,
+      color: 'text-primary',
+      bg: 'bg-primary/10',
+      change: 'Offered'
+    },
+    {
+      title: 'Total Subjects',
+      value: stats.totalSubjects?.toString() || '0',
+      icon: FaBookOpen,
+      color: 'text-secondary',
+      bg: 'bg-secondary/10',
+      change: 'Active'
+    },
+    {
+      title: 'Notices',
+      value: stats.totalNotices?.toString() || '0',
+      icon: FaBell,
+      color: 'text-primary',
+      bg: 'bg-primary/10',
+      change: 'Posted'
+    },
+    {
+      title: 'Library Books',
+      value: stats.totalBooks?.toString() || '0',
+      icon: FaBook,
+      color: 'text-secondary',
+      bg: 'bg-secondary/10',
+      change: 'In Library'
+    }
   ];
 
   const quickActions = [
@@ -86,7 +130,7 @@ const AdminDashboardNew = () => {
     },
     {
       title: 'Fee Management',
-      icon: FaDollarSign,
+      icon: FaRupeeSign,
       color: 'text-secondary',
       borderColor: 'border-secondary',
       bg: 'bg-secondary/10',
@@ -253,23 +297,21 @@ const AdminDashboardNew = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentActivities.map((activity, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-2 h-2 rounded-full ${activity.type === 'student' ? 'bg-primary' :
-                        activity.type === 'fee' ? 'bg-secondary' :
-                          activity.type === 'leave' ? 'bg-primary' :
-                            activity.type === 'assignment' ? 'bg-secondary' :
-                              'bg-red-500'
-                        }`}></div>
-                      <div>
-                        <p className="text-sm font-medium text-secondary">{activity.action}</p>
-                        <p className="text-xs text-text-secondary">{activity.user}</p>
+                {dashboardData?.recentActivities && dashboardData.recentActivities.length > 0 ? (
+                  dashboardData.recentActivities.map((activity, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-2 h-2 rounded-full bg-primary`}></div>
+                        <div>
+                          <p className="text-sm font-medium text-secondary">{activity.description || activity.action}</p>
+                          <p className="text-xs text-text-secondary">{new Date(activity.date || Date.now()).toLocaleDateString()}</p>
+                        </div>
                       </div>
                     </div>
-                    <span className="text-xs text-text-muted">{activity.time}</span>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-sm text-text-muted text-center py-4">No recent activities recorded.</p>
+                )}
               </div>
             </CardContent>
           </Card>

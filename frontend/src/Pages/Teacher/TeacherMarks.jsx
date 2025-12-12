@@ -6,7 +6,7 @@ import { BASE_URL } from '../../constants/api';
 import { FaPlus, FaTrophy, FaChartLine } from 'react-icons/fa';
 import Card, { CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Input from '../../components/ui/Input';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
@@ -117,14 +117,19 @@ const TeacherMarks = () => {
             <Select
               label="Select Subject"
               value={selectedSubject}
-              onChange={(e) => setSelectedSubject(e.target.value)}
+              onValueChange={setSelectedSubject}
             >
-              <option value="all">-- Select Subject --</option>
-              {subjects.map(subject => (
-                <option key={subject._id} value={subject._id}>
-                  {subject.subjectName} ({subject.subjectCode})
-                </option>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="-- Select Subject --" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">-- Select Subject --</SelectItem>
+                {subjects.map(subject => (
+                  <SelectItem key={subject._id} value={subject._id}>
+                    {subject.subjectName} ({subject.subjectCode})
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
         </CardContent>
@@ -185,27 +190,37 @@ const TeacherMarks = () => {
               <Select
                 label="Student"
                 value={formData.studentId}
-                onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, studentId: value })}
                 required
               >
-                <option value="">-- Select Student --</option>
-                {students.map(student => (
-                  <option key={student._id} value={student._id}>
-                    {student.name} ({student.rollNo})
-                  </option>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="-- Select Student --" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">-- Select Student --</SelectItem>
+                  {students.map(student => (
+                    <SelectItem key={student._id} value={student._id}>
+                      {student.name} ({student.rollNo})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
 
               <Select
                 label="Exam Type"
                 value={formData.examType}
-                onChange={(e) => setFormData({ ...formData, examType: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, examType: value })}
                 required
               >
-                <option value="Mid-Term">Mid-Term</option>
-                <option value="End-Term">End-Term</option>
-                <option value="Quiz">Quiz</option>
-                <option value="Assignment">Assignment</option>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Exam Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Mid-Term">Mid-Term</SelectItem>
+                  <SelectItem value="End-Term">End-Term</SelectItem>
+                  <SelectItem value="Quiz">Quiz</SelectItem>
+                  <SelectItem value="Assignment">Assignment</SelectItem>
+                </SelectContent>
               </Select>
 
               <Input

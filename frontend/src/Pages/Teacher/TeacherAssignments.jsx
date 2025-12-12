@@ -8,7 +8,7 @@ import { FaPlus, FaCalendarAlt, FaUsers, FaCheckCircle, FaFileAlt } from 'react-
 import Card, { CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Badge from '../../components/ui/Badge';
 import { toast } from 'react-toastify';
 
@@ -136,14 +136,19 @@ const TeacherAssignments = () => {
             <Select
               label="Filter by Subject"
               value={filterSubject}
-              onChange={(e) => setFilterSubject(e.target.value)}
+              onValueChange={setFilterSubject}
             >
-              <option value="">All Subjects</option>
-              {subjects.map(subject => (
-                <option key={subject._id} value={subject._id}>
-                  {subject.subjectName} ({subject.subjectCode})
-                </option>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="All Subjects" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Subjects</SelectItem>
+                {subjects.map(subject => (
+                  <SelectItem key={subject._id} value={subject._id}>
+                    {subject.subjectName} ({subject.subjectCode})
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </CardContent>
         </Card>
@@ -220,15 +225,20 @@ const TeacherAssignments = () => {
               <Select
                 label="Subject"
                 value={formData.subjectId}
-                onChange={(e) => setFormData({ ...formData, subjectId: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, subjectId: value })}
                 required
               >
-                <option value="">Select Subject</option>
-                {subjects.map(subject => (
-                  <option key={subject._id} value={subject._id}>
-                    {subject.subjectName} ({subject.subjectCode})
-                  </option>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Subject" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Select Subject</SelectItem>
+                  {subjects.map(subject => (
+                    <SelectItem key={subject._id} value={subject._id}>
+                      {subject.subjectName} ({subject.subjectCode})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
 
               <Input
@@ -269,10 +279,15 @@ const TeacherAssignments = () => {
               <Select
                 label="Submission Type"
                 value={formData.submissionType}
-                onChange={(e) => setFormData({ ...formData, submissionType: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, submissionType: value })}
               >
-                <option value="online">Online Upload</option>
-                <option value="offline">Offline Submission</option>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Submission Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="online">Online Upload</SelectItem>
+                  <SelectItem value="offline">Offline Submission</SelectItem>
+                </SelectContent>
               </Select>
 
               <div>

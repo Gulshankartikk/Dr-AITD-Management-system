@@ -7,7 +7,7 @@ import { FaTrophy } from 'react-icons/fa';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
 import Badge from '../../components/ui/Badge';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 const StudentMarks = () => {
@@ -54,8 +54,8 @@ const StudentMarks = () => {
         try {
             const token = Cookies.get('token');
             const params = {};
-            if (filters.subjectId) params.subjectId = filters.subjectId;
-            if (filters.examType) params.examType = filters.examType;
+            if (filters.subjectId && filters.subjectId !== 'all') params.subjectId = filters.subjectId;
+            if (filters.examType && filters.examType !== 'all') params.examType = filters.examType;
 
             const response = await axios.get(`${BASE_URL}/api/student/${studentId}/marks`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -100,23 +100,35 @@ const StudentMarks = () => {
                             <Select
                                 label="Filter by Subject"
                                 value={filters.subjectId}
-                                onChange={(e) => setFilters({ ...filters, subjectId: e.target.value })}
-                                options={[
-                                    { value: '', label: 'All Subjects' },
-                                    ...subjects.map(sub => ({ value: sub._id, label: sub.subjectName }))
-                                ]}
-                            />
+                                onValueChange={(value) => setFilters({ ...filters, subjectId: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Subjects" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Subjects</SelectItem>
+                                    {subjects.map(sub => (
+                                        <SelectItem key={sub._id} value={sub._id}>{sub.subjectName}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div className="w-full md:w-1/3">
                             <Select
                                 label="Filter by Exam Type"
                                 value={filters.examType}
-                                onChange={(e) => setFilters({ ...filters, examType: e.target.value })}
-                                options={[
-                                    { value: '', label: 'All Exams' },
-                                    ...examTypes
-                                ]}
-                            />
+                                onValueChange={(value) => setFilters({ ...filters, examType: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Exams" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Exams</SelectItem>
+                                    {examTypes.map(type => (
+                                        <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                 </CardContent>

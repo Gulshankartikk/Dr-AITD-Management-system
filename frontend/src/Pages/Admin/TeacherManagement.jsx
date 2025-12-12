@@ -28,12 +28,8 @@ const TeacherManagement = () => {
   const isAdmin = userRole === 'admin';
 
   useEffect(() => {
-    if (userRole !== 'admin') {
-      navigate('/unauthorized');
-      return;
-    }
     fetchTeachers();
-  }, [userRole, navigate]);
+  }, []);
 
   const fetchTeachers = async () => {
     try {

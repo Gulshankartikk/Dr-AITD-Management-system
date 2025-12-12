@@ -7,7 +7,7 @@ import { FaUpload, FaFileAlt } from "react-icons/fa";
 import Card, { CardContent } from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
-import Select from "../../components/ui/Select";
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from "../../components/ui/Select";
 
 const TeacherUpload = ({ teacherId }) => {
   const [activeTab, setActiveTab] = useState("assignment");
@@ -186,14 +186,19 @@ const TeacherUpload = ({ teacherId }) => {
                 label="Subject *"
                 name="subjectId"
                 value={formData.subjectId}
-                onChange={handleInputChange}
+                onValueChange={(value) => handleInputChange({ target: { name: 'subjectId', value } })}
               >
-                <option value="">Select Subject</option>
-                {subjects.map((s) => (
-                  <option key={s._id} value={s._id}>
-                    {s.subjectName} ({s.subjectCode})
-                  </option>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Subject" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Select Subject</SelectItem>
+                  {subjects.map((s) => (
+                    <SelectItem key={s._id} value={s._id}>
+                      {s.subjectName} ({s.subjectCode})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             )}
 
@@ -203,14 +208,19 @@ const TeacherUpload = ({ teacherId }) => {
                 label="Course *"
                 name="courseId"
                 value={formData.courseId}
-                onChange={handleInputChange}
+                onValueChange={(value) => handleInputChange({ target: { name: 'courseId', value } })}
               >
-                <option value="">Select Course</option>
-                {courses.map((c) => (
-                  <option key={c._id} value={c._id}>
-                    {c.courseName} ({c.courseCode})
-                  </option>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Course" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Select Course</SelectItem>
+                  {courses.map((c) => (
+                    <SelectItem key={c._id} value={c._id}>
+                      {c.courseName} ({c.courseCode})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             )}
 

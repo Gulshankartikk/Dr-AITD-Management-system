@@ -7,7 +7,7 @@ import { FaUpload, FaFileAlt, FaUsers, FaCalendarAlt } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import BackButton from '../../components/BackButton';
 
 const AdminUpload = () => {
@@ -165,30 +165,40 @@ const AdminUpload = () => {
                   label="Target Course *"
                   name="courseId"
                   value={formData.courseId}
-                  onChange={handleInputChange}
+                  onValueChange={(value) => handleInputChange({ target: { name: 'courseId', value } })}
                   required
                 >
-                  <option value="">Select Course</option>
-                  {courses.map(course => (
-                    <option key={course._id} value={course._id}>
-                      {course.courseName} ({course.courseCode})
-                    </option>
-                  ))}
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Course" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Select Course</SelectItem>
+                    {courses.map(course => (
+                      <SelectItem key={course._id} value={course._id}>
+                        {course.courseName} ({course.courseCode})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               ) : (
                 <Select
                   label="Subject *"
                   name="subjectId"
                   value={formData.subjectId}
-                  onChange={handleInputChange}
+                  onValueChange={(value) => handleInputChange({ target: { name: 'subjectId', value } })}
                   required
                 >
-                  <option value="">Select Subject</option>
-                  {subjects.map(subject => (
-                    <option key={subject._id} value={subject._id}>
-                      {subject.subjectName} ({subject.subjectCode})
-                    </option>
-                  ))}
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Subject" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Select Subject</SelectItem>
+                    {subjects.map(subject => (
+                      <SelectItem key={subject._id} value={subject._id}>
+                        {subject.subjectName} ({subject.subjectCode})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               )}
 

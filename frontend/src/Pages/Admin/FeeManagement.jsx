@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FaDollarSign, FaPlus, FaDownload, FaSearch, FaEye, FaEdit, FaTimes, FaReceipt, FaCreditCard } from 'react-icons/fa';
+import { FaRupeeSign, FaPlus, FaDownload, FaSearch, FaEye, FaEdit, FaTimes, FaReceipt, FaCreditCard } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
 import Input from '../../components/ui/Input';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Button from '../../components/ui/Button';
 
 const FeeManagement = () => {
@@ -158,7 +158,7 @@ const FeeManagement = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
               <div className="flex items-center">
-                <FaDollarSign className="text-3xl text-green-500 mr-4" />
+                <FaRupeeSign className="text-3xl text-green-500 mr-4" />
                 <div>
                   <p className="text-text-secondary">Total Collection</p>
                   <p className="text-2xl font-bold text-secondary">₹{feeRecords.reduce((sum, record) => sum + record.paid, 0).toLocaleString()}</p>
@@ -167,7 +167,7 @@ const FeeManagement = () => {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
               <div className="flex items-center">
-                <FaDollarSign className="text-3xl text-red-500 mr-4" />
+                <FaRupeeSign className="text-3xl text-red-500 mr-4" />
                 <div>
                   <p className="text-text-secondary">Total Due</p>
                   <p className="text-2xl font-bold text-secondary">₹{feeRecords.reduce((sum, record) => sum + record.due, 0).toLocaleString()}</p>
@@ -176,7 +176,7 @@ const FeeManagement = () => {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
               <div className="flex items-center">
-                <FaDollarSign className="text-3xl text-primary mr-4" />
+                <FaRupeeSign className="text-3xl text-primary mr-4" />
                 <div>
                   <p className="text-text-secondary">Total Amount</p>
                   <p className="text-2xl font-bold text-secondary">₹{feeRecords.reduce((sum, record) => sum + record.amount, 0).toLocaleString()}</p>
@@ -185,7 +185,7 @@ const FeeManagement = () => {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
               <div className="flex items-center">
-                <FaDollarSign className="text-3xl text-yellow-500 mr-4" />
+                <FaRupeeSign className="text-3xl text-yellow-500 mr-4" />
                 <div>
                   <p className="text-text-secondary">Pending Students</p>
                   <p className="text-2xl font-bold text-secondary">{feeRecords.filter(record => record.status !== 'Paid').length}</p>
@@ -209,12 +209,17 @@ const FeeManagement = () => {
               </div>
               <Select
                 value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
+                onValueChange={setSelectedStatus}
               >
-                <option>All Status</option>
-                <option>Paid</option>
-                <option>Partial</option>
-                <option>Pending</option>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All Status">All Status</SelectItem>
+                  <SelectItem value="Paid">Paid</SelectItem>
+                  <SelectItem value="Partial">Partial</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                </SelectContent>
               </Select>
             </div>
           </div>
@@ -313,12 +318,17 @@ const FeeManagement = () => {
                     <Select
                       label="Payment Method"
                       value={paymentForm.method}
-                      onChange={(e) => setPaymentForm({ ...paymentForm, method: e.target.value })}
+                      onValueChange={(value) => setPaymentForm({ ...paymentForm, method: value })}
                     >
-                      <option>Cash</option>
-                      <option>Online</option>
-                      <option>Cheque</option>
-                      <option>Bank Transfer</option>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Method" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Cash">Cash</SelectItem>
+                        <SelectItem value="Online">Online</SelectItem>
+                        <SelectItem value="Cheque">Cheque</SelectItem>
+                        <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
+                      </SelectContent>
                     </Select>
                     <Input
                       label="Payment Date"

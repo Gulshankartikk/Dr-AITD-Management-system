@@ -7,7 +7,7 @@ import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
 import Cookies from 'js-cookie';
 import Button from '../../components/ui/Button';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Input from '../../components/ui/Input';
 
 const NoticesManagement = () => {
@@ -185,12 +185,17 @@ const NoticesManagement = () => {
                   <Select
                     label="Target Course"
                     value={formData.courseId}
-                    onChange={(e) => setFormData({ ...formData, courseId: e.target.value })}
+                    onValueChange={(value) => setFormData({ ...formData, courseId: value })}
                   >
-                    <option value="">Select Course</option>
-                    {courses.map(course => (
-                      <option key={course._id} value={course._id}>{course.courseName}</option>
-                    ))}
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Course" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Select Course</SelectItem>
+                      {courses.map(course => (
+                        <SelectItem key={course._id} value={course._id}>{course.courseName}</SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
 
                   <div>

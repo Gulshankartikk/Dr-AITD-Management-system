@@ -7,11 +7,12 @@ import BackButton from "../../components/BackButton";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
-import Select from "../../components/ui/Select";
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from "../../components/ui/Select";
 
 const AddSubject = () => {
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
+  const [coursesLoading, setCoursesLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState("");
   const [userRole, setUserRole] = useState(null);
   const [formData, setFormData] = useState({
@@ -52,8 +53,9 @@ const AddSubject = () => {
   }, [token]);
 
   const fetchCourses = async () => {
+    setCoursesLoading(true);
     try {
-      const response = await axios.get(`${BASE_URL}/courses`, {
+      const response = await axios.get(`${BASE_URL}/api/courses`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCourses(response.data.courses || []);
@@ -64,6 +66,8 @@ const AddSubject = () => {
         navigate("/login");
       }
       setCourses([]);
+    } finally {
+      setCoursesLoading(false);
     }
   };
 
@@ -195,18 +199,29 @@ const AddSubject = () => {
               label="Select Course *"
               name="selectedCourse"
               value={selectedCourse}
-              onChange={(e) => {
-                setSelectedCourse(e.target.value);
-                setFormData(prev => ({ ...prev, selectedCourse: e.target.value }));
+              onValueChange={(value) => {
+                setSelectedCourse(value);
+                setFormData(prev => ({ ...prev, selectedCourse: value }));
               }}
               required
             >
-              <option value="">Select Course</option>
-              {courses.map(course => (
-                <option key={course._id} value={course._id}>
-                  {course.courseName} ({course.courseCode})
-                </option>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Select Course" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Select Course</SelectItem>
+                {coursesLoading ? (
+                  <SelectItem value="loading" disabled>Loading courses...</SelectItem>
+                ) : courses.length === 0 ? (
+                  <SelectItem value="no-courses" disabled>No courses available</SelectItem>
+                ) : (
+                  courses.map(course => (
+                    <SelectItem key={course._id} value={course._id}>
+                      {course.courseName} ({course.courseCode})
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
             </Select>
           </div>
 
@@ -235,38 +250,53 @@ const AddSubject = () => {
               label="Subject Type *"
               name="subject_type"
               value={formData.subject_type}
-              onChange={handleChange}
+              onValueChange={(value) => handleChange({ target: { name: 'subject_type', value } })}
               required
             >
-              {subjectTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Select Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {subjectTypes.map(type => (
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                ))}
+              </SelectContent>
             </Select>
 
             <Select
               label="Credits *"
               name="credits"
               value={formData.credits}
-              onChange={handleChange}
+              onValueChange={(value) => handleChange({ target: { name: 'credits', value } })}
               required
             >
-              <option value="">Select Credits</option>
-              {creditOptions.map(credit => (
-                <option key={credit} value={credit}>{credit}</option>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Select Credits" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Select Credits</SelectItem>
+                {creditOptions.map(credit => (
+                  <SelectItem key={credit} value={credit}>{credit}</SelectItem>
+                ))}
+              </SelectContent>
             </Select>
 
             <Select
               label="Semester *"
               name="semester"
               value={formData.semester}
-              onChange={handleChange}
+              onValueChange={(value) => handleChange({ target: { name: 'semester', value } })}
               required
             >
-              <option value="">Select Semester</option>
-              {semesters.map(sem => (
-                <option key={sem} value={sem}>Semester {sem}</option>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Select Semester" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Select Semester</SelectItem>
+                {semesters.map(sem => (
+                  <SelectItem key={sem} value={sem}>Semester {sem}</SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
 
@@ -275,27 +305,37 @@ const AddSubject = () => {
               label="Branch *"
               name="branch"
               value={formData.branch}
-              onChange={handleChange}
+              onValueChange={(value) => handleChange({ target: { name: 'branch', value } })}
               required
             >
-              <option value="">Select Branch</option>
-              {branches.map(branch => (
-                <option key={branch} value={branch}>{branch}</option>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Select Branch" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Select Branch</SelectItem>
+                {branches.map(branch => (
+                  <SelectItem key={branch} value={branch}>{branch}</SelectItem>
+                ))}
+              </SelectContent>
             </Select>
 
             <Select
               label="Assign Teacher (Optional)"
               name="teacher"
               value={formData.teacher}
-              onChange={handleChange}
+              onValueChange={(value) => handleChange({ target: { name: 'teacher', value } })}
             >
-              <option value="">Select Teacher</option>
-              {teachers && teachers.map(teacher => (
-                <option key={teacher._id} value={teacher._id}>
-                  {teacher.name}
-                </option>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Select Teacher" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Select Teacher</SelectItem>
+                {teachers && teachers.map(teacher => (
+                  <SelectItem key={teacher._id} value={teacher._id}>
+                    {teacher.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
 

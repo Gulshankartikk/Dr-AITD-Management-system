@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import Select from "../../components/ui/Select";
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from "../../components/ui/Select";
 import { GraduationCap, ArrowLeft } from "lucide-react";
 
 const Register = () => {
@@ -18,6 +18,7 @@ const Register = () => {
     courseId: ""
   });
   const [courses, setCourses] = useState([]);
+  const [coursesLoading, setCoursesLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -26,11 +27,14 @@ const Register = () => {
   }, []);
 
   const fetchCourses = async () => {
+    setCoursesLoading(true);
     try {
       const response = await axios.get(`${BASE_URL}/api/courses`);
       setCourses(response.data.courses || []);
     } catch (error) {
       console.error("Error fetching courses:", error);
+    } finally {
+      setCoursesLoading(false);
     }
   };
 
@@ -154,15 +158,26 @@ const Register = () => {
             label="Select Course"
             name="courseId"
             value={formData.courseId}
-            onChange={handleChange}
+            onValueChange={(value) => handleChange({ target: { name: 'courseId', value } })}
             required
           >
-            <option value="">-- Select a Course --</option>
-            {courses.map((course) => (
-              <option key={course._id} value={course._id}>
-                {course.courseName} ({course.courseCode})
-              </option>
-            ))}
+            <SelectTrigger>
+              <SelectValue placeholder="-- Select a Course --" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">-- Select a Course --</SelectItem>
+              {coursesLoading ? (
+                <SelectItem value="loading" disabled>Loading courses...</SelectItem>
+              ) : courses.length === 0 ? (
+                <SelectItem value="no-courses" disabled>No courses available</SelectItem>
+              ) : (
+                courses.map((course) => (
+                  <SelectItem key={course._id} value={course._id}>
+                    {course.courseName} ({course.courseCode})
+                  </SelectItem>
+                ))
+              )}
+            </SelectContent>
           </Select>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

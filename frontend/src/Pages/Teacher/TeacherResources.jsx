@@ -8,7 +8,7 @@ import { FaPlus, FaFileAlt, FaVideo, FaBook, FaLink, FaTrash, FaDownload, FaEye 
 import Card, { CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Badge from '../../components/ui/Badge';
 import { toast } from 'react-toastify';
 
@@ -175,22 +175,32 @@ const TeacherResources = () => {
                         <Select
                             label="Filter by Subject"
                             value={filterSubject}
-                            onChange={(e) => setFilterSubject(e.target.value)}
+                            onValueChange={(value) => setFilterSubject(value)}
                         >
-                            <option value="">All Subjects</option>
-                            {subjects.map(sub => (
-                                <option key={sub._id} value={sub._id}>{sub.subjectName} ({sub.subjectCode})</option>
-                            ))}
+                            <SelectTrigger>
+                                <SelectValue placeholder="All Subjects" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="">All Subjects</SelectItem>
+                                {subjects.map(sub => (
+                                    <SelectItem key={sub._id} value={sub._id}>{sub.subjectName} ({sub.subjectCode})</SelectItem>
+                                ))}
+                            </SelectContent>
                         </Select>
                         <Select
                             label="Filter by Type"
                             value={filterType}
-                            onChange={(e) => setFilterType(e.target.value)}
+                            onValueChange={(value) => setFilterType(value)}
                         >
-                            <option value="">All Types</option>
-                            {RESOURCE_TYPES.map(t => (
-                                <option key={t.value} value={t.value}>{t.label}</option>
-                            ))}
+                            <SelectTrigger>
+                                <SelectValue placeholder="All Types" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="">All Types</SelectItem>
+                                {RESOURCE_TYPES.map(t => (
+                                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                                ))}
+                            </SelectContent>
                         </Select>
                     </CardContent>
                 </Card>
@@ -264,24 +274,34 @@ const TeacherResources = () => {
                             <Select
                                 label="Subject"
                                 value={formData.subjectId}
-                                onChange={(e) => setFormData({ ...formData, subjectId: e.target.value })}
+                                onValueChange={(value) => setFormData({ ...formData, subjectId: value })}
                                 required
                             >
-                                <option value="">Select Subject</option>
-                                {subjects.map(sub => (
-                                    <option key={sub._id} value={sub._id}>{sub.subjectName}</option>
-                                ))}
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Subject" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="">Select Subject</SelectItem>
+                                    {subjects.map(sub => (
+                                        <SelectItem key={sub._id} value={sub._id}>{sub.subjectName}</SelectItem>
+                                    ))}
+                                </SelectContent>
                             </Select>
 
                             <Select
                                 label="Resource Type"
                                 value={formData.type}
-                                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                                onValueChange={(value) => setFormData({ ...formData, type: value })}
                                 required
                             >
-                                {RESOURCE_TYPES.map(t => (
-                                    <option key={t.value} value={t.value}>{t.label}</option>
-                                ))}
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {RESOURCE_TYPES.map(t => (
+                                        <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                                    ))}
+                                </SelectContent>
                             </Select>
 
                             <Input

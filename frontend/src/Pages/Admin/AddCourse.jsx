@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 import BackButton from '../../components/BackButton';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 
 const AddCourse = () => {
   const navigate = useNavigate();
@@ -81,15 +81,20 @@ const AddCourse = () => {
                   label="Course Duration *"
                   name="courseDuration"
                   value={formData.courseDuration}
-                  onChange={handleInputChange}
+                  onValueChange={(value) => handleInputChange({ target: { name: 'courseDuration', value } })}
                   required
                 >
-                  <option value="">Select Duration</option>
-                  <option value="1 Year">1 Year</option>
-                  <option value="2 Years">2 Years</option>
-                  <option value="3 Years">3 Years</option>
-                  <option value="4 Years">4 Years</option>
-                  <option value="5 Years">5 Years</option>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Duration" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Select Duration</SelectItem>
+                    <SelectItem value="1 Year">1 Year</SelectItem>
+                    <SelectItem value="2 Years">2 Years</SelectItem>
+                    <SelectItem value="3 Years">3 Years</SelectItem>
+                    <SelectItem value="4 Years">4 Years</SelectItem>
+                    <SelectItem value="5 Years">5 Years</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
 

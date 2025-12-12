@@ -3,7 +3,7 @@ import { FaBookOpen, FaPlus, FaSearch, FaEdit, FaTrash, FaDownload, FaEye, FaTim
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
 import Input from '../../components/ui/Input';
-import Select from '../../components/ui/Select';
+import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Button from '../../components/ui/Button';
 
 const LibraryManagement = () => {
@@ -199,22 +199,32 @@ const LibraryManagement = () => {
               </div>
               <Select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onValueChange={setSelectedCategory}
               >
-                <option>All Categories</option>
-                <option>Computer Science</option>
-                <option>Mechanical</option>
-                <option>Business</option>
-                <option>Mathematics</option>
-                <option>Physics</option>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All Categories">All Categories</SelectItem>
+                  <SelectItem value="Computer Science">Computer Science</SelectItem>
+                  <SelectItem value="Mechanical">Mechanical</SelectItem>
+                  <SelectItem value="Business">Business</SelectItem>
+                  <SelectItem value="Mathematics">Mathematics</SelectItem>
+                  <SelectItem value="Physics">Physics</SelectItem>
+                </SelectContent>
               </Select>
               <Select
                 value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
+                onValueChange={setSelectedStatus}
               >
-                <option>All Status</option>
-                <option>Available</option>
-                <option>Out of Stock</option>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All Status">All Status</SelectItem>
+                  <SelectItem value="Available">Available</SelectItem>
+                  <SelectItem value="Out of Stock">Out of Stock</SelectItem>
+                </SelectContent>
               </Select>
             </div>
           </div>
@@ -313,14 +323,18 @@ const LibraryManagement = () => {
                   <Select
                     label="Category"
                     value={newBook.category}
-                    onChange={(e) => setNewBook({ ...newBook, category: e.target.value })}
+                    onValueChange={(value) => setNewBook({ ...newBook, category: value })}
                   >
-                    <option value="">Select Category</option>
-                    <option>Computer Science</option>
-                    <option>Mechanical</option>
-                    <option>Business</option>
-                    <option>Mathematics</option>
-                    <option>Physics</option>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Computer Science">Computer Science</SelectItem>
+                      <SelectItem value="Mechanical">Mechanical</SelectItem>
+                      <SelectItem value="Business">Business</SelectItem>
+                      <SelectItem value="Mathematics">Mathematics</SelectItem>
+                      <SelectItem value="Physics">Physics</SelectItem>
+                    </SelectContent>
                   </Select>
                   <Input
                     label="Total Copies"
@@ -367,12 +381,16 @@ const LibraryManagement = () => {
                   <Select
                     label="Select Book"
                     value={issueForm.bookId}
-                    onChange={(e) => setIssueForm({ ...issueForm, bookId: e.target.value })}
+                    onValueChange={(value) => setIssueForm({ ...issueForm, bookId: value })}
                   >
-                    <option value="">Select a book</option>
-                    {books.filter(book => book.available > 0).map(book => (
-                      <option key={book.id} value={book.id}>{book.title} - Available: {book.available}</option>
-                    ))}
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a book" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {books.filter(book => book.available > 0).map(book => (
+                        <SelectItem key={book.id} value={String(book.id)}>{book.title} - Available: {book.available}</SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                   <Input
                     label="Student Roll Number"
