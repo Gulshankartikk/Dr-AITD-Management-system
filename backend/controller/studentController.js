@@ -30,6 +30,10 @@ const studentRegister = async (req, res) => {
   try {
     const { name, email, phone, password, courseId } = req.body;
 
+    if (!name || !email || !password || !courseId) {
+      return res.status(400).json({ success: false, msg: 'All fields including Course are required' });
+    }
+
     // Check if student already exists
     const existingStudent = await Student.findOne({ email });
     if (existingStudent) {

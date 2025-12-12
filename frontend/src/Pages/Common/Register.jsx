@@ -55,6 +55,11 @@ const Register = () => {
       return;
     }
 
+    if (!formData.courseId) {
+      toast.error("Please select a course");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await axios.post(`${BASE_URL}/api/student/register`, {
@@ -165,11 +170,10 @@ const Register = () => {
               <SelectValue placeholder="-- Select a Course --" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">-- Select a Course --</SelectItem>
               {coursesLoading ? (
                 <SelectItem value="loading" disabled>Loading courses...</SelectItem>
               ) : courses.length === 0 ? (
-                <SelectItem value="no-courses" disabled>No courses available</SelectItem>
+                <div className="p-2 text-sm text-gray-500 text-center">No courses available</div>
               ) : (
                 courses.map((course) => (
                   <SelectItem key={course._id} value={course._id}>
