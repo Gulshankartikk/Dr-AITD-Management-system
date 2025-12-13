@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaCog, FaSave, FaUser, FaLock, FaBell, FaDatabase } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
@@ -6,13 +6,53 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select, { SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/Select';
 import { toast } from 'react-toastify';
+import adminService from '../../services/adminService';
 
 const SettingsManagement = () => {
   const [activeTab, setActiveTab] = useState('general');
+  const [loading, setLoading] = useState(false);
+  const [settings, setSettings] = useState({
+    institutionName: 'Dr AITD Management System',
+    academicYear: '2023-2024',
+    address: '123 Education Street, Knowledge City, State - 123456',
+    email: 'admin@college.edu',
+    phone: '+91 34 567 8900'
+  });
 
-  const handleSave = () => {
-    // In a real app, this would gather state and submit to API
-    toast.success('Settings saved successfully');
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const data = await adminService.getSettings();
+      if (data.success && data.settings) {
+        setSettings(prev => ({ ...prev, ...data.settings }));
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+      // Fallback to defaults or show error if critical
+    }
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      await adminService.updateSettings(settings);
+      toast.success('Settings saved successfully');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast.error('Failed to save settings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (key, value) => {
+    setSettings(prev => ({
+      ...prev,
+      [key]: value
+    }));
   };
 
   const tabs = [
@@ -72,9 +112,14 @@ const SettingsManagement = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Input
                           label="Institution Name"
-                          defaultValue="DR.AITD Management System"
+                          value={settings.institutionName}
+                          onChange={(e) => handleChange('institutionName', e.target.value)}
                         />
-                        <Select label="Academic Year" defaultValue="2023-2024">
+                        <Select
+                          label="Academic Year"
+                          value={settings.academicYear}
+                          onValueChange={(val) => handleChange('academicYear', val)}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select Year" />
                           </SelectTrigger>
@@ -88,7 +133,8 @@ const SettingsManagement = () => {
                         <label className="block text-sm font-medium text-text-secondary mb-2">Institution Address</label>
                         <textarea
                           rows="3"
-                          defaultValue="123 Education Street, Knowledge City, State - 123456"
+                          value={settings.address}
+                          onChange={(e) => handleChange('address', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
                         />
                       </div>
@@ -96,12 +142,14 @@ const SettingsManagement = () => {
                         <Input
                           label="Contact Email"
                           type="email"
-                          defaultValue="admin@college.edu"
+                          value={settings.email}
+                          onChange={(e) => handleChange('email', e.target.value)}
                         />
                         <Input
                           label="Contact Phone"
                           type="tel"
-                          defaultValue="+9134 567 8900"
+                          value={settings.phone}
+                          onChange={(e) => handleChange('phone', e.target.value)}
                         />
                       </div>
                     </div>

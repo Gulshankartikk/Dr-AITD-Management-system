@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
-import Cookies from 'js-cookie';
+import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
 import { FaUpload, FaFileAlt, FaUsers, FaCalendarAlt } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
@@ -29,12 +27,9 @@ const AdminUpload = () => {
 
   const fetchData = async () => {
     try {
-      const token = Cookies.get('token');
-      const headers = { Authorization: `Bearer ${token}` };
-
       const [coursesRes, subjectsRes] = await Promise.all([
-        axios.get(`${BASE_URL}/courses`, { headers }),
-        axios.get(`${BASE_URL}/subjects`, { headers })
+        api.get('/api/courses'),
+        api.get('/api/subjects')
       ]);
 
       setCourses(coursesRes.data.courses || []);
@@ -58,7 +53,6 @@ const AdminUpload = () => {
     setUploading(true);
 
     try {
-      const token = Cookies.get('token');
       const uploadFormData = new FormData();
 
       uploadFormData.append('title', formData.title);
@@ -80,9 +74,8 @@ const AdminUpload = () => {
         ? `/api/admin/notices`
         : `/api/admin/materials`;
 
-      await axios.post(`${BASE_URL}${endpoint}`, uploadFormData, {
+      await api.post(endpoint, uploadFormData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
       });

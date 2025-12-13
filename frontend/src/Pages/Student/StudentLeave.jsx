@@ -6,9 +6,7 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Modal from '../../components/ui/Modal';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
-import Cookies from 'js-cookie';
+import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
 import Badge from '../../components/ui/Badge';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -39,10 +37,7 @@ const StudentLeave = () => {
 
   const fetchLeaves = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/student/${studentId}/leaves`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/api/student/${studentId}/leaves`);
       if (response.data.success) {
         setLeaves(response.data.leaves || []);
       }
@@ -58,10 +53,7 @@ const StudentLeave = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const token = Cookies.get('token');
-      await axios.post(`${BASE_URL}/api/student/${studentId}/leave`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post(`/api/student/${studentId}/leave`, formData);
       toast.success('Leave request submitted successfully!');
       setShowModal(false);
       setFormData({ leaveType: 'Sick Leave', startDate: '', endDate: '', reason: '' });

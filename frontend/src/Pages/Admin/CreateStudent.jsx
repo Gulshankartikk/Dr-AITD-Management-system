@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
+import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
-import Cookies from 'js-cookie';
 import BackButton from '../../components/BackButton';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -33,7 +31,7 @@ const CreateStudent = () => {
   const fetchCourses = async () => {
     setCoursesLoading(true);
     try {
-      const response = await axios.get(`${BASE_URL}/api/courses`);
+      const response = await api.get('/api/courses');
       if (response.data.success) {
         setCourses(response.data.courses || []);
       }
@@ -58,10 +56,7 @@ const CreateStudent = () => {
     setLoading(true);
 
     try {
-      const token = Cookies.get('token');
-      const response = await axios.post(`${BASE_URL}/api/admin/students`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.post('/api/admin/students', formData);
 
       if (response.data.success) {
         toast.success('Student created successfully!');

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
-import Cookies from 'js-cookie';
+import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
 import { FaCheck, FaTimes, FaCalendarAlt, FaUsers } from 'react-icons/fa';
 import Card, { CardContent } from '../../components/ui/Card';
@@ -34,13 +32,7 @@ const AttendanceUpload = ({ teacherId }) => {
   // ===================== FETCH SUBJECTS =====================
   const fetchSubjects = async () => {
     try {
-      const token = Cookies.get('token');
-      const headers = { Authorization: `Bearer ${token}` };
-
-      const res = await axios.get(`${BASE_URL}/api/teacher/${teacherId}/subjects`, {
-        headers,
-      });
-
+      const res = await api.get(`/api/teacher/${teacherId}/subjects`);
       setSubjects(res.data.subjects || []);
     } catch (error) {
       console.error('Error fetching subjects:', error);
@@ -54,12 +46,8 @@ const AttendanceUpload = ({ teacherId }) => {
 
     setLoading(true);
     try {
-      const token = Cookies.get('token');
-      const headers = { Authorization: `Bearer ${token}` };
-
-      const res = await axios.get(
-        `${BASE_URL}/api/teacher/${teacherId}/subjects/${selectedSubject}/students`,
-        { headers }
+      const res = await api.get(
+        `/api/teacher/${teacherId}/subjects/${selectedSubject}/students`
       );
 
       const studentList = res.data.students || [];
@@ -100,9 +88,6 @@ const AttendanceUpload = ({ teacherId }) => {
     setSubmitting(true);
 
     try {
-      const token = Cookies.get('token');
-      const headers = { Authorization: `Bearer ${token}` };
-
       const data = {
         subjectId: selectedSubject,
         date: attendanceDate,
@@ -112,9 +97,7 @@ const AttendanceUpload = ({ teacherId }) => {
         })),
       };
 
-      await axios.post(`${BASE_URL}/api/teacher/${teacherId}/attendance`, data, {
-        headers,
-      });
+      await api.post(`/api/teacher/${teacherId}/attendance`, data);
 
       toast.success('Attendance submitted successfully!');
 

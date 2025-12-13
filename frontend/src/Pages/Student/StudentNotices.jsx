@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
-import { BASE_URL } from '../../constants/api';
+import api from '../../api/axiosInstance';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { FaBell, FaCalendarAlt } from 'react-icons/fa';
 import Card, { CardContent } from '../../components/ui/Card';
@@ -18,10 +16,7 @@ const StudentNotices = () => {
 
   const fetchNotices = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/student/${studentId}/notices`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/api/student/${studentId}/notices`);
       setNotices(response.data.notices || []);
     } catch (error) {
       console.error('Error fetching notices:', error);

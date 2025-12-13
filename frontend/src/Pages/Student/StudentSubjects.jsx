@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
+import api from '../../api/axiosInstance';
 import { FaBook, FaChalkboardTeacher, FaFileAlt, FaClipboardList, FaArrowRight } from 'react-icons/fa';
-import Cookies from 'js-cookie';
 import Card, { CardHeader, CardTitle, CardContent, CardFooter } from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
@@ -18,10 +16,7 @@ const StudentSubjects = () => {
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
-                const token = Cookies.get('token');
-                const response = await axios.get(`${BASE_URL}/api/student/${studentId}/subjects`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await api.get(`/api/student/${studentId}/subjects`);
                 if (response.data.success) {
                     setSubjects(response.data.subjects);
                 }

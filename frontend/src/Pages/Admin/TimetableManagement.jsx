@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaCalendarAlt, FaPlus, FaClock, FaEdit, FaDownload, FaTimes, FaSearch, FaUsers, FaChalkboardTeacher, FaTrash } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
-import Cookies from 'js-cookie';
+import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
 import Button from '../../components/ui/Button';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
@@ -46,11 +44,10 @@ const TimetableManagement = () => {
   const fetchInitialData = async () => {
     setInitialLoading(true);
     try {
-      const token = Cookies.get('token');
       const [coursesRes, teachersRes, subjectsRes] = await Promise.all([
-        axios.get(`${BASE_URL}/api/admin/courses`, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`${BASE_URL}/api/admin/teachers`, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`${BASE_URL}/api/admin/subjects`, { headers: { Authorization: `Bearer ${token}` } })
+        api.get('/api/admin/courses'),
+        api.get('/api/admin/teachers'),
+        api.get('/api/admin/subjects')
       ]);
 
       setCourses(coursesRes.data.courses || []);
@@ -71,10 +68,8 @@ const TimetableManagement = () => {
   const fetchTimetable = async () => {
     setLoading(true);
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/admin/timetable`, {
-        params: { courseId: selectedCourse, semester: selectedSemester },
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await api.get('/api/admin/timetable', {
+        params: { courseId: selectedCourse, semester: selectedSemester }
       });
       setTimetable(response.data.timetable || []);
     } catch (error) {
@@ -92,13 +87,10 @@ const TimetableManagement = () => {
     }
 
     try {
-      const token = Cookies.get('token');
-      await axios.post(`${BASE_URL}/api/admin/timetable`, {
+      await api.post('/api/admin/timetable', {
         ...newSlot,
         courseId: selectedCourse,
         semester: selectedSemester
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       toast.success('Slot added successfully');
@@ -115,10 +107,7 @@ const TimetableManagement = () => {
     if (!window.confirm('Are you sure you want to delete this slot?')) return;
 
     try {
-      const token = Cookies.get('token');
-      await axios.delete(`${BASE_URL}/api/admin/timetable/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/api/admin/timetable/${id}`);
       toast.success('Slot deleted successfully');
       fetchTimetable();
     } catch (error) {

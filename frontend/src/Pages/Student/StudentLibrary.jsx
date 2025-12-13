@@ -5,8 +5,7 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Badge from '../../components/ui/Badge';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
+import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
 
 const StudentLibrary = () => {
@@ -19,7 +18,7 @@ const StudentLibrary = () => {
     useEffect(() => {
         const fetchBooks = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/api/student/library/books`, { withCredentials: true });
+                const response = await api.get('/api/student/library/books');
                 if (response.data.success) {
                     setBooks(response.data.books);
                 }

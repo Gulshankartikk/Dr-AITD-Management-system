@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
-import Cookies from 'js-cookie';
+import api from '../../api/axiosInstance';
 import { FaTrophy } from 'react-icons/fa';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
@@ -39,10 +37,7 @@ const StudentMarks = () => {
 
     const fetchSubjects = async () => {
         try {
-            const token = Cookies.get('token');
-            const response = await axios.get(`${BASE_URL}/api/student/${studentId}/subjects`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get(`/api/student/${studentId}/subjects`);
             setSubjects(response.data.subjects || []);
         } catch (error) {
             console.error('Error fetching subjects:', error);
@@ -52,13 +47,11 @@ const StudentMarks = () => {
     const fetchMarks = async () => {
         setLoading(true);
         try {
-            const token = Cookies.get('token');
             const params = {};
             if (filters.subjectId && filters.subjectId !== 'all') params.subjectId = filters.subjectId;
             if (filters.examType && filters.examType !== 'all') params.examType = filters.examType;
 
-            const response = await axios.get(`${BASE_URL}/api/student/${studentId}/marks`, {
-                headers: { Authorization: `Bearer ${token}` },
+            const response = await api.get(`/api/student/${studentId}/marks`, {
                 params
             });
             setMarks(response.data.marks || []);

@@ -28,23 +28,12 @@ const useAutoLogout = (timeout = 1800000) => { // 30 minutes = 1800000ms
 
     resetTimer();
 
-    // Prevent back button after logout
-    const preventBack = () => {
-      const token = Cookies.get('token');
-      if (!token) {
-        window.history.pushState(null, '', window.location.href);
-        navigate('/login', { replace: true });
-      }
-    };
-
-    window.addEventListener('popstate', preventBack);
-
+    // Clear timer on unmount
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       events.forEach(event => {
         window.removeEventListener(event, resetTimer);
       });
-      window.removeEventListener('popstate', preventBack);
     };
   }, [navigate, timeout]);
 

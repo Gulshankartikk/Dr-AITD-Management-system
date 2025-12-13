@@ -69,7 +69,7 @@ const Login = () => {
   };
 
   const loginSuccess = (token) => {
-    Cookies.set("token", token);
+    Cookies.set("token", token, { expires: 30 });
     localStorage.setItem("token", token);
     dispatch(addUserDetails({ token: token }));
 

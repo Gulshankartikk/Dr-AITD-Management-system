@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BASE_URL } from '../../constants/api';
-import axios from 'axios';
+import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
-import Cookies from 'js-cookie';
 import Card, { CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Select from '../../components/ui/Select';
@@ -29,10 +27,7 @@ const StudentList = () => {
 
   const fetchSubjects = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/subjects`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/subjects');
       if (response.data.success && response.data.subjects.length > 0) {
         setSubjects(response.data.subjects);
         setSelectedSubject(response.data.subjects[0]._id);
@@ -46,7 +41,6 @@ const StudentList = () => {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const token = Cookies.get('token');
       const subject = subjects.find(s => s._id === selectedSubject);
 
       if (!subject) {
@@ -54,9 +48,7 @@ const StudentList = () => {
         return;
       }
 
-      const response = await axios.get(`${BASE_URL}/api/admin/students`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/admin/students');
 
       if (response.data.success) {
         const allStudents = response.data.students;
@@ -99,20 +91,17 @@ const StudentList = () => {
     setSaving(true);
 
     try {
-      const token = Cookies.get('token');
       const attendanceData = students.map(student => ({
         studentId: student._id,
         status: student.status
       }));
 
       // CORRECT ROUTE + CORRECT BODY
-      const response = await axios.post(`${BASE_URL}/api/teacher/admin/attendance`, {
+      const response = await api.post('/api/teacher/admin/attendance', {
         teacherId,
         subjectId: selectedSubject,
         date: selectedDate,
         attendance: attendanceData
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (response.data.success) {

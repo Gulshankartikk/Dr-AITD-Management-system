@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
-import Cookies from 'js-cookie';
+import api from '../../api/axiosInstance';
 import { FaClipboardList, FaCalendarAlt, FaCheck, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import Card, { CardContent } from '../../components/ui/Card';
@@ -22,10 +20,7 @@ const StudentAttendance = () => {
 
   const fetchAttendance = async () => {
     try {
-      const token = Cookies.get('token');
-      const headers = { Authorization: `Bearer ${token}` };
-
-      const response = await axios.get(`${BASE_URL}/api/student/${studentId}/attendance`, { headers });
+      const response = await api.get(`/api/student/${studentId}/attendance`);
       setAttendance(response.data.attendance || []);
       setStudentName(response.data.student?.name || '');
       calculateStats(response.data.attendance || []);

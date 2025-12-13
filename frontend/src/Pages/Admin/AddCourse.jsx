@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
+import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
-import Cookies from 'js-cookie';
 import BackButton from '../../components/BackButton';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -33,10 +31,7 @@ const AddCourse = () => {
     setLoading(true);
 
     try {
-      const token = Cookies.get('token');
-      const response = await axios.post(`${BASE_URL}/api/admin/courses`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.post('/api/admin/courses', formData);
 
       if (response.data.success) {
         toast.success('Course created successfully!');

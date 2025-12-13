@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BASE_URL } from "../../constants/api";
-import axios from "axios";
-import Cookies from "js-cookie";
+import api from "../../api/axiosInstance";
 import { toast } from "react-toastify";
 import BackButton from "../../components/BackButton";
 import { useNavigate } from "react-router-dom";
@@ -33,38 +31,21 @@ const AddSubject = () => {
   const creditOptions = [1, 2, 3, 4, 5, 6];
 
   const navigate = useNavigate();
-  const token = Cookies.get("token");
 
   useEffect(() => {
     const role = localStorage.getItem('role') || sessionStorage.getItem('role');
     setUserRole(role);
-
-    if (!token) {
-      toast.error("Session expired. Please login again.");
-      navigate("/login");
-    }
-  }, [token, navigate]);
-
-  useEffect(() => {
-    if (token) {
-      fetchCourses();
-      fetchTeachers();
-    }
-  }, [token]);
+    fetchCourses();
+    fetchTeachers();
+  }, []);
 
   const fetchCourses = async () => {
     setCoursesLoading(true);
     try {
-      const response = await axios.get(`${BASE_URL}/api/courses`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/courses');
       setCourses(response.data.courses || []);
     } catch (error) {
       console.error("Error fetching courses:", error);
-      if (error.response?.status === 401) {
-        toast.error("Session expired. Please login again.");
-        navigate("/login");
-      }
       setCourses([]);
     } finally {
       setCoursesLoading(false);
@@ -73,15 +54,10 @@ const AddSubject = () => {
 
   const fetchTeachers = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/admin/teachers`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/admin/teachers');
       setTeachers(response.data.teachers || []);
     } catch (error) {
       console.error("Error fetching teachers:", error);
-      if (error.response?.status === 401) {
-        // Already handled by other calls or useEffect, but good to be safe
-      }
       setTeachers([]);
     }
   };
@@ -96,12 +72,6 @@ const AddSubject = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!token) {
-      toast.error("Session expired. Please login again.");
-      navigate("/login");
-      return;
-    }
 
     if (
       !formData.subject_name ||
@@ -129,11 +99,7 @@ const AddSubject = () => {
 
       console.log('Submitting payload:', payload);
 
-      await axios.post(`${BASE_URL}/api/admin/subjects`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.post('/api/admin/subjects', payload);
 
       toast.success("Subject added successfully");
 
@@ -153,14 +119,7 @@ const AddSubject = () => {
 
     } catch (error) {
       console.error("Error adding subject:", error);
-      if (error.response?.status === 403) {
-        toast.error("Access denied. Only admins can add subjects.");
-      } else if (error.response?.status === 401) {
-        toast.error("Session expired. Please login again.");
-        navigate("/login");
-      } else {
-        toast.error(error.response?.data?.msg || error.response?.data?.message || "Failed to add subject");
-      }
+      toast.error(error.response?.data?.msg || error.response?.data?.message || "Failed to add subject");
     }
   };
 

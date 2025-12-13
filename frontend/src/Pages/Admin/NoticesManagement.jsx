@@ -4,7 +4,6 @@ import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
 import { toast } from 'react-toastify';
 import api from '../../api/axiosInstance';
-import { BASE_URL } from '../../constants/api';
 import Button from '../../components/ui/Button';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Input from '../../components/ui/Input';

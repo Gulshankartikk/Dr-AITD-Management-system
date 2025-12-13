@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
-import Cookies from 'js-cookie';
+import api from '../../api/axiosInstance';
 import { FaDownload, FaEye, FaFileAlt, FaUser, FaLink } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import Card, { CardContent } from '../../components/ui/Card';
@@ -29,13 +27,10 @@ const StudentResources = () => {
 
   const fetchResources = async () => {
     try {
-      const token = Cookies.get('token');
-      const headers = { Authorization: `Bearer ${token}` };
-
       const [assignmentsRes, resourcesRes, attendanceRes] = await Promise.all([
-        axios.get(`${BASE_URL}/api/student/${studentId}/assignments`, { headers }),
-        axios.get(`${BASE_URL}/api/student/${studentId}/resources`, { headers }),
-        axios.get(`${BASE_URL}/api/student/${studentId}/attendance`, { headers })
+        api.get(`/api/student/${studentId}/assignments`),
+        api.get(`/api/student/${studentId}/resources`),
+        api.get(`/api/student/${studentId}/attendance`)
       ]);
 
       const allResources = resourcesRes.data.resources || [];

@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaFileAlt, FaDownload, FaChartBar, FaCalendarAlt, FaUsers, FaRupeeSign, FaSpinner, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
-import Cookies from 'js-cookie';
+import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
 import Button from '../../components/ui/Button';
 import Select from '../../components/ui/Select';
@@ -36,10 +34,7 @@ const ReportsManagement = () => {
 
   const fetchManualReports = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/admin/manual-reports`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/admin/manual-reports');
       if (response.data.success) {
         setManualReports(response.data.reports);
       }
@@ -53,10 +48,7 @@ const ReportsManagement = () => {
     setSelectedReport(type);
     setReportData(null);
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}${type.endpoint}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(type.endpoint);
 
       if (response.data.success) {
         setReportData(response.data.data);
@@ -73,16 +65,11 @@ const ReportsManagement = () => {
   const handleManualSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = Cookies.get('token');
       if (editingReport) {
-        await axios.put(`${BASE_URL}/api/admin/manual-reports/${editingReport._id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.put(`/api/admin/manual-reports/${editingReport._id}`, formData);
         toast.success('Report updated successfully');
       } else {
-        await axios.post(`${BASE_URL}/api/admin/manual-reports`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.post('/api/admin/manual-reports', formData);
         toast.success('Report created successfully');
       }
       setShowModal(false);
@@ -98,10 +85,7 @@ const ReportsManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this report?')) {
       try {
-        const token = Cookies.get('token');
-        await axios.delete(`${BASE_URL}/api/admin/manual-reports/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/api/admin/manual-reports/${id}`);
         toast.success('Report deleted successfully');
         fetchManualReports();
       } catch (error) {

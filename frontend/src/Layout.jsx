@@ -4,6 +4,8 @@ import Sidebar from "./components/layout/Sidebar";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/Footer";
 import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux';
+import { addUserDetails } from './features/UserSlice';
 
 const Layout = () => {
   const location = useLocation();
@@ -53,11 +55,18 @@ const Layout = () => {
       }
     } else {
       // For non-admins, viewRole MUST always match userRole
-      // This ensures that if a user logs out (userRole becomes null) 
-      // or logs in as a different role, viewRole updates correctly.
       setViewRole(userRole);
     }
   }, [location.pathname, userRole]);
+
+  // Redux Hydration for Session Restore
+  const dispatch = useDispatch();
+  React.useEffect(() => {
+    const token = Cookies.get('token');
+    if (token) {
+      dispatch(addUserDetails({ token }));
+    }
+  }, [dispatch]);
 
   if (isPublicPage) {
     return <Outlet />;

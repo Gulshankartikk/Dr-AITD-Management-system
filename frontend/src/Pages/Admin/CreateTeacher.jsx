@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
+import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
-import Cookies from 'js-cookie';
 import BackButton from '../../components/BackButton';
 import AdminHeader from '../../components/AdminHeader';
 import { FaUser, FaEnvelope, FaPhone, FaLock, FaBook, FaChalkboardTeacher, FaSave, FaTimes } from 'react-icons/fa';
@@ -35,10 +33,7 @@ const CreateTeacher = () => {
 
   const fetchCourses = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/admin/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/admin/dashboard');
       if (response.data.success) {
         setCourses(response.data.data.courses);
       }
@@ -52,10 +47,7 @@ const CreateTeacher = () => {
 
   const fetchSubjects = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/admin/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/admin/dashboard');
       if (response.data.success) {
         setSubjects(response.data.data.subjects);
       }
@@ -85,10 +77,7 @@ const CreateTeacher = () => {
     setLoading(true);
 
     try {
-      const token = Cookies.get('token');
-      const response = await axios.post(`${BASE_URL}/api/admin/teachers`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.post('/api/admin/teachers', formData);
 
       if (response.data.success) {
         toast.success('Teacher created successfully!');

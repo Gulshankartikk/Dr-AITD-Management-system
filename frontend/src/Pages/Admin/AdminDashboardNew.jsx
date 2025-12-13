@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axiosInstance';
-import { BASE_URL } from '../../constants/api';
 import {
   FaUsers, FaChalkboardTeacher, FaBook, FaClipboardList, FaRupeeSign,
   FaBell, FaCalendarAlt, FaChartBar, FaCog, FaFileAlt, FaBookOpen,

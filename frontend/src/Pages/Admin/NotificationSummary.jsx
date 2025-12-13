@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
+import api from '../../api/axiosInstance';
 import { FaBell, FaClipboardList, FaStickyNote, FaFileAlt, FaEye, FaDownload, FaTrash, FaEdit } from 'react-icons/fa';
 import { MdAssignment, MdNotifications } from 'react-icons/md';
-import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import AdminHeader from '../../components/AdminHeader';
 import Button from '../../components/ui/Button';
@@ -29,22 +27,22 @@ const NotificationSummary = () => {
 
   const fetchAllData = async () => {
     try {
-      const token = Cookies.get('token');
-      const headers = { Authorization: `Bearer ${token}` };
-
       // Fetch all data
-      const [assignmentsRes, noticesRes, materialsRes, attendanceRes] = await Promise.all([
-        axios.get(`${BASE_URL}/api/teacher/6919d9542d2366a7429b117f/assignments`, { headers }),
-        axios.get(`${BASE_URL}/api/teacher/6919d9542d2366a7429b117f/notices`, { headers }),
-        axios.get(`${BASE_URL}/api/teacher/6919d9542d2366a7429b117f/materials`, { headers }),
-        axios.get(`${BASE_URL}/api/teacher/6919d9542d2366a7429b117f/attendance`, { headers })
+      // TODO: Replace hardcoded teacher ID with dynamic data or admin routes
+      const [assignmentsRes, noticesRes, materialsRes, attendanceRes, teachersRes] = await Promise.all([
+        api.get('/api/teacher/6919d9542d2366a7429b117f/assignments'),
+        api.get('/api/teacher/6919d9542d2366a7429b117f/notices'),
+        api.get('/api/teacher/6919d9542d2366a7429b117f/materials'),
+        api.get('/api/teacher/6919d9542d2366a7429b117f/attendance'),
+        api.get('/api/admin/teachers') // Added to fetch teachers
       ]);
 
       setData({
         assignments: assignmentsRes.data.assignments || [],
         notices: noticesRes.data.notices || [],
         materials: materialsRes.data.materials || [],
-        attendance: attendanceRes.data.attendance || []
+        attendance: attendanceRes.data.attendance || [],
+        teachers: teachersRes.data.teachers || []
       });
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -124,7 +122,6 @@ const NotificationSummary = () => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
 
     try {
-      const token = Cookies.get('token');
       let endpoint = '';
 
       switch (type) {
@@ -142,9 +139,7 @@ const NotificationSummary = () => {
           break;
       }
 
-      await axios.delete(`${BASE_URL}${endpoint}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(endpoint);
 
       // Remove from local state
       setData(prev => ({
@@ -177,10 +172,7 @@ const NotificationSummary = () => {
 
   const handleUpdateTeacher = async (updatedData) => {
     try {
-      const token = Cookies.get('token');
-      await axios.put(`${BASE_URL}/api/admin/teachers/${editingTeacher._id}`, updatedData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.put(`/api/admin/teachers/${editingTeacher._id}`, updatedData);
 
       // Update local state
       setData(prev => ({

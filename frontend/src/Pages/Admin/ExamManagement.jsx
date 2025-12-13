@@ -5,9 +5,7 @@ import BackButton from '../../components/BackButton';
 import Input from '../../components/ui/Input';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Button from '../../components/ui/Button';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
-import Cookies from 'js-cookie';
+import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
 
 const ExamManagement = () => {
@@ -34,12 +32,9 @@ const ExamManagement = () => {
 
   const fetchData = async () => {
     try {
-      const token = Cookies.get('token');
-      const headers = { Authorization: `Bearer ${token}` };
-
       const [coursesRes, subjectsRes] = await Promise.all([
-        axios.get(`${BASE_URL}/courses`, { headers }), // Public or protected endpoint
-        axios.get(`${BASE_URL}/subjects`, { headers })
+        api.get('/api/courses'),
+        api.get('/api/subjects')
       ]);
 
       setCourses(coursesRes.data.courses || []);

@@ -4,7 +4,6 @@ import { toast } from 'react-toastify';
 import { FaUserGraduate, FaPlus, FaEdit, FaTrash, FaEye, FaSearch, FaChalkboardTeacher } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
-import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../components/ui/Input';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
