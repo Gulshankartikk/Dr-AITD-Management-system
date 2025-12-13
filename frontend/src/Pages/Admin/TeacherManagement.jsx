@@ -8,6 +8,7 @@ import adminService from '../../services/adminService';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
 
 const TeacherManagement = () => {
   const [teachers, setTeachers] = useState([]);
@@ -142,74 +143,72 @@ const TeacherManagement = () => {
           </div>
 
           <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">Teacher Details</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">Department</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">Contact</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {teachers.map((teacher) => (
-                    <tr key={teacher._id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Teacher Details</TableHead>
+                  <TableHead>Department</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {teachers.map((teacher) => (
+                  <TableRow key={teacher._id}>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+                          <FaChalkboardTeacher />
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-bold text-secondary">{teacher.name}</div>
+                          <div className="text-xs text-text-secondary">{teacher.designation || 'Faculty'}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm text-secondary">{teacher.department || 'N/A'}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm text-secondary">{teacher.email}</div>
+                      <div className="text-xs text-text-secondary">{teacher.phone}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-3">
+                        <button className="text-secondary hover:text-secondary/80 transition-colors">
+                          <FaEye />
+                        </button>
+                        {isAdmin && (
+                          <button
+                            onClick={() => navigate(`/teacher/${teacher._id}/dashboard`)}
+                            className="text-primary hover:text-primary/80 transition-colors"
+                            title="View Dashboard"
+                          >
                             <FaChalkboardTeacher />
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-bold text-secondary">{teacher.name}</div>
-                            <div className="text-xs text-text-secondary">{teacher.designation || 'Faculty'}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-secondary">{teacher.department || 'N/A'}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-secondary">{teacher.email}</div>
-                        <div className="text-xs text-text-secondary">{teacher.phone}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-3">
-                          <button className="text-secondary hover:text-secondary/80 transition-colors">
-                            <FaEye />
                           </button>
-                          {isAdmin && (
+                        )}
+                        {isAdmin && (
+                          <>
                             <button
-                              onClick={() => navigate(`/teacher/${teacher._id}/dashboard`)}
+                              onClick={() => handleEdit(teacher)}
                               className="text-primary hover:text-primary/80 transition-colors"
-                              title="View Dashboard"
                             >
-                              <FaChalkboardTeacher />
+                              <FaEdit />
                             </button>
-                          )}
-                          {isAdmin && (
-                            <>
-                              <button
-                                onClick={() => handleEdit(teacher)}
-                                className="text-primary hover:text-primary/80 transition-colors"
-                              >
-                                <FaEdit />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(teacher._id)}
-                                className="text-danger hover:text-red-700 transition-colors"
-                              >
-                                <FaTrash />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                            <button
+                              onClick={() => handleDelete(teacher._id)}
+                              className="text-danger hover:text-red-700 transition-colors"
+                            >
+                              <FaTrash />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </div>
       </div>

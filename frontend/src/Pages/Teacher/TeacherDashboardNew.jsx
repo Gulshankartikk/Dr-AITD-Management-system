@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
+import api from '../../api/axiosInstance';
 import {
   FaUsers, FaChalkboardTeacher, FaTasks, FaClipboardCheck,
   FaBook, FaUpload, FaClipboardList, FaFileUpload, FaPaperPlane,
   FaEdit, FaChartBar, FaDownload, FaBell, FaCalendarAlt, FaArrowRight
 } from 'react-icons/fa';
-import Cookies from 'js-cookie';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
@@ -28,24 +26,21 @@ const TeacherDashboardNew = () => {
 
   const fetchData = async () => {
     try {
-      const token = Cookies.get('token') || localStorage.getItem('token');
-      const headers = { Authorization: `Bearer ${token}` };
-
       // 1. Fetch Teacher Profile & Dashboard Data
-      const dashboardRes = await axios.get(`${BASE_URL}/api/teacher/${id}/dashboard`, { headers });
+      const dashboardRes = await api.get(`/api/teacher/${id}/dashboard`);
       setTeacher(dashboardRes.data.teacher);
       setAssignedSubjects(dashboardRes.data.teacher?.assignedSubjects || []);
 
       // 2. Fetch Timetable
-      const timetableRes = await axios.get(`${BASE_URL}/api/teacher/${id}/timetable`, { headers });
+      const timetableRes = await api.get(`/api/teacher/${id}/timetable`);
       setTimetable(timetableRes.data.timetable || []);
 
       // 3. Fetch Notices
-      const noticesRes = await axios.get(`${BASE_URL}/api/teacher/${id}/notices`, { headers });
+      const noticesRes = await api.get(`/api/teacher/${id}/notices`);
       setNotices(noticesRes.data.notices || []);
 
       // 4. Fetch Assignments
-      const assignmentsRes = await axios.get(`${BASE_URL}/api/teacher/${id}/assignments`, { headers });
+      const assignmentsRes = await api.get(`/api/teacher/${id}/assignments`);
       setAssignments(assignmentsRes.data.assignments || []);
 
     } catch (error) {

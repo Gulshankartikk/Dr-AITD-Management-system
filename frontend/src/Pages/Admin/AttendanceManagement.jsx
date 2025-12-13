@@ -5,6 +5,7 @@ import BackButton from '../../components/BackButton';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
+import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
 
 const AttendanceManagement = () => {
   const [attendanceData, setAttendanceData] = useState([
@@ -203,50 +204,50 @@ const AttendanceManagement = () => {
 
           {/* Attendance Table */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Roll No</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Student</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Course</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Present Days</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Total Days</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Percentage</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredData.map((record) => (
-                    <tr key={record.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap font-medium text-secondary">{record.rollNo}</td>
-                      <td className="px-6 py-4 whitespace-nowrap font-medium text-secondary">{record.student}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{record.course}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{record.present}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{record.total}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                            <div
-                              className={`h-2 rounded-full ${record.percentage >= 80 ? 'bg-success' :
-                                record.percentage >= 60 ? 'bg-warning' : 'bg-danger'
-                                }`}
-                              style={{ width: `${record.percentage}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-sm font-medium text-text-secondary">{record.percentage}%</span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Roll No</TableHead>
+                  <TableHead>Student</TableHead>
+                  <TableHead>Course</TableHead>
+                  <TableHead>Present Days</TableHead>
+                  <TableHead>Total Days</TableHead>
+                  <TableHead>Percentage</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredData.map((record) => (
+                  <TableRow key={record.id}>
+                    <TableCell className="font-medium text-secondary">{record.rollNo}</TableCell>
+                    <TableCell className="font-medium text-secondary">{record.student}</TableCell>
+                    <TableCell>{record.course}</TableCell>
+                    <TableCell>{record.present}</TableCell>
+                    <TableCell>{record.total}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                          <div
+                            className={`h-2 rounded-full ${record.percentage >= 80 ? 'bg-success' :
+                              record.percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                              }`}
+                            style={{ width: `${record.percentage}%` }}
+                          ></div>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${record.percentage >= 80 ? 'bg-success/10 text-success' :
-                          record.percentage >= 60 ? 'bg-warning/10 text-warning' :
-                            'bg-danger/10 text-danger'
-                          }`}>
-                          {record.percentage >= 80 ? 'Good' : record.percentage >= 60 ? 'Average' : 'Poor'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <span className="text-sm font-medium text-text-secondary">{record.percentage}%</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${record.percentage >= 80 ? 'bg-success/10 text-success' :
+                        record.percentage >= 60 ? 'bg-warning/10 text-warning' :
+                          'bg-danger/10 text-danger'
+                        }`}>
+                        {record.percentage >= 80 ? 'Good' : record.percentage >= 60 ? 'Average' : 'Poor'}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex">
                         <button
                           onClick={() => viewDetails(record)}
                           className="text-primary hover:text-primary/80 mr-3 flex items-center"
@@ -259,12 +260,12 @@ const AttendanceManagement = () => {
                         >
                           <FaEdit className="mr-1" /> Edit
                         </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
 
           {/* Mark Attendance Modal */}

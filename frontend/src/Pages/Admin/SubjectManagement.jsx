@@ -4,6 +4,7 @@ import { FaBook, FaPlus, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
 import Button from '../../components/ui/Button';
+import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
 import adminService from '../../services/adminService';
 
 const SubjectManagement = () => {
@@ -44,48 +45,46 @@ const SubjectManagement = () => {
                     </div>
 
                     <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Subject Name</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Code</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Type</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Credits</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Semester</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200">
-                                    {subjects.map((subject) => (
-                                        <tr key={subject._id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center">
-                                                    <FaBook className="text-primary mr-3" />
-                                                    <span className="font-medium text-secondary">{subject.subjectName}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-secondary">{subject.subjectCode}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-secondary">{subject.subjectType}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-secondary">{subject.credits}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-secondary">{subject.semester}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Subject Name</TableHead>
+                                    <TableHead>Code</TableHead>
+                                    <TableHead>Type</TableHead>
+                                    <TableHead>Credits</TableHead>
+                                    <TableHead>Semester</TableHead>
+                                    <TableHead>Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {subjects.map((subject) => (
+                                    <TableRow key={subject._id}>
+                                        <TableCell>
+                                            <div className="flex items-center">
+                                                <FaBook className="text-primary mr-3" />
+                                                <span className="font-medium text-secondary">{subject.subjectName}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>{subject.subjectCode}</TableCell>
+                                        <TableCell>{subject.subjectType}</TableCell>
+                                        <TableCell>{subject.credits}</TableCell>
+                                        <TableCell>{subject.semester}</TableCell>
+                                        <TableCell>
+                                            <div className="flex space-x-2">
                                                 <button className="text-primary hover:text-primary/80"><FaEye /></button>
                                                 <button className="text-primary hover:text-primary/80"><FaEdit /></button>
                                                 <button className="text-danger hover:text-red-700"><FaTrash /></button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {subjects.length === 0 && (
-                                        <tr>
-                                            <td colSpan="6" className="px-6 py-4 text-center text-text-secondary">
-                                                No subjects found.
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {subjects.length === 0 && (
+                                    <TableRow>
+                                        <TableCell className="text-center py-4" colSpan={6}>No subjects found.</TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
                     </div>
                 </div>
             </div>

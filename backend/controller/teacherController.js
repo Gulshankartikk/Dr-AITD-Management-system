@@ -853,6 +853,7 @@ module.exports = {
   getTimetable: async (req, res) => {
     try {
       const { teacherId } = req.params;
+      if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
       if (!checkAccess(req, teacherId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -869,6 +870,7 @@ module.exports = {
   applyLeave: async (req, res) => {
     try {
       const { teacherId } = req.params;
+      if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
       if (!checkAccess(req, teacherId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -891,6 +893,7 @@ module.exports = {
   changePassword: async (req, res) => {
     try {
       const { teacherId } = req.params;
+      if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
       if (!checkAccess(req, teacherId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -918,6 +921,7 @@ module.exports = {
   getLeaves: async (req, res) => {
     try {
       const { teacherId } = req.params;
+      if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
       if (!checkAccess(req, teacherId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -933,6 +937,7 @@ module.exports = {
   addResource: async (req, res) => {
     try {
       const { teacherId } = req.params;
+      if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
       if (!checkAccess(req, teacherId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -1002,6 +1007,7 @@ module.exports = {
   getResources: async (req, res) => {
     try {
       const { teacherId } = req.params;
+      if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
       if (!checkAccess(req, teacherId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -1025,6 +1031,7 @@ module.exports = {
   deleteResource: async (req, res) => {
     try {
       const { resourceId, teacherId } = req.params;
+      if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
       if (!checkAccess(req, teacherId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });

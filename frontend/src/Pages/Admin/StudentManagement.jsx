@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import Input from '../../components/ui/Input';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Button from '../../components/ui/Button';
+import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
 
 const StudentManagement = () => {
   const [students, setStudents] = useState([]);
@@ -167,76 +168,78 @@ const StudentManagement = () => {
             )}
           </div>
 
+
+
+          // ... (inside component) ...
+
           <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">Student Details</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">Academic Info</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">Contact</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {students.map((student) => (
-                    <tr key={student._id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-                            <FaUserGraduate />
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-bold text-secondary">{student.name}</div>
-                            <div className="text-xs text-text-secondary">Roll: {student.rollNo}</div>
-                          </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Student Details</TableHead>
+                  <TableHead>Academic Info</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {students.map((student) => (
+                  <TableRow key={student._id}>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+                          <FaUserGraduate />
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-secondary">{student.courseId?.courseName || 'N/A'}</div>
-                        <div className="text-xs text-text-secondary">Semester {student.semester}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-secondary">{student.email}</div>
-                        <div className="text-xs text-text-secondary">{student.phone}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-3">
-                          <button className="text-secondary hover:text-secondary/80 transition-colors">
-                            <FaEye />
+                        <div className="ml-4">
+                          <div className="text-sm font-bold text-secondary">{student.name}</div>
+                          <div className="text-xs text-text-secondary">Roll: {student.rollNo}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm text-secondary">{student.courseId?.courseName || 'N/A'}</div>
+                      <div className="text-xs text-text-secondary">Semester {student.semester}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm text-secondary">{student.email}</div>
+                      <div className="text-xs text-text-secondary">{student.phone}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-3">
+                        <button className="text-secondary hover:text-secondary/80 transition-colors">
+                          <FaEye />
+                        </button>
+                        {isAdmin && (
+                          <button
+                            onClick={() => navigate(`/student/${student._id}/dashboard`)}
+                            className="text-primary hover:text-primary/80 transition-colors"
+                            title="View Dashboard"
+                          >
+                            <FaChalkboardTeacher />
                           </button>
-                          {isAdmin && (
+                        )}
+                        {isAdmin && (
+                          <>
                             <button
-                              onClick={() => navigate(`/student/${student._id}/dashboard`)}
+                              onClick={() => handleEdit(student)}
                               className="text-primary hover:text-primary/80 transition-colors"
-                              title="View Dashboard"
                             >
-                              <FaChalkboardTeacher />
+                              <FaEdit />
                             </button>
-                          )}
-                          {isAdmin && (
-                            <>
-                              <button
-                                onClick={() => handleEdit(student)}
-                                className="text-primary hover:text-primary/80 transition-colors"
-                              >
-                                <FaEdit />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(student._id)}
-                                className="text-danger hover:text-red-700 transition-colors"
-                              >
-                                <FaTrash />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                            <button
+                              onClick={() => handleDelete(student._id)}
+                              className="text-danger hover:text-red-700 transition-colors"
+                            >
+                              <FaTrash />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </div>
       </div>

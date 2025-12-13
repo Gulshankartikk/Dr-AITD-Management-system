@@ -175,7 +175,7 @@ const Register = () => {
               {coursesLoading ? (
                 <SelectItem value="loading" disabled>Loading courses...</SelectItem>
               ) : courses.length === 0 ? (
-                <div className="p-2 text-sm text-gray-500 text-center">No courses available</div>
+                <SelectItem value="none" disabled>No courses available</SelectItem>
               ) : (
                 courses.map((course) => (
                   <SelectItem key={course._id} value={course._id}>

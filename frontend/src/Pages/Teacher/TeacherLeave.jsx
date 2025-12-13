@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaCalendarCheck, FaClock } from 'react-icons/fa';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
 import Card, { CardContent } from '../../components/ui/Card';
+import Badge from '../../components/ui/Badge';
+import api from '../../api/axiosInstance';
+import { toast } from 'react-toastify';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const TeacherLeave = () => {
   const { id: teacherId } = useParams();
   const [leaves, setLeaves] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     leaveType: 'Sick Leave',
@@ -19,12 +25,42 @@ const TeacherLeave = () => {
 
   const leaveTypes = ['Sick Leave', 'Casual Leave', 'Emergency Leave', 'Personal Leave'];
 
+  useEffect(() => {
+    fetchLeaves();
+  }, [teacherId]);
+
+  const fetchLeaves = async () => {
+    try {
+      const response = await api.get(`/api/teacher/${teacherId}/leaves`);
+      if (response.data.success) {
+        setLeaves(response.data.leaves || []);
+      }
+    } catch (error) {
+      console.error('Error fetching leaves:', error);
+      toast.error('Failed to load leave history');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Leave application submitted successfully!');
-    setShowModal(false);
-    setFormData({ leaveType: 'Sick Leave', startDate: '', endDate: '', reason: '' });
+    setSubmitting(true);
+    try {
+      await api.post(`/api/teacher/${teacherId}/leave`, formData);
+      toast.success('Leave application submitted successfully!');
+      setShowModal(false);
+      setFormData({ leaveType: 'Sick Leave', startDate: '', endDate: '', reason: '' });
+      fetchLeaves();
+    } catch (error) {
+      console.error('Error submitting leave:', error);
+      toast.error(error.response?.data?.msg || 'Failed to submit leave request');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (loading) return <LoadingSpinner message="Loading leave history..." />;
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -39,25 +75,47 @@ const TeacherLeave = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {leaves.length === 0 ? (
+        <div className="grid gap-6">
+          {leaves.map((leave, index) => (
+            <Card key={index} className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-lg font-bold text-secondary">{leave.leaveType}</h3>
+                    <Badge variant={
+                      leave.status === 'Approved' ? 'success' :
+                        leave.status === 'Rejected' ? 'danger' : 'warning'
+                    }>
+                      {leave.status}
+                    </Badge>
+                  </div>
+                  <p className="text-text-secondary mb-2">{leave.reason}</p>
+                  <div className="flex items-center gap-4 text-sm text-text-muted">
+                    <div className="flex items-center gap-1">
+                      <FaCalendarCheck />
+                      <span>
+                        {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <FaClock />
+                      <span>Applied on {new Date(leave.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+          {leaves.length === 0 && (
             <div className="col-span-full bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
               <p className="text-text-secondary text-lg">No leave applications yet</p>
             </div>
-          ) : (
-            leaves.map((leave, index) => (
-              <Card key={index}>
-                <CardContent>
-                  {/* Leave details would go here */}
-                </CardContent>
-              </Card>
-            ))
           )}
         </div>
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-secondary/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full border border-gray-200">
             <h2 className="text-2xl font-bold mb-4 text-secondary font-heading">Apply for Leave</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -103,7 +161,7 @@ const TeacherLeave = () => {
                 <Button type="button" variant="outline" onClick={() => setShowModal(false)} className="flex-1">
                   Cancel
                 </Button>
-                <Button type="submit" className="flex-1">
+                <Button type="submit" className="flex-1" isLoading={submitting}>
                   Submit
                 </Button>
               </div>

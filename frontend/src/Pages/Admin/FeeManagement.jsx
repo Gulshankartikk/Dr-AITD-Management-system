@@ -5,6 +5,7 @@ import BackButton from '../../components/BackButton';
 import Input from '../../components/ui/Input';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Button from '../../components/ui/Button';
+import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
 
 const FeeManagement = () => {
   const [feeRecords, setFeeRecords] = useState([]);
@@ -226,64 +227,62 @@ const FeeManagement = () => {
 
           {/* Fee Records Table */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Roll No</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Student</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Course</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Total Amount</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Paid</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Due</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredRecords.map((record) => (
-                    <tr key={record.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap font-medium text-secondary">{record.rollNo}</td>
-                      <td className="px-6 py-4 whitespace-nowrap font-medium text-secondary">{record.student}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{record.course}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-secondary">₹{record.amount.toLocaleString()}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-green-600">₹{record.paid.toLocaleString()}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-red-600">₹{record.due.toLocaleString()}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${record.status === 'Paid' ? 'bg-green-100 text-green-800' :
-                          record.status === 'Partial' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-red-100 text-red-800'
-                          }`}>
-                          {record.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => viewDetails(record)}
-                            className="text-primary hover:text-primary/80"
-                          >
-                            <FaEye />
-                          </button>
-                          <button
-                            onClick={() => editFee(record)}
-                            className="text-green-600 hover:text-green-900"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => makePayment(record)}
-                            className="text-secondary hover:text-secondary/80"
-                          >
-                            <FaCreditCard />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Roll No</TableHead>
+                  <TableHead>Student</TableHead>
+                  <TableHead>Course</TableHead>
+                  <TableHead>Total Amount</TableHead>
+                  <TableHead>Paid</TableHead>
+                  <TableHead>Due</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredRecords.map((record) => (
+                  <TableRow key={record.id}>
+                    <TableCell className="font-medium text-secondary">{record.rollNo}</TableCell>
+                    <TableCell className="font-medium text-secondary">{record.student}</TableCell>
+                    <TableCell>{record.course}</TableCell>
+                    <TableCell>₹{record.amount.toLocaleString()}</TableCell>
+                    <TableCell className="text-green-600">₹{record.paid.toLocaleString()}</TableCell>
+                    <TableCell className="text-red-600">₹{record.due.toLocaleString()}</TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${record.status === 'Paid' ? 'bg-green-100 text-green-800' :
+                        record.status === 'Partial' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
+                        {record.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => viewDetails(record)}
+                          className="text-primary hover:text-primary/80"
+                        >
+                          <FaEye />
+                        </button>
+                        <button
+                          onClick={() => editFee(record)}
+                          className="text-green-600 hover:text-green-900"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => makePayment(record)}
+                          className="text-secondary hover:text-secondary/80"
+                        >
+                          <FaCreditCard />
+                        </button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
 
           {/* Add Payment Modal */}

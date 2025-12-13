@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BASE_URL } from "../../constants/api";
 import authService from "../../services/authService";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import { jwtDecode } from "jwt-decode";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { GraduationCap, ArrowLeft, Eye, EyeOff, Lock, User, Shield, Info } from "lucide-react";
-import collegeImg from "../../assets/dr-ambedkar-institute-of-technology-for-handicapped-kanpur.jpeg.jpg";
+import collegeImg from "../../assets/login_bg.png";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -28,6 +28,16 @@ const Login = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Check for session expired query param
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('sessionExpired')) {
+      toast.error("Session Expired. Please login again.");
+      // Clean up the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

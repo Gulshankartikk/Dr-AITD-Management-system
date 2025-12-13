@@ -8,6 +8,7 @@ import { BASE_URL } from '../../constants/api';
 import Button from '../../components/ui/Button';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Input from '../../components/ui/Input';
+import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
 
 const NoticesManagement = () => {
   const [notices, setNotices] = useState([]);
@@ -108,51 +109,51 @@ const NoticesManagement = () => {
             <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
               <h2 className="text-xl font-bold text-secondary font-heading">Recent Notices</h2>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Title</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Course</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {notices.length === 0 ? (
-                    <tr>
-                      <td colSpan="4" className="px-6 py-8 text-center text-text-muted">
-                        No notices found. Create one to get started.
-                      </td>
-                    </tr>
-                  ) : (
-                    notices.map((notice) => (
-                      <tr key={notice._id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center">
-                            <FaBell className="text-primary mr-3" />
-                            <div>
-                              <p className="font-medium text-secondary">{notice.title}</p>
-                              <p className="text-sm text-text-muted truncate max-w-xs">{notice.description}</p>
-                            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Course</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {notices.length === 0 ? (
+                  <TableRow>
+                    <TableCell className="text-center py-8 text-text-muted" colSpan={4}>
+                      No notices found. Create one to get started.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  notices.map((notice) => (
+                    <TableRow key={notice._id}>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <FaBell className="text-primary mr-3" />
+                          <div>
+                            <p className="font-medium text-secondary">{notice.title}</p>
+                            <p className="text-sm text-text-muted truncate max-w-xs">{notice.description}</p>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-text-secondary">
-                          {notice.courseId?.courseName || 'All Courses'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-text-secondary">
-                          {new Date(notice.createdAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-text-secondary">
+                        {notice.courseId?.courseName || 'All Courses'}
+                      </TableCell>
+                      <TableCell className="text-text-secondary">
+                        {new Date(notice.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
                           <button onClick={() => openViewModal(notice)} className="text-primary hover:text-primary/80"><FaEye /></button>
                           <button onClick={() => handleDelete(notice._id)} className="text-danger hover:text-danger/80"><FaTrash /></button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
           </div>
 
           {/* Create Modal */}

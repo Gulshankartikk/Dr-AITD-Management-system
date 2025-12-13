@@ -12,9 +12,14 @@ const Layout = () => {
   // Determine if we should show the full layout (Sidebar + Navbar)
   // Hide on public pages: /, /login, /register, /unauthorized, /404
   // Also hide on Landing Page if it's the root
-  const publicPaths = ['/', '/login', '/register', '/unauthorized'];
+  const publicPaths = ['/', '/login', '/register', '/unauthorized', '/achievers'];
   // Check if current path is exactly one of the public paths or starts with /landing (if we had one)
   const isPublicPage = publicPaths.includes(location.pathname);
+
+  // Close sidebar on route change (mobile)
+  React.useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
 
   const [viewRole, setViewRole] = useState(null);
 

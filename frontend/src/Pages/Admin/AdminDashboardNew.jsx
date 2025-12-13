@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import {
   FaUsers, FaChalkboardTeacher, FaBook, FaClipboardList, FaRupeeSign,
   FaBell, FaCalendarAlt, FaChartBar, FaCog, FaFileAlt, FaBookOpen,
   FaClipboardCheck, FaMoneyBillWave, FaUserPlus, FaCheckCircle, FaClock
 } from 'react-icons/fa';
-import Cookies from 'js-cookie';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
@@ -23,10 +22,7 @@ const AdminDashboardNew = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const token = Cookies.get('token') || localStorage.getItem('token');
-      const response = await axios.get(`${BASE_URL}/api/admin/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/admin/dashboard');
       setDashboardData(response.data.data);
     } catch (error) {
       console.error('Error:', error);

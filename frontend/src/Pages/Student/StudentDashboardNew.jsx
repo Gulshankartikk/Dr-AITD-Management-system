@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
-import { BASE_URL } from '../../constants/api';
+import api from '../../api/axiosInstance';
 import {
-  User, FileText, Bell, CheckCircle, Clock
+  User, FileText, Bell, CheckCircle, Clock, CreditCard
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Card from '../../components/ui/Card';
@@ -23,18 +21,11 @@ const StudentDashboardNew = () => {
   const [subjects, setSubjects] = useState([]);
   const [marks, setMarks] = useState([]);
   const [materials, setMaterials] = useState([]);
+  const [fees, setFees] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = Cookies.get('token') || localStorage.getItem('token');
-        if (!token) {
-          navigate('/login');
-          return;
-        }
-
-        const headers = { Authorization: `Bearer ${token}` };
-
         // Parallel data fetching
         const [
           profileRes,
@@ -43,15 +34,17 @@ const StudentDashboardNew = () => {
           noticesRes,
           subjectsRes,
           marksRes,
-          materialsRes
+          materialsRes,
+          feesRes
         ] = await Promise.all([
-          axios.get(`${BASE_URL}/api/student/${studentId}/profile`, { headers }),
-          axios.get(`${BASE_URL}/api/student/${studentId}/attendance`, { headers }),
-          axios.get(`${BASE_URL}/api/student/${studentId}/assignments`, { headers }),
-          axios.get(`${BASE_URL}/api/student/${studentId}/notices`, { headers }),
-          axios.get(`${BASE_URL}/api/student/${studentId}/subjects`, { headers }),
-          axios.get(`${BASE_URL}/api/student/${studentId}/marks`, { headers }),
-          axios.get(`${BASE_URL}/api/student/${studentId}/materials`, { headers })
+          api.get(`/api/student/${studentId}/profile`),
+          api.get(`/api/student/${studentId}/attendance`),
+          api.get(`/api/student/${studentId}/assignments`),
+          api.get(`/api/student/${studentId}/notices`),
+          api.get(`/api/student/${studentId}/subjects`),
+          api.get(`/api/student/${studentId}/marks`),
+          api.get(`/api/student/${studentId}/materials`),
+          api.get(`/api/student/${studentId}/fees`)
         ]);
 
         setStudent(profileRes.data.student);
@@ -61,6 +54,7 @@ const StudentDashboardNew = () => {
         setSubjects(subjectsRes.data.subjects || []);
         setMarks(marksRes.data.marks || []);
         setMaterials(materialsRes.data.materials || []);
+        setFees(feesRes.data.fees || []);
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -83,6 +77,10 @@ const StudentDashboardNew = () => {
       </div>
     );
   }
+
+  // Calculate generic fee status
+  const pendingFees = fees.filter(f => f.status === 'Pending' || f.status === 'Overdue');
+  const hasPendingFees = pendingFees.length > 0;
 
   return (
     <div className="space-y-6">
@@ -114,7 +112,7 @@ const StudentDashboardNew = () => {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <Card className="p-6 border-l-4 border-primary">
           <div className="flex justify-between items-start">
             <div>
@@ -128,7 +126,7 @@ const StudentDashboardNew = () => {
             </div>
           </div>
         </Card>
-        <Card className="p-6 border-l-4 border-primary">
+        <Card className="p-6 border-l-4 border-success">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-text-secondary text-sm font-medium">Attendance</p>
@@ -138,7 +136,7 @@ const StudentDashboardNew = () => {
                   : 'N/A'}
               </h3>
             </div>
-            <div className="p-3 bg-primary/10 rounded-lg text-primary">
+            <div className="p-3 bg-success/10 rounded-lg text-success">
               <CheckCircle size={24} />
             </div>
           </div>
@@ -154,6 +152,23 @@ const StudentDashboardNew = () => {
             </div>
           </div>
         </Card>
+
+        {/* Fee Status Card */}
+        <Card className={`p-6 border-l-4 ${hasPendingFees ? 'border-danger' : 'border-success'}`}>
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-text-secondary text-sm font-medium">Fee Status</p>
+              <h3 className={`text-xl font-bold mt-2 ${hasPendingFees ? 'text-danger' : 'text-success'}`}>
+                {hasPendingFees ? 'Dues Pending' : 'All Paid'}
+              </h3>
+              {hasPendingFees && <p className="text-xs text-danger mt-1">{pendingFees.length} invoice(s)</p>}
+            </div>
+            <div className={`p-3 rounded-lg ${hasPendingFees ? 'bg-danger/10 text-danger' : 'bg-success/10 text-success'}`}>
+              <CreditCard size={24} />
+            </div>
+          </div>
+        </Card>
+
         <Card className="p-6 border-l-4 border-warning cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/achievers')}>
           <div className="flex justify-between items-start">
             <div>

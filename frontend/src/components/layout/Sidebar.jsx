@@ -36,6 +36,9 @@ const Sidebar = ({ isOpen, onClose, userRole, userId, realRole }) => {
         { icon: ClipboardCheck, label: 'Attendance', path: '/admin/attendance' },
         { icon: Calendar, label: 'Timetable', path: '/admin/timetable' },
         { icon: FileText, label: 'Notices', path: '/admin/notices' },
+        { icon: ClipboardCheck, label: 'Exams', path: '/admin/exams' },
+        { icon: BookOpen, label: 'Library', path: '/admin/library' },
+        { icon: FileText, label: 'Reports', path: '/admin/reports' },
         { icon: Settings, label: 'Settings', path: '/admin/settings' },
       ];
     } else if (userRole === 'teacher') {
@@ -62,6 +65,7 @@ const Sidebar = ({ isOpen, onClose, userRole, userId, realRole }) => {
         { icon: GraduationCap, label: 'Marks', path: `/teacher/${teacherId}/marks` },
         { icon: Calendar, label: 'Timetable', path: `/teacher/${teacherId}/timetable` },
         { icon: FileText, label: 'Notices', path: `/teacher/${teacherId}/notices` },
+        { icon: Calendar, label: 'Leave', path: `/teacher/${teacherId}/leave` },
       ];
     } else if (userRole === 'student') {
       let studentId = userId;
@@ -86,7 +90,9 @@ const Sidebar = ({ isOpen, onClose, userRole, userId, realRole }) => {
         { icon: GraduationCap, label: 'Marks', path: `/student/${studentId}/marks` },
         { icon: CreditCard, label: 'Fees', path: `/student/${studentId}/fees` },
         { icon: Calendar, label: 'Timetable', path: `/student/${studentId}/timetable` },
+        { icon: BookOpen, label: 'Library', path: `/student/${studentId}/library` },
         { icon: FileText, label: 'Notices', path: `/student/${studentId}/notices` },
+        { icon: Calendar, label: 'Leave', path: `/student/${studentId}/leave` },
       ];
     }
     return [];
@@ -104,7 +110,7 @@ const Sidebar = ({ isOpen, onClose, userRole, userId, realRole }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-72 bg-secondary border-r border-white/5 transform transition-transform duration-300 lg:transform-none shadow-2xl lg:shadow-none ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed lg:static inset-y-0 left-0 z-[60] w-72 bg-secondary border-r border-white/5 transform transition-transform duration-300 lg:transform-none shadow-2xl lg:shadow-none ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="h-full flex flex-col">
           {/* Logo */}
