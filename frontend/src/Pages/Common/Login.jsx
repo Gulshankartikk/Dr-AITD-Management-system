@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { BASE_URL } from "../../constants/api";
 import authService from "../../services/authService";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";

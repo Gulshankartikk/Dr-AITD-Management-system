@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/Select';
 import { FaTimes } from 'react-icons/fa';
-import axios from 'axios';
-import { BASE_URL } from '../constants/api';
-import Cookies from 'js-cookie';
+import api from '../api/axiosInstance';
 import { toast } from 'react-toastify';
 
 export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
@@ -21,10 +19,7 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
 
   const fetchData = async () => {
     try {
-      const token = Cookies.get('token');
-      const subjectsRes = await axios.get(`${BASE_URL}/api/subjects`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const subjectsRes = await api.get('/api/subjects');
 
       if (subjectsRes.data.success) {
         setSubjects(subjectsRes.data.subjects);
@@ -41,15 +36,12 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
 
   const fetchStudentsBySubject = async (subjectId) => {
     try {
-      const token = Cookies.get('token');
       const subject = subjects.find(s => s._id === subjectId) ||
-        await axios.get(`${BASE_URL}/api/subjects`, { headers: { Authorization: `Bearer ${token}` } })
+        await api.get('/api/subjects')
           .then(res => res.data.subjects.find(s => s._id === subjectId));
 
       if (subject) {
-        const studentsRes = await axios.get(`${BASE_URL}/api/admin/students`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const studentsRes = await api.get('/api/admin/students');
 
         if (studentsRes.data.success) {
           const filteredStudents = studentsRes.data.students
@@ -77,18 +69,15 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const token = Cookies.get('token');
       const attendanceData = students.map(student => ({
         studentId: student._id,
         status: student.status
       }));
 
-      await axios.post(`${BASE_URL}/api/teacher/${teacherId}/attendance`, {
+      await api.post(`/api/teacher/${teacherId}/attendance`, {
         subjectId: selectedSubject,
         date: selectedDate,
         attendance: attendanceData
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       toast.success('Attendance saved successfully!');
@@ -158,8 +147,8 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
               </div>
               <div className="flex items-center space-x-2">
                 <span className={`px-2 py-1 rounded text-xs font-medium ${student.status === 'Present'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
                   }`}>
                   {student.status}
                 </span>
@@ -167,8 +156,8 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
                   <button
                     onClick={() => handleStatusChange(student._id, 'Present')}
                     className={`px-3 py-1 rounded text-sm font-medium transition-colors ${student.status === 'Present'
-                        ? 'bg-green-500 text-white shadow-md'
-                        : 'bg-green-100 text-green-700 hover:bg-green-200 border border-green-300'
+                      ? 'bg-green-500 text-white shadow-md'
+                      : 'bg-green-100 text-green-700 hover:bg-green-200 border border-green-300'
                       }`}
                   >
                     Present
@@ -176,8 +165,8 @@ export const AttendanceModal = ({ isOpen, onClose, teacherId }) => {
                   <button
                     onClick={() => handleStatusChange(student._id, 'Absent')}
                     className={`px-3 py-1 rounded text-sm font-medium transition-colors ${student.status === 'Absent'
-                        ? 'bg-red-500 text-white shadow-md'
-                        : 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-300'
+                      ? 'bg-red-500 text-white shadow-md'
+                      : 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-300'
                       }`}
                   >
                     Absent
@@ -234,10 +223,7 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
 
   const fetchSubjects = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/subjects`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/subjects');
       if (response.data.success && response.data.subjects.length > 0) {
         setSubjects(response.data.subjects);
         setFormData({
@@ -281,7 +267,6 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
 
     setLoading(true);
     try {
-      const token = Cookies.get('token');
 
       if (uploadType === 'file') {
         const formDataToSend = new FormData();
@@ -291,16 +276,13 @@ export const AssignmentModal = ({ isOpen, onClose, teacherId }) => {
         formDataToSend.append('subjectId', formData.subjectId);
         formDataToSend.append('file', file);
 
-        await axios.post(`${BASE_URL}/api/teacher/${teacherId}/assignments`, formDataToSend, {
+        await api.post(`/api/teacher/${teacherId}/assignments`, formDataToSend, {
           headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           }
         });
       } else {
-        await axios.post(`${BASE_URL}/api/teacher/${teacherId}/assignments`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.post(`/api/teacher/${teacherId}/assignments`, formData);
       }
 
       toast.success('Assignment created successfully!');
@@ -462,10 +444,7 @@ export const NoticeModal = ({ isOpen, onClose, teacherId }) => {
 
   const fetchCourses = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/courses`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/courses');
       if (response.data.success && response.data.courses.length > 0) {
         setCourses(response.data.courses);
         setFormData({
@@ -487,10 +466,7 @@ export const NoticeModal = ({ isOpen, onClose, teacherId }) => {
 
     setLoading(true);
     try {
-      const token = Cookies.get('token');
-      await axios.post(`${BASE_URL}/api/teacher/${teacherId}/notices`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post(`/api/teacher/${teacherId}/notices`, formData);
 
       toast.success('Notice posted successfully!');
       onClose();
@@ -594,10 +570,7 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
 
   const fetchSubjects = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/subjects`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/subjects');
       if (response.data.success && response.data.subjects.length > 0) {
         setSubjects(response.data.subjects);
         setFormData({
@@ -640,8 +613,6 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
 
     setLoading(true);
     try {
-      const token = Cookies.get('token');
-
       if (uploadType === 'file') {
         const formDataToSend = new FormData();
         formDataToSend.append('title', formData.title);
@@ -649,16 +620,13 @@ export const MaterialModal = ({ isOpen, onClose, teacherId }) => {
         formDataToSend.append('subjectId', formData.subjectId);
         formDataToSend.append('file', file);
 
-        await axios.post(`${BASE_URL}/api/teacher/${teacherId}/materials`, formDataToSend, {
+        await api.post(`/api/teacher/${teacherId}/materials`, formDataToSend, {
           headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           }
         });
       } else {
-        await axios.post(`${BASE_URL}/api/teacher/${teacherId}/materials`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.post(`/api/teacher/${teacherId}/materials`, formData);
       }
 
       toast.success('Material uploaded successfully!');

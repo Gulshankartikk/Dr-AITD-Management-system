@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { BASE_URL } from '../constants/api';
-import { FaBell, FaTimes, FaEye } from 'react-icons/fa';
+import api from '../api/axiosInstance';
+import { FaBell, FaTimes } from 'react-icons/fa';
 
 const NotificationBell = ({ userId, userRole }) => {
   const [notifications, setNotifications] = useState([]);
@@ -12,10 +11,8 @@ const NotificationBell = ({ userId, userRole }) => {
   // Fetch unread count
   const fetchUnreadCount = async () => {
     try {
-      const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0];
-      const response = await axios.get(
-        `${BASE_URL}/api/notifications/${userId}/unread-count?role=${userRole}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+      const response = await api.get(
+        `/api/notifications/${userId}/unread-count?role=${userRole}`
       );
       setUnreadCount(response.data.unreadCount);
     } catch (error) {
@@ -28,10 +25,8 @@ const NotificationBell = ({ userId, userRole }) => {
     if (loading) return;
     setLoading(true);
     try {
-      const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0];
-      const response = await axios.get(
-        `${BASE_URL}/api/notifications/${userId}?role=${userRole}&limit=10`,
-        { headers: { Authorization: `Bearer ${token}` } }
+      const response = await api.get(
+        `/api/notifications/${userId}?role=${userRole}&limit=10`
       );
       setNotifications(response.data.notifications);
       setUnreadCount(response.data.pagination.unreadCount);
@@ -45,13 +40,17 @@ const NotificationBell = ({ userId, userRole }) => {
   // Mark notification as read
   const markAsRead = async (notificationId) => {
     try {
-      const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0];
-      await axios.put(
-        `${BASE_URL}/api/notifications/${notificationId}/read`,
-        { userId },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await api.put(
+        `/api/notifications/${notificationId}/read`,
+        { userId }
       );
       fetchUnreadCount();
+      // Optimistically update local state to reflect read status immediately
+      setNotifications(prev => prev.map(n =>
+        n._id === notificationId
+          ? { ...n, readBy: [...n.readBy, { userId }] }
+          : n
+      ));
     } catch (error) {
       console.error('Error marking as read:', error);
     }
@@ -86,7 +85,7 @@ const NotificationBell = ({ userId, userRole }) => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = (now - date) / (1000 * 60 * 60);
-    
+
     if (diffInHours < 1) {
       return 'Just now';
     } else if (diffInHours < 24) {
@@ -152,9 +151,8 @@ const NotificationBell = ({ userId, userRole }) => {
                 return (
                   <div
                     key={notification._id}
-                    className={`p-4 border-b hover:bg-gray-50 cursor-pointer ${
-                      !isRead ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
-                    }`}
+                    className={`p-4 border-b hover:bg-gray-50 cursor-pointer ${!isRead ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                      }`}
                     onClick={() => !isRead && markAsRead(notification._id)}
                   >
                     <div className="flex items-start space-x-3">
@@ -162,7 +160,7 @@ const NotificationBell = ({ userId, userRole }) => {
                       <div className="text-2xl">
                         {getNotificationIcon(notification.type)}
                       </div>
-                      
+
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
