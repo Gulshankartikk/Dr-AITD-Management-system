@@ -48,6 +48,33 @@ router.post('/admin/resetPassword', (req, res, next) => { req.body.role = 'admin
 //                      TEACHER ROUTES
 // ======================================================
 
+// ======================================================
+//              ADMIN USING TEACHER FUNCTIONS
+//              (Must be before parameterized routes)
+// ======================================================
+router.post('/teacher/admin/attendance', verifyToken, (req, res, next) => {
+  // Set teacherId in params for the controller to use
+  req.params.teacherId = req.body.teacherId || 'admin';
+  // Call the controller
+  teacherController.markAttendance(req, res, next);
+});
+router.post('/teacher/admin/assignments', verifyToken, upload.single('file'), (req, res, next) => {
+  req.params.teacherId = 'admin';
+  teacherController.addAssignment(req, res, next);
+});
+router.post('/teacher/admin/notices', verifyToken, (req, res, next) => {
+  req.params.teacherId = 'admin';
+  teacherController.addNotice(req, res, next);
+});
+router.post('/teacher/admin/materials', verifyToken, upload.single('file'), (req, res, next) => {
+  req.params.teacherId = 'admin';
+  teacherController.addStudyMaterial(req, res, next);
+});
+router.get('/teacher/admin/dashboard', verifyToken, (req, res, next) => {
+  req.params.teacherId = 'admin';
+  teacherController.getTeacherDashboard(req, res, next);
+});
+
 // Dashboard + subjects + courses
 router.get('/teacher/:teacherId/dashboard', verifyToken, validateId('teacherId'), teacherController.getTeacherDashboard);
 router.post('/teacher/:teacherId/change-password', verifyToken, teacherController.changePassword);
@@ -239,18 +266,6 @@ router.delete('/admin/notices/:noticeId', verifyToken, isAdmin, validateId('noti
 router.delete('/admin/materials/:materialId', verifyToken, isAdmin, validateId('materialId'), adminController.deleteMaterial);
 router.get('/admin/notices', verifyToken, isAdmin, adminController.getAllNotices);
 
-
-// ======================================================
-//              ADMIN USING TEACHER FUNCTIONS
-// ======================================================
-router.post('/teacher/admin/attendance', verifyToken, (req, res) => {
-  req.params.teacherId = req.body.teacherId || 'admin';
-  teacherController.markAttendance(req, res);
-});
-router.post('/teacher/admin/assignments', verifyToken, upload.single('file'), teacherController.addAssignment);
-router.post('/teacher/admin/notices', verifyToken, teacherController.addNotice);
-router.post('/teacher/admin/materials', verifyToken, upload.single('file'), teacherController.addStudyMaterial);
-router.get('/teacher/admin/dashboard', verifyToken, teacherController.getTeacherDashboard);
 
 // Teacher student management
 router.get('/teacher/students/:studentId', verifyToken, validateId('studentId'), adminController.getStudentDetails);

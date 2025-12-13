@@ -22,7 +22,7 @@ const TeacherTimetable = () => {
   const fetchTimetable = async () => {
     try {
       // Mock timetable data - replace with actual API when available
-      await api.get(`/teacher/${teacherId}/dashboard`);
+      await api.get(`/api/teacher/${teacherId}/dashboard`);
       setTimetable([]);
     } catch (error) {
       console.error('Error fetching timetable:', error);

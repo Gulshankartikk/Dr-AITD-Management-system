@@ -34,7 +34,7 @@ const TeacherAttendance = () => {
 
   const fetchSubjects = async () => {
     try {
-      const response = await api.get(`/teacher/${teacherId}/dashboard`);
+      const response = await api.get(`/api/teacher/${teacherId}/dashboard`);
       setSubjects(response.data.teacher?.assignedSubjects || []);
     } catch (error) {
       console.error('Error fetching subjects:', error);
@@ -45,7 +45,7 @@ const TeacherAttendance = () => {
     setLoading(true);
     try {
       const response = await api.get(
-        `/teacher/${teacherId}/subjects/${selectedSubject}/students`
+        `/api/teacher/${teacherId}/subjects/${selectedSubject}/students`
       );
       setStudents(response.data.students || []);
       const initialAttendance = {};
@@ -78,7 +78,7 @@ const TeacherAttendance = () => {
       }));
 
       await api.post(
-        `/teacher/${teacherId}/attendance`,
+        `/api/teacher/${teacherId}/attendance`,
         { subjectId: selectedSubject, date, attendance: attendanceData }
       );
       alert('Attendance marked successfully!');

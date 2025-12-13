@@ -32,8 +32,8 @@ const TeacherMaterials = () => {
   const fetchData = async () => {
     try {
       const [materialsRes, dashboardRes] = await Promise.all([
-        api.get(`/teacher/${teacherId}/materials`),
-        api.get(`/teacher/${teacherId}/dashboard`)
+        api.get(`/api/teacher/${teacherId}/materials`),
+        api.get(`/api/teacher/${teacherId}/dashboard`)
       ]);
       const materialsData = materialsRes.data.materials || [];
       setAllMaterials(materialsData);
@@ -65,7 +65,7 @@ const TeacherMaterials = () => {
         uploadData.append('file', formData.file);
       }
 
-      await api.post(`/teacher/${teacherId}/materials`, uploadData, {
+      await api.post(`/api/teacher/${teacherId}/materials`, uploadData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

@@ -38,7 +38,7 @@ const TeacherProfile = () => {
 
   const fetchTeacherProfile = async () => {
     try {
-      const response = await api.get(`/teacher/${teacherId}/dashboard`);
+      const response = await api.get(`/api/teacher/${teacherId}/dashboard`);
       const tData = response.data.teacher;
       setTeacher(tData);
       setEditData({
@@ -102,7 +102,7 @@ const TeacherProfile = () => {
 
   const fetchAssignments = async () => {
     try {
-      const response = await api.get(`/teacher/${teacherId}/assignments`);
+      const response = await api.get(`/api/teacher/${teacherId}/assignments`);
       setAssignments(response.data.assignments || []);
     } catch (error) {
       console.error('Error fetching assignments:', error);
@@ -111,7 +111,7 @@ const TeacherProfile = () => {
 
   const fetchMaterials = async () => {
     try {
-      const response = await api.get(`/teacher/${teacherId}/materials`);
+      const response = await api.get(`/api/teacher/${teacherId}/materials`);
       setMaterials(response.data.materials || []);
     } catch (error) {
       console.error('Error fetching materials:', error);
@@ -120,7 +120,7 @@ const TeacherProfile = () => {
 
   const fetchNotices = async () => {
     try {
-      const response = await api.get(`/teacher/${teacherId}/notices`);
+      const response = await api.get(`/api/teacher/${teacherId}/notices`);
       setNotices(response.data.notices || []);
     } catch (error) {
       console.error('Error fetching notices:', error);

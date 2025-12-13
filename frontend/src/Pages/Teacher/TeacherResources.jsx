@@ -52,8 +52,8 @@ const TeacherResources = () => {
     const fetchData = async () => {
         try {
             const [resourcesRes, dashboardRes] = await Promise.all([
-                api.get(`/teacher/${teacherId}/resources`),
-                api.get(`/teacher/${teacherId}/dashboard`)
+                api.get(`/api/teacher/${teacherId}/resources`),
+                api.get(`/api/teacher/${teacherId}/dashboard`)
             ]);
 
             setResources(resourcesRes.data.resources || []);
@@ -87,7 +87,7 @@ const TeacherResources = () => {
                 data.append('file', file);
             }
 
-            await api.post(`/teacher/${teacherId}/resources`, data, {
+            await api.post(`/api/teacher/${teacherId}/resources`, data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
@@ -116,7 +116,7 @@ const TeacherResources = () => {
         if (!window.confirm('Are you sure you want to delete this resource?')) return;
 
         try {
-            await api.delete(`/teacher/${teacherId}/resources/${resourceId}`);
+            await api.delete(`/api/teacher/${teacherId}/resources/${resourceId}`);
             toast.success('Resource deleted');
             fetchData();
         } catch (error) {

@@ -31,8 +31,8 @@ const TeacherNotices = () => {
   const fetchData = async () => {
     try {
       const [noticesRes, dashboardRes] = await Promise.all([
-        api.get(`/teacher/${teacherId}/notices`),
-        api.get(`/teacher/${teacherId}/dashboard`)
+        api.get(`/api/teacher/${teacherId}/notices`),
+        api.get(`/api/teacher/${teacherId}/dashboard`)
       ]);
       const noticesData = noticesRes.data.notices || [];
       setAllNotices(noticesData);
@@ -56,7 +56,7 @@ const TeacherNotices = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post(`/teacher/${teacherId}/notices`, formData);
+      await api.post(`/api/teacher/${teacherId}/notices`, formData);
       alert('Notice sent successfully!');
       setShowModal(false);
       setFormData({ courseId: '', title: '', description: '' });

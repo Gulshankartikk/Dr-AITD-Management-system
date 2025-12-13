@@ -40,7 +40,7 @@ const TeacherMarks = () => {
 
   const fetchSubjects = async () => {
     try {
-      const response = await api.get(`/teacher/${teacherId}/dashboard`);
+      const response = await api.get(`/api/teacher/${teacherId}/dashboard`);
       setSubjects(response.data.teacher?.assignedSubjects || []);
     } catch (error) {
       console.error('Error fetching subjects:', error);
@@ -52,8 +52,8 @@ const TeacherMarks = () => {
     try {
       console.log('Fetching students for subject:', selectedSubject);
       const [studentsRes, marksRes] = await Promise.all([
-        api.get(`/teacher/${teacherId}/subjects/${selectedSubject}/students`),
-        api.get(`/teacher/${teacherId}/marks/${selectedSubject}`)
+        api.get(`/api/teacher/${teacherId}/subjects/${selectedSubject}/students`),
+        api.get(`/api/teacher/${teacherId}/marks/${selectedSubject}`)
       ]);
       console.log('Students fetched:', studentsRes.data.students);
       setStudents(studentsRes.data.students || []);

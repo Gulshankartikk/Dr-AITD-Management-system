@@ -38,7 +38,7 @@ const StudentProfile = () => {
 
   const fetchStudentProfile = async () => {
     try {
-      const response = await api.get(`/student/${studentId}/profile`);
+      const response = await api.get(`/api/student/${studentId}/profile`);
       const sData = response.data.student;
       setStudent(sData);
       setEditData({
@@ -90,7 +90,7 @@ const StudentProfile = () => {
 
   const fetchAttendance = async () => {
     try {
-      const response = await api.get(`/student/${studentId}/attendance`);
+      const response = await api.get(`/api/student/${studentId}/attendance`);
       setAttendance(response.data.attendanceBySubject || []);
     } catch (error) {
       console.error('Error fetching attendance:', error);
@@ -99,7 +99,7 @@ const StudentProfile = () => {
 
   const fetchMarks = async () => {
     try {
-      const response = await api.get(`/student/${studentId}/marks`);
+      const response = await api.get(`/api/student/${studentId}/marks`);
       setMarks(response.data.marks || []);
     } catch (error) {
       console.error('Error fetching marks:', error);
@@ -108,7 +108,7 @@ const StudentProfile = () => {
 
   const fetchAssignments = async () => {
     try {
-      const response = await api.get(`/student/${studentId}/assignments`);
+      const response = await api.get(`/api/student/${studentId}/assignments`);
       setAssignments(response.data.assignments || []);
     } catch (error) {
       console.error('Error fetching assignments:', error);
