@@ -30,10 +30,18 @@ const Register = () => {
   const fetchCourses = async () => {
     setCoursesLoading(true);
     try {
-      const response = await api.get('/courses');
-      setCourses(response.data.courses || []);
+      console.log("Fetching courses from /api/courses...");
+      const response = await api.get('/api/courses');
+      console.log("Courses response:", response.data);
+      if (response.data && response.data.courses) {
+        setCourses(response.data.courses);
+      } else {
+        console.warn("No courses found in response data");
+        setCourses([]);
+      }
     } catch (error) {
       console.error("Error fetching courses:", error);
+      toast.error("Failed to load courses. Please try refreshing.");
     } finally {
       setCoursesLoading(false);
     }

@@ -30,7 +30,9 @@ app.use(
         'http://localhost:5175',
         'http://localhost:5176',
         'http://localhost:4000',
-
+        'http://127.0.0.1:5173',
+        'http://127.0.0.1:5174',
+        'http://127.0.0.1:4000',
       ];
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);

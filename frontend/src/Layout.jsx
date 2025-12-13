@@ -27,7 +27,7 @@ const Layout = () => {
 
   // Get user details from token
   const getUserDetails = () => {
-    const token = Cookies.get('token');
+    const token = Cookies.get('token') || localStorage.getItem('token');
     if (!token) return { role: null, userId: null };
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -90,8 +90,8 @@ const Layout = () => {
           setViewRole={setViewRole}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-8">
-          <div className="max-w-7xl mx-auto min-h-[calc(100vh-12rem)]">
+        <main className="flex-1 overflow-y-auto bg-gray-50/50">
+          <div className="min-h-full p-4 lg:p-8">
             <Outlet />
           </div>
           <Footer />
