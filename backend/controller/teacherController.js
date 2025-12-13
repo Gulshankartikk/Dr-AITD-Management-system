@@ -30,6 +30,11 @@ const checkAccess = (req, targetTeacherId) => {
   return false;
 };
 
+const isValidId = (id) => {
+  const specialIds = ['teacher', 'admin', 'gulshan', 'ankita', 'aditya', 'abhishek']; // Add demo IDs
+  return specialIds.includes(id) || mongoose.Types.ObjectId.isValid(id);
+};
+
 const sendNotification = async (type, data) => {
   try {
     console.log(`Notification: ${type}`);
@@ -105,6 +110,7 @@ const teacherLogin = async (req, res) => {
 const getTeacherDashboard = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
     if (!checkAccess(req, teacherId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -196,6 +202,7 @@ const getTeacherDashboard = async (req, res) => {
 const getTeacherSubjects = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
     if (!checkAccess(req, teacherId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -222,6 +229,7 @@ const getTeacherSubjects = async (req, res) => {
 const getTeacherCourses = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
     if (!checkAccess(req, teacherId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -267,6 +275,7 @@ const getStudentsBySubject = async (req, res) => {
 const markAttendance = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
     const { subjectId, date, attendance } = req.body;
 
     console.log('Attendance request:', { teacherId, subjectId, date, attendanceCount: attendance?.length });
@@ -326,6 +335,7 @@ const markAttendance = async (req, res) => {
 const getAttendanceReport = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (teacherId && !isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
     const { subjectId, courseId, startDate, endDate } = req.query;
 
     const teacher = await Teacher.findById(teacherId).populate('assignedSubjects assignedCourse');
@@ -410,6 +420,7 @@ const getAttendanceReport = async (req, res) => {
 const addMarks = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
     const { studentId, subjectId, marks, totalMarks, examType } = req.body;
 
     if (!studentId || !subjectId || marks == null || totalMarks == null) {
@@ -445,6 +456,8 @@ const addMarks = async (req, res) => {
 const getAllStudentsMarks = async (req, res) => {
   try {
     const { teacherId, subjectId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
+    if (subjectId && !mongoose.Types.ObjectId.isValid(subjectId)) return res.status(400).json({ success: false, msg: 'Invalid Subject ID' });
     if (!subjectId) return res.status(400).json({ success: false, msg: 'subjectId required' });
 
     const subject = await Subject.findById(subjectId);
@@ -492,6 +505,7 @@ const getAllStudentsMarks = async (req, res) => {
 const addNotes = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
     const { subjectId, title, description } = req.body;
 
     if (!title || !subjectId) {
@@ -518,6 +532,7 @@ const addNotes = async (req, res) => {
 const addStudyMaterial = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
     const { subjectId, title, description } = req.body;
 
     if (!title || !subjectId) {
@@ -561,6 +576,7 @@ const addStudyMaterial = async (req, res) => {
 const addAssignment = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
     const { subjectId, title, description, deadline, maxMarks, submissionType } = req.body;
 
     if (!title || !subjectId || !deadline) {
@@ -623,6 +639,7 @@ const addAssignment = async (req, res) => {
 const addNotice = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
     const { courseId, title, description } = req.body;
 
     if (!title || !description || !courseId) {
@@ -659,6 +676,7 @@ const addNotice = async (req, res) => {
 const getTeacherNotes = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
     if (!checkAccess(req, teacherId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -675,6 +693,7 @@ const getTeacherNotes = async (req, res) => {
 const getTeacherMaterials = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
     if (!checkAccess(req, teacherId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -691,6 +710,7 @@ const getTeacherMaterials = async (req, res) => {
 const getTeacherAssignments = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
     if (!checkAccess(req, teacherId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -776,6 +796,7 @@ const addSubject = async (req, res) => {
 const getTeacherNotices = async (req, res) => {
   try {
     const { teacherId } = req.params;
+    if (!isValidId(teacherId)) return res.status(400).json({ success: false, msg: 'Invalid Teacher ID format' });
 
     if (!checkAccess(req, teacherId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });

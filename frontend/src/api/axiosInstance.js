@@ -34,14 +34,16 @@ api.interceptors.response.use(
     (error) => {
         if (error.response && error.response.status === 401) {
             // Token expired or invalid
-            // We could trigger a logout action here if we had access to store
-            // For now, we rely on the component handling the error or redirecting
-            console.warn('Unauthorized access - potential token expiration');
+            console.warn('Unauthorized access - token expired or invalid. Logging out...');
 
-            // Optional: Clear storage if 401 is persistent?
-            // localStorage.removeItem('token');
-            // Cookies.remove('token');
-            // window.location.href = '/login'; // Aggressive redirect
+            // Clear storage
+            localStorage.removeItem('token');
+            Cookies.remove('token');
+
+            // Redirect to login but prevent infinite loops if already on login
+            if (!window.location.pathname.includes('/login')) {
+                window.location.href = '/login';
+            }
         }
         return Promise.reject(error);
     }

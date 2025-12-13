@@ -15,6 +15,12 @@ const {
   Fee,
   LearningResource
 } = require('../models');
+const mongoose = require('mongoose');
+
+const isValidId = (id) => {
+  const specialIds = ['demo-student', 'admin-student', 'student', 'student1', 'admin'];
+  return specialIds.includes(id) || mongoose.Types.ObjectId.isValid(id);
+};
 
 // Helper to check access rights
 const checkAccess = (req, targetStudentId) => {
@@ -123,6 +129,10 @@ const changePassword = async (req, res) => {
   try {
     const { studentId } = req.params;
 
+    if (!isValidId(studentId)) {
+      return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
+    }
+
     if (!checkAccess(req, studentId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
     }
@@ -152,6 +162,7 @@ const changePassword = async (req, res) => {
 const getStudentProfile = async (req, res) => {
   try {
     const { studentId } = req.params;
+    if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
     if (!checkAccess(req, studentId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -183,50 +194,13 @@ const getStudentProfile = async (req, res) => {
     res.status(500).json({ success: false, msg: error.message });
   }
 };
-/*
-// Get Student Attendance
-const getStudentAttendance = async (req, res) => {
-  try {
-    const { studentId } = req.params;
-    const { subjectId, month, year } = req.query;
-    
-    let query = { studentId };
-    if (subjectId) query.subjectId = subjectId;
-    if (month && year) {
-      const startDate = new Date(year, month - 1, 1);
-      const endDate = new Date(year, month, 0);
-      query.date = { $gte: startDate, $lte: endDate };
-    }
-    
-    const attendance = await Attendance.find(query)
-      .populate('subjectId', 'subjectName subjectCode')
-      .sort({ date: -1 });
-    
-    // Calculate attendance percentage
-    const totalClasses = attendance.length;
-    const presentClasses = attendance.filter(a => a.status === 'Present').length;
-    const attendancePercentage = totalClasses > 0 ? ((presentClasses / totalClasses) * 100).toFixed(2) : 0;
-    
-    res.json({ 
-      success: true, 
-      attendance,
-      student,
-      stats: {
-        totalClasses,
-        presentClasses,
-        absentClasses: totalClasses - presentClasses,
-        attendancePercentage
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, msg: error.message });
-  }
-};*/
+
 
 // Get Student Attendance
 const getStudentAttendance = async (req, res) => {
   try {
     const { studentId } = req.params;
+    if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
     const { subjectId, month, year } = req.query;
 
     // Handle demo students (including backward compatibility)
@@ -305,6 +279,7 @@ const getStudentAttendance = async (req, res) => {
 const getStudentSubjects = async (req, res) => {
   try {
     const { studentId } = req.params;
+    if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
     if (!checkAccess(req, studentId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -323,6 +298,7 @@ const getStudentSubjects = async (req, res) => {
 const getNotesBySubject = async (req, res) => {
   try {
     const { studentId } = req.params;
+    if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
     if (!checkAccess(req, studentId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -360,6 +336,7 @@ const getNotesBySubject = async (req, res) => {
 const getStudyMaterials = async (req, res) => {
   try {
     const { studentId } = req.params;
+    if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
     if (!checkAccess(req, studentId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -397,6 +374,7 @@ const getStudyMaterials = async (req, res) => {
 const getAssignments = async (req, res) => {
   try {
     const { studentId } = req.params;
+    if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
     if (!checkAccess(req, studentId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -434,6 +412,8 @@ const getAssignments = async (req, res) => {
 const submitAssignment = async (req, res) => {
   try {
     const { studentId, assignmentId } = req.params;
+    if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
+    if (!mongoose.Types.ObjectId.isValid(assignmentId)) return res.status(400).json({ success: false, msg: 'Invalid Assignment ID' });
 
     if (!checkAccess(req, studentId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -461,6 +441,7 @@ const submitAssignment = async (req, res) => {
 const getStudentMarks = async (req, res) => {
   try {
     const { studentId } = req.params;
+    if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
     if (!checkAccess(req, studentId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -494,6 +475,7 @@ const getStudentMarks = async (req, res) => {
 const getNotices = async (req, res) => {
   try {
     const { studentId } = req.params;
+    if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
     if (!checkAccess(req, studentId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -514,6 +496,7 @@ const getNotices = async (req, res) => {
 const getStudentDashboard = async (req, res) => {
   try {
     const { studentId } = req.params;
+    if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
     if (!checkAccess(req, studentId)) {
       return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -585,6 +568,7 @@ module.exports = {
   getTimetable: async (req, res) => {
     try {
       const { studentId } = req.params;
+      if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
       if (!checkAccess(req, studentId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -602,6 +586,7 @@ module.exports = {
   getFees: async (req, res) => {
     try {
       const { studentId } = req.params;
+      if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
       if (!checkAccess(req, studentId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -615,6 +600,7 @@ module.exports = {
   applyLeave: async (req, res) => {
     try {
       const { studentId } = req.params;
+      if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
       if (!checkAccess(req, studentId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -637,6 +623,7 @@ module.exports = {
   getLeaves: async (req, res) => {
     try {
       const { studentId } = req.params;
+      if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
       if (!checkAccess(req, studentId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });
@@ -650,6 +637,7 @@ module.exports = {
   getResources: async (req, res) => {
     try {
       const { studentId } = req.params;
+      if (!isValidId(studentId)) return res.status(400).json({ success: false, msg: 'Invalid Student ID format' });
 
       if (!checkAccess(req, studentId)) {
         return res.status(403).json({ success: false, msg: 'Access denied' });

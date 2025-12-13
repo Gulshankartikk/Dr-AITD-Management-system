@@ -42,13 +42,15 @@ const Sidebar = ({ isOpen, onClose, userRole, userId, realRole }) => {
       let teacherId = userId;
       // If admin is viewing, or if strictly relying on URL is needed (fallback)
       if (realRole === 'admin' || !teacherId) {
-        teacherId = location.pathname.split('/')[2];
+        // Try to capture ID from URL: /teacher/:id/...
+        const parts = location.pathname.split('/');
+        if (parts[1] === 'teacher' && parts[2] && parts[2] !== 'dashboard') {
+          teacherId = parts[2];
+        }
       }
 
-      // Fallback if on admin page or invalid ID
-      if (!teacherId || teacherId === 'teachers' || teacherId === 'admin') {
-        teacherId = 'demo-teacher';
-      }
+      // Ensure we have a valid ID before rendering links that require it
+      if (!teacherId) return [];
 
       return [
         { icon: LayoutDashboard, label: 'Dashboard', path: `/teacher/${teacherId}/dashboard` },
@@ -65,13 +67,15 @@ const Sidebar = ({ isOpen, onClose, userRole, userId, realRole }) => {
       let studentId = userId;
 
       if (realRole === 'admin' || !studentId) {
-        studentId = location.pathname.split('/')[2];
+        // Try to capture ID from URL: /student/:id/...
+        const parts = location.pathname.split('/');
+        if (parts[1] === 'student' && parts[2] && parts[2] !== 'dashboard') {
+          studentId = parts[2];
+        }
       }
 
-      // Fallback if on admin page or invalid ID
-      if (!studentId || studentId === 'students' || studentId === 'admin') {
-        studentId = 'demo-student';
-      }
+      // Ensure we have a valid ID
+      if (!studentId) return [];
 
       return [
         { icon: LayoutDashboard, label: 'Dashboard', path: `/student/${studentId}/dashboard` },
