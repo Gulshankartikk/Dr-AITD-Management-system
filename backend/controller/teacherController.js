@@ -138,8 +138,8 @@ const getTeacherDashboard = async (req, res) => {
     }
 
     if (teacherId === 'teacher') {
-      const courses = await Course.find({ isActive: true }).limit(2);
-      const subjects = await Subject.find({ isActive: true }).limit(3).populate('courseId', 'courseName courseCode');
+      const courses = await Course.find({ isActive: true });
+      const subjects = await Subject.find({ isActive: true }).populate('courseId', 'courseName courseCode');
 
       return res.json({
         success: true,
@@ -157,8 +157,8 @@ const getTeacherDashboard = async (req, res) => {
     }
 
     if (teacherId === 'admin') {
-      const courses = await Course.find({ isActive: true }).limit(2);
-      const subjects = await Subject.find({ isActive: true }).limit(3);
+      const courses = await Course.find({ isActive: true });
+      const subjects = await Subject.find({ isActive: true }).populate('courseId', 'courseName courseCode');
 
       return res.json({
         success: true,
