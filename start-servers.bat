@@ -32,7 +32,7 @@ echo Frontend: http://localhost:5173 (Your Local App)
 echo.
 echo NOTE: To fix the "Network Error" on Vercel, you MUST
 echo       deploy this backend to the cloud (Render/Railway).
-echo       See DEPLOY_BACKEND.md for instructions.
+echo       See README.md for instructions.
 echo ===================================================
 echo.
 pause

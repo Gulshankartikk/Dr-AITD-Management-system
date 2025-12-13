@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import { FaCalendarAlt, FaCheck, FaTimes, FaSave } from 'react-icons/fa';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
@@ -35,10 +34,7 @@ const TeacherAttendance = () => {
 
   const fetchSubjects = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/teacher/${teacherId}/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/teacher/${teacherId}/dashboard`);
       setSubjects(response.data.teacher?.assignedSubjects || []);
     } catch (error) {
       console.error('Error fetching subjects:', error);
@@ -48,10 +44,8 @@ const TeacherAttendance = () => {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(
-        `${BASE_URL}/api/teacher/${teacherId}/subjects/${selectedSubject}/students`,
-        { headers: { Authorization: `Bearer ${token}` } }
+      const response = await api.get(
+        `/teacher/${teacherId}/subjects/${selectedSubject}/students`
       );
       setStudents(response.data.students || []);
       const initialAttendance = {};
@@ -78,16 +72,14 @@ const TeacherAttendance = () => {
     }
     setSubmitting(true);
     try {
-      const token = Cookies.get('token');
       const attendanceData = Object.keys(attendance).map(studentId => ({
         studentId,
         status: attendance[studentId]
       }));
 
-      await axios.post(
-        `${BASE_URL}/api/teacher/${teacherId}/attendance`,
-        { subjectId: selectedSubject, date, attendance: attendanceData },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await api.post(
+        `/teacher/${teacherId}/attendance`,
+        { subjectId: selectedSubject, date, attendance: attendanceData }
       );
       alert('Attendance marked successfully!');
     } catch (error) {

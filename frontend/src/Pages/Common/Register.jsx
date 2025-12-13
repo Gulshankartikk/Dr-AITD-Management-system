@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { BASE_URL } from "../../constants/api";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from "../../components/ui/Select";
 import { GraduationCap, ArrowLeft } from "lucide-react";
+
+import api from "../../api/axiosInstance";
+import authService from "../../services/authService";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +30,7 @@ const Register = () => {
   const fetchCourses = async () => {
     setCoursesLoading(true);
     try {
-      const response = await axios.get(`${BASE_URL}/api/courses`);
+      const response = await api.get('/courses');
       setCourses(response.data.courses || []);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -62,15 +63,16 @@ const Register = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post(`${BASE_URL}/api/student/register`, {
+      // Use authService for registration
+      const response = await authService.register({
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
         courseId: formData.courseId
-      });
+      }, 'student');
 
-      setRegisteredStudent(response.data.student);
+      setRegisteredStudent(response.student);
       toast.success("Registration successful!");
     } catch (error) {
       console.error("Registration error:", error);

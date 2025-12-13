@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { FaCalendarAlt, FaClock } from 'react-icons/fa';
@@ -21,11 +21,8 @@ const TeacherTimetable = () => {
 
   const fetchTimetable = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/teacher/${teacherId}/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      // Mock timetable data - replace with actual API
+      // Mock timetable data - replace with actual API when available
+      await api.get(`/teacher/${teacherId}/dashboard`);
       setTimetable([]);
     } catch (error) {
       console.error('Error fetching timetable:', error);

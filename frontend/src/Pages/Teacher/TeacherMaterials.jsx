@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import { FaPlus, FaFileAlt, FaDownload } from 'react-icons/fa';
 import Card, { CardContent } from '../../components/ui/Card';
@@ -31,14 +31,9 @@ const TeacherMaterials = () => {
 
   const fetchData = async () => {
     try {
-      const token = Cookies.get('token');
       const [materialsRes, dashboardRes] = await Promise.all([
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/materials`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/dashboard`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        api.get(`/teacher/${teacherId}/materials`),
+        api.get(`/teacher/${teacherId}/dashboard`)
       ]);
       const materialsData = materialsRes.data.materials || [];
       setAllMaterials(materialsData);
@@ -62,7 +57,6 @@ const TeacherMaterials = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = Cookies.get('token');
       const uploadData = new FormData();
       uploadData.append('subjectId', formData.subjectId);
       uploadData.append('title', formData.title);
@@ -71,16 +65,11 @@ const TeacherMaterials = () => {
         uploadData.append('file', formData.file);
       }
 
-      await axios.post(
-        `${BASE_URL}/api/teacher/${teacherId}/materials`,
-        uploadData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-          }
+      await api.post(`/teacher/${teacherId}/materials`, uploadData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
-      );
+      });
       alert('Study material uploaded successfully!');
       setShowModal(false);
       setFormData({ subjectId: '', title: '', description: '', file: null });

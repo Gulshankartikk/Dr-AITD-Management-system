@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import {
   FaUser, FaEnvelope, FaPhone, FaChalkboardTeacher, FaBook, FaClipboardList,
   FaTasks, FaBell, FaBriefcase, FaCalendarAlt, FaFilePdf, FaUpload, FaGraduationCap,
   FaFlask, FaChartLine, FaEdit, FaSave, FaTimes, FaBuilding, FaIdBadge
 } from 'react-icons/fa';
-import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import Button from '../../components/ui/Button';
 import Card, { CardContent } from '../../components/ui/Card';
@@ -38,10 +38,7 @@ const TeacherProfile = () => {
 
   const fetchTeacherProfile = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/teacher/${teacherId}/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/teacher/${teacherId}/dashboard`);
       const tData = response.data.teacher;
       setTeacher(tData);
       setEditData({
@@ -93,10 +90,7 @@ const TeacherProfile = () => {
 
   const handleSaveProfile = async () => {
     try {
-      const token = Cookies.get('token');
-      await axios.put(`${BASE_URL}/api/teacher/${teacherId}/profile`, editData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.put(`/teacher/${teacherId}/profile`, editData);
       setTeacher({ ...teacher, ...editData });
       setIsEditing(false);
       toast.success('Profile updated successfully!');
@@ -108,10 +102,7 @@ const TeacherProfile = () => {
 
   const fetchAssignments = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/teacher/${teacherId}/assignments`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/teacher/${teacherId}/assignments`);
       setAssignments(response.data.assignments || []);
     } catch (error) {
       console.error('Error fetching assignments:', error);
@@ -120,10 +111,7 @@ const TeacherProfile = () => {
 
   const fetchMaterials = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/teacher/${teacherId}/materials`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/teacher/${teacherId}/materials`);
       setMaterials(response.data.materials || []);
     } catch (error) {
       console.error('Error fetching materials:', error);
@@ -132,10 +120,7 @@ const TeacherProfile = () => {
 
   const fetchNotices = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/teacher/${teacherId}/notices`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/teacher/${teacherId}/notices`);
       setNotices(response.data.notices || []);
     } catch (error) {
       console.error('Error fetching notices:', error);

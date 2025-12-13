@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { BASE_URL } from '../../constants/api';
-import axios from 'axios';
+
 import { toast } from 'react-toastify';
 import { FaChalkboardTeacher, FaPlus, FaEdit, FaTrash, FaEye, FaGraduationCap } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
-import Cookies from 'js-cookie';
+import adminService from '../../services/adminService';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
@@ -33,13 +32,9 @@ const TeacherManagement = () => {
 
   const fetchTeachers = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/admin/teachers`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (response.data.success) {
-        setTeachers(response.data.teachers);
+      const data = await adminService.getTeachers();
+      if (data.success) {
+        setTeachers(data.teachers);
       }
     } catch (error) {
       console.error('Error fetching teachers:', error);
@@ -65,11 +60,7 @@ const TeacherManagement = () => {
   const handleDelete = async (teacherId) => {
     if (window.confirm('Are you sure you want to delete this teacher?')) {
       try {
-        const token = Cookies.get('token');
-        await axios.delete(`${BASE_URL}/api/admin/teachers/${teacherId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
+        await adminService.deleteTeacher(teacherId);
         toast.success('Teacher deleted successfully');
         fetchTeachers();
       } catch (error) {
@@ -83,20 +74,13 @@ const TeacherManagement = () => {
     e.preventDefault();
 
     try {
-      const token = Cookies.get('token');
-
       if (editingTeacher) {
         const dataToSend = { ...formData };
         if (!dataToSend.password) delete dataToSend.password;
-
-        await axios.put(`${BASE_URL}/api/admin/teachers/${editingTeacher._id}`, dataToSend, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await adminService.updateTeacher(editingTeacher._id, dataToSend);
         toast.success('Teacher updated successfully');
       } else {
-        await axios.post(`${BASE_URL}/api/admin/teachers`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await adminService.createTeacher(formData);
         toast.success('Teacher created successfully');
       }
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import {
   FaUser, FaIdCard, FaGraduationCap, FaChartLine,
@@ -37,10 +38,7 @@ const StudentProfile = () => {
 
   const fetchStudentProfile = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/student/${studentId}/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/student/${studentId}/profile`);
       const sData = response.data.student;
       setStudent(sData);
       setEditData({
@@ -80,10 +78,7 @@ const StudentProfile = () => {
 
   const handleSaveProfile = async () => {
     try {
-      const token = Cookies.get('token');
-      await axios.put(`${BASE_URL}/api/student/${studentId}/profile`, editData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.put(`/student/${studentId}/profile`, editData);
       setStudent({ ...student, ...editData });
       setIsEditing(false);
       toast.success('Profile updated successfully!');
@@ -95,10 +90,7 @@ const StudentProfile = () => {
 
   const fetchAttendance = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/student/${studentId}/attendance`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/student/${studentId}/attendance`);
       setAttendance(response.data.attendanceBySubject || []);
     } catch (error) {
       console.error('Error fetching attendance:', error);
@@ -107,10 +99,7 @@ const StudentProfile = () => {
 
   const fetchMarks = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/student/${studentId}/marks`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/student/${studentId}/marks`);
       setMarks(response.data.marks || []);
     } catch (error) {
       console.error('Error fetching marks:', error);
@@ -119,10 +108,7 @@ const StudentProfile = () => {
 
   const fetchAssignments = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/student/${studentId}/assignments`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/student/${studentId}/assignments`);
       setAssignments(response.data.assignments || []);
     } catch (error) {
       console.error('Error fetching assignments:', error);

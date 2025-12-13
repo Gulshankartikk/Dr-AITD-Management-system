@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
-import Cookies from 'js-cookie';
 import { FaDownload, FaEye, FaUser, FaClock, FaTasks, FaCalendarAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import Card, { CardContent } from '../../components/ui/Card';
@@ -21,10 +21,7 @@ const StudentAssignments = () => {
 
   const fetchAssignments = async () => {
     try {
-      const token = Cookies.get('token');
-      const headers = { Authorization: `Bearer ${token}` };
-
-      const response = await axios.get(`${BASE_URL}/api/student/${studentId}/assignments`, { headers });
+      const response = await api.get(`/student/${studentId}/assignments`);
       setAssignments(response.data.assignments || []);
     } catch (error) {
       console.error('Error fetching assignments:', error);

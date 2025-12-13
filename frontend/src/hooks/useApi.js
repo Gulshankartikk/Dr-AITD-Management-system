@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { BASE_URL } from '../constants/api';
-import Cookies from 'js-cookie';
+import api from '../api/axiosInstance';
 
 export const useApi = (url, options = {}) => {
   const [data, setData] = useState(null);
@@ -15,23 +13,23 @@ export const useApi = (url, options = {}) => {
       setLoading(true);
       setError(null);
 
-      const token = Cookies.get('token') || localStorage.getItem('token');
+      // api instance handles base URL and headers
       const config = {
         method: customOptions.method || method,
-        url: `${BASE_URL}${customUrl}`,
+        url: customUrl,
+        ...customOptions,
         headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
           ...customOptions.headers
-        },
-        ...customOptions
+        }
       };
 
-      const response = await axios(config);
+      const response = await api(config);
       setData(response.data);
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || err.message);
+      console.error("API Error:", err);
+      const message = err.response?.data?.msg || err.response?.data?.message || err.message || "An unexpected error occurred";
+      setError(message);
       throw err;
     } finally {
       setLoading(false);
@@ -56,17 +54,12 @@ export const usePost = (url) => {
       setLoading(true);
       setError(null);
 
-      const token = Cookies.get('token') || localStorage.getItem('token');
-      const response = await axios.post(`${BASE_URL}${customUrl}`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` })
-        }
-      });
-
+      const response = await api.post(customUrl, data);
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || err.message);
+      console.error("API Error (Post):", err);
+      const message = err.response?.data?.msg || err.response?.data?.message || err.message || "An unexpected error occurred";
+      setError(message);
       throw err;
     } finally {
       setLoading(false);

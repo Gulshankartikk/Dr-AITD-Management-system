@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { FaPlus, FaCalendarAlt, FaUsers, FaCheckCircle, FaFileAlt } from 'react-icons/fa';
@@ -38,14 +38,9 @@ const TeacherAssignments = () => {
 
   const fetchData = async () => {
     try {
-      const token = Cookies.get('token');
       const [assignmentsRes, dashboardRes] = await Promise.all([
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/assignments`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/dashboard`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        api.get(`/teacher/${teacherId}/assignments`),
+        api.get(`/teacher/${teacherId}/dashboard`)
       ]);
       const assignmentsData = assignmentsRes.data.assignments || [];
       setAllAssignments(assignmentsData);
@@ -75,7 +70,6 @@ const TeacherAssignments = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const token = Cookies.get('token');
       const data = new FormData();
       data.append('subjectId', formData.subjectId);
       data.append('title', formData.title);
@@ -88,11 +82,9 @@ const TeacherAssignments = () => {
         data.append('file', file);
       }
 
-      await axios.post(
-        `${BASE_URL}/api/teacher/${teacherId}/assignments`,
-        data,
-        { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } }
-      );
+      await api.post(`/teacher/${teacherId}/assignments`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
 
       toast.success('Assignment created successfully!');
       setShowModal(false);

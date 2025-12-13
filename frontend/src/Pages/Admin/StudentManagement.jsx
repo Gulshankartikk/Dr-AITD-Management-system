@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BASE_URL } from '../../constants/api';
-import axios from 'axios';
+import adminService from '../../services/adminService';
 import { toast } from 'react-toastify';
 import { FaUserGraduate, FaPlus, FaEdit, FaTrash, FaEye, FaSearch, FaChalkboardTeacher } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
@@ -38,12 +37,9 @@ const StudentManagement = () => {
 
   const fetchStudents = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/admin/students`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.data.success) {
-        setStudents(response.data.students);
+      const data = await adminService.getStudents();
+      if (data.success) {
+        setStudents(data.students);
       }
     } catch (error) {
       console.error('Error fetching students:', error);
@@ -56,9 +52,9 @@ const StudentManagement = () => {
   const fetchCourses = async () => {
     setCoursesLoading(true);
     try {
-      const response = await axios.get(`${BASE_URL}/api/courses`);
-      if (response.data.success) {
-        setCourses(response.data.courses);
+      const data = await adminService.getCourses();
+      if (data.success) {
+        setCourses(data.courses);
       }
     } catch (error) {
       console.error('Error fetching courses:', error);
@@ -84,10 +80,7 @@ const StudentManagement = () => {
   const handleDelete = async (studentId) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
       try {
-        const token = Cookies.get('token');
-        await axios.delete(`${BASE_URL}/api/admin/students/${studentId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await adminService.deleteStudent(studentId);
         toast.success('Student deleted successfully');
         fetchStudents();
       } catch (error) {
@@ -99,19 +92,21 @@ const StudentManagement = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Prevent submission if courseId is invalid
+    if (!formData.courseId || formData.courseId === 'no-courses') {
+      toast.error('Please select a valid course');
+      return;
+    }
+
     try {
-      const token = Cookies.get('token');
       if (editingStudent) {
         const dataToSend = { ...formData };
         if (!dataToSend.password) delete dataToSend.password;
-        await axios.put(`${BASE_URL}/api/admin/students/${editingStudent._id}`, dataToSend, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await adminService.updateStudent(editingStudent._id, dataToSend);
         toast.success('Student updated successfully');
       } else {
-        await axios.post(`${BASE_URL}/api/admin/students`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await adminService.createStudent(formData);
         toast.success('Student created successfully');
       }
       setShowModal(false);

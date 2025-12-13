@@ -61,7 +61,8 @@ A comprehensive, modern Enterprise Resource Planning (ERP) solution designed spe
 
 ## 🚀 Deployment (Render)
 
-This project is configured for **One-Click Deployment** on Render using Infrastructure as Code (IaC).
+### Option 1: Automatic Blueprint (Recommended)
+This project is configured for **One-Click Deployment** on Render using Infrastructure as Code (IaC) via `render.yaml`.
 
 1.  Push this repository to GitHub.
 2.  Log in to [Render](https://render.com).
@@ -71,6 +72,21 @@ This project is configured for **One-Click Deployment** on Render using Infrastr
 6.  **Environment Variables**: You will be prompted to enter:
     *   `MONGO_URL`: Your MongoDB Atlas connection string.
     *   `JWT_SECRET`: A secure random string.
+
+### Option 2: Manual Setup
+If you prefer to set up services manually:
+
+**1. Backend (Web Service)**
+*   **Root Directory:** `backend`
+*   **Build Command:** `npm install`
+*   **Start Command:** `node index.js`
+*   **Environment Variables:** `MONGO_URL`, `JWT_SECRET`
+
+**2. Frontend (Static Site)**
+*   **Root Directory:** `frontend`
+*   **Build Command:** `npm run build`
+*   **Publish Directory:** `dist`
+*   **Environment Variables:** `VITE_API_URL` (Set this to your backend URL).
 
 ---
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { FaPlus, FaFileAlt, FaVideo, FaBook, FaLink, FaTrash, FaDownload, FaEye } from 'react-icons/fa';
@@ -51,14 +51,9 @@ const TeacherResources = () => {
 
     const fetchData = async () => {
         try {
-            const token = Cookies.get('token');
             const [resourcesRes, dashboardRes] = await Promise.all([
-                axios.get(`${BASE_URL}/api/teacher/${teacherId}/resources`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                }),
-                axios.get(`${BASE_URL}/api/teacher/${teacherId}/dashboard`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                })
+                api.get(`/teacher/${teacherId}/resources`),
+                api.get(`/teacher/${teacherId}/dashboard`)
             ]);
 
             setResources(resourcesRes.data.resources || []);
@@ -80,7 +75,6 @@ const TeacherResources = () => {
         setSubmitting(true);
 
         try {
-            const token = Cookies.get('token');
             const data = new FormData();
             data.append('subjectId', formData.subjectId);
             data.append('title', formData.title);
@@ -93,11 +87,9 @@ const TeacherResources = () => {
                 data.append('file', file);
             }
 
-            await axios.post(
-                `${BASE_URL}/api/teacher/${teacherId}/resources`,
-                data,
-                { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } }
-            );
+            await api.post(`/teacher/${teacherId}/resources`, data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
 
             toast.success('Resource added successfully!');
             setShowModal(false);
@@ -124,10 +116,7 @@ const TeacherResources = () => {
         if (!window.confirm('Are you sure you want to delete this resource?')) return;
 
         try {
-            const token = Cookies.get('token');
-            await axios.delete(`${BASE_URL}/api/teacher/${teacherId}/resources/${resourceId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/teacher/${teacherId}/resources/${resourceId}`);
             toast.success('Resource deleted');
             fetchData();
         } catch (error) {

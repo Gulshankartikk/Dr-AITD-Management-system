@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FaBell, FaPlus, FaEdit, FaTrash, FaEye, FaTimes } from 'react-icons/fa';
+import { FaBell, FaPlus, FaRemoveFormat, FaTrash, FaEye, FaTimes } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
-import Cookies from 'js-cookie';
 import Button from '../../components/ui/Button';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Input from '../../components/ui/Input';
@@ -32,10 +31,9 @@ const NoticesManagement = () => {
   const fetchInitialData = async () => {
     setLoading(true);
     try {
-      const token = Cookies.get('token');
       const [noticesRes, coursesRes] = await Promise.all([
-        axios.get(`${BASE_URL}/api/admin/notices`, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`${BASE_URL}/api/admin/courses`, { headers: { Authorization: `Bearer ${token}` } })
+        api.get('/admin/notices'),
+        api.get('/admin/courses')
       ]);
 
       setNotices(noticesRes.data.notices || []);
@@ -55,13 +53,10 @@ const NoticesManagement = () => {
     }
 
     try {
-      const token = Cookies.get('token');
       // Using the teacher/admin route which maps to teacherController.addNotice
-      await axios.post(`${BASE_URL}/api/teacher/admin/notices`, {
+      await api.post('/teacher/admin/notices', {
         ...formData,
         teacherId: 'admin'
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       toast.success('Notice created successfully');
@@ -78,10 +73,7 @@ const NoticesManagement = () => {
     if (!window.confirm('Are you sure you want to delete this notice?')) return;
 
     try {
-      const token = Cookies.get('token');
-      await axios.delete(`${BASE_URL}/api/admin/notices/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/admin/notices/${id}`);
       toast.success('Notice deleted successfully');
       fetchInitialData();
     } catch (error) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import { FaBell, FaCalendarAlt, FaPlus } from 'react-icons/fa';
 import Card, { CardContent } from '../../components/ui/Card';
@@ -30,14 +30,9 @@ const TeacherNotices = () => {
 
   const fetchData = async () => {
     try {
-      const token = Cookies.get('token');
       const [noticesRes, dashboardRes] = await Promise.all([
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/notices`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/dashboard`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        api.get(`/teacher/${teacherId}/notices`),
+        api.get(`/teacher/${teacherId}/dashboard`)
       ]);
       const noticesData = noticesRes.data.notices || [];
       setAllNotices(noticesData);
@@ -61,12 +56,7 @@ const TeacherNotices = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = Cookies.get('token');
-      await axios.post(
-        `${BASE_URL}/api/teacher/${teacherId}/notices`,
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.post(`/teacher/${teacherId}/notices`, formData);
       alert('Notice sent successfully!');
       setShowModal(false);
       setFormData({ courseId: '', title: '', description: '' });

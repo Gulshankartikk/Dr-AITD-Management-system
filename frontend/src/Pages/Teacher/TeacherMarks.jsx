@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import api from '../../api/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import { FaPlus, FaTrophy, FaChartLine } from 'react-icons/fa';
 import Card, { CardContent } from '../../components/ui/Card';
@@ -41,10 +40,7 @@ const TeacherMarks = () => {
 
   const fetchSubjects = async () => {
     try {
-      const token = Cookies.get('token');
-      const response = await axios.get(`${BASE_URL}/api/teacher/${teacherId}/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/teacher/${teacherId}/dashboard`);
       setSubjects(response.data.teacher?.assignedSubjects || []);
     } catch (error) {
       console.error('Error fetching subjects:', error);
@@ -54,15 +50,10 @@ const TeacherMarks = () => {
   const fetchStudentsAndMarks = async () => {
     setLoading(true);
     try {
-      const token = Cookies.get('token');
       console.log('Fetching students for subject:', selectedSubject);
       const [studentsRes, marksRes] = await Promise.all([
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/subjects/${selectedSubject}/students`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/marks/${selectedSubject}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        api.get(`/teacher/${teacherId}/subjects/${selectedSubject}/students`),
+        api.get(`/teacher/${teacherId}/marks/${selectedSubject}`)
       ]);
       console.log('Students fetched:', studentsRes.data.students);
       setStudents(studentsRes.data.students || []);
@@ -81,11 +72,9 @@ const TeacherMarks = () => {
       return;
     }
     try {
-      const token = Cookies.get('token');
-      await axios.post(
-        `${BASE_URL}/api/teacher/${teacherId}/marks`,
-        { ...formData, subjectId: selectedSubject },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await api.post(
+        `/teacher/${teacherId}/marks`,
+        { ...formData, subjectId: selectedSubject }
       );
       alert('Marks added successfully!');
       setShowModal(false);

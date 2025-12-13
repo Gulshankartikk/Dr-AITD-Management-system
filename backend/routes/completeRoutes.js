@@ -5,6 +5,7 @@ const router = express.Router();
 const { verifyToken, isAdmin, isTeacher } = require('../middleware/Auth');
 const upload = require('../middleware/upload');
 const errorHandler = require('../middleware/errorHandler');
+const validateId = require('../middleware/validateId');
 
 // ================= CONTROLLERS =================
 const authController = require('../controller/authController');
@@ -48,7 +49,7 @@ router.post('/admin/resetPassword', (req, res, next) => { req.body.role = 'admin
 // ======================================================
 
 // Dashboard + subjects + courses
-router.get('/teacher/:teacherId/dashboard', verifyToken, teacherController.getTeacherDashboard);
+router.get('/teacher/:teacherId/dashboard', verifyToken, validateId('teacherId'), teacherController.getTeacherDashboard);
 router.post('/teacher/:teacherId/change-password', verifyToken, teacherController.changePassword);
 router.put('/teacher/:teacherId/profile', verifyToken, isAdmin, async (req, res) => {
   try {
@@ -73,15 +74,15 @@ router.put('/teacher/:teacherId/profile', verifyToken, isAdmin, async (req, res)
 });
 
 // Students by subject
-router.get('/teacher/:teacherId/subjects/:subjectId/students', verifyToken, teacherController.getStudentsBySubject);
+router.get('/teacher/:teacherId/subjects/:subjectId/students', verifyToken, validateId(['teacherId', 'subjectId']), teacherController.getStudentsBySubject);
 
 // Attendance
-router.post('/teacher/:teacherId/attendance', verifyToken, teacherController.markAttendance);
+router.post('/teacher/:teacherId/attendance', verifyToken, validateId('teacherId'), teacherController.markAttendance);
 router.get('/teacher/:teacherId/attendance-report', verifyToken, teacherController.getAttendanceReport);
 
 // Assignments
-router.get('/teacher/:teacherId/assignments', verifyToken, teacherController.getTeacherAssignments);
-router.post('/teacher/:teacherId/assignments', verifyToken, upload.single('file'), teacherController.addAssignment);
+router.get('/teacher/:teacherId/assignments', verifyToken, validateId('teacherId'), teacherController.getTeacherAssignments);
+router.post('/teacher/:teacherId/assignments', verifyToken, validateId('teacherId'), upload.single('file'), teacherController.addAssignment);
 
 // Marks
 router.post('/teacher/:teacherId/marks', verifyToken, teacherController.addMarks);
@@ -115,11 +116,11 @@ router.delete('/teacher/:teacherId/resources/:resourceId', verifyToken, teacherC
 //                      STUDENT ROUTES
 // ======================================================
 router.post('/student/register', studentController.studentRegister);
-router.post('/student/:studentId/change-password', verifyToken, studentController.changePassword);
+router.post('/student/:studentId/change-password', verifyToken, validateId('studentId'), studentController.changePassword);
 
-router.get('/student/:studentId/dashboard', verifyToken, studentController.getStudentDashboard);
-router.get('/student/:studentId/profile', verifyToken, studentController.getStudentProfile);
-router.put('/student/:studentId/profile', verifyToken, isAdmin, async (req, res) => {
+router.get('/student/:studentId/dashboard', verifyToken, validateId('studentId'), studentController.getStudentDashboard);
+router.get('/student/:studentId/profile', verifyToken, validateId('studentId'), studentController.getStudentProfile);
+router.put('/student/:studentId/profile', verifyToken, isAdmin, validateId('studentId'), async (req, res) => {
   try {
     const { studentId } = req.params;
     const { name, email, phone } = req.body;
@@ -140,20 +141,20 @@ router.put('/student/:studentId/profile', verifyToken, isAdmin, async (req, res)
     res.status(500).json({ success: false, msg: error.message });
   }
 });
-router.get('/student/:studentId/attendance', verifyToken, studentController.getStudentAttendance);
-router.get('/student/:studentId/subjects', verifyToken, studentController.getStudentSubjects);
-router.get('/student/:studentId/notes', verifyToken, studentController.getNotesBySubject);
-router.get('/student/:studentId/resources', verifyToken, studentController.getResources);
-router.get('/student/:studentId/materials', verifyToken, studentController.getStudyMaterials);
-router.get('/student/:studentId/assignments', verifyToken, studentController.getAssignments);
-router.post('/student/:studentId/assignments/:assignmentId/submit', verifyToken, studentController.submitAssignment);
-router.get('/student/:studentId/marks', verifyToken, studentController.getStudentMarks);
-router.get('/student/:studentId/notices', verifyToken, studentController.getNotices);
+router.get('/student/:studentId/attendance', verifyToken, validateId('studentId'), studentController.getStudentAttendance);
+router.get('/student/:studentId/subjects', verifyToken, validateId('studentId'), studentController.getStudentSubjects);
+router.get('/student/:studentId/notes', verifyToken, validateId('studentId'), studentController.getNotesBySubject);
+router.get('/student/:studentId/resources', verifyToken, validateId('studentId'), studentController.getResources);
+router.get('/student/:studentId/materials', verifyToken, validateId('studentId'), studentController.getStudyMaterials);
+router.get('/student/:studentId/assignments', verifyToken, validateId('studentId'), studentController.getAssignments);
+router.post('/student/:studentId/assignments/:assignmentId/submit', verifyToken, validateId(['studentId', 'assignmentId']), studentController.submitAssignment);
+router.get('/student/:studentId/marks', verifyToken, validateId('studentId'), studentController.getStudentMarks);
+router.get('/student/:studentId/notices', verifyToken, validateId('studentId'), studentController.getNotices);
 
 // Timetable + Fees + Leave
-router.get('/student/:studentId/timetable', verifyToken, studentController.getTimetable);
-router.get('/student/:studentId/fees', verifyToken, studentController.getFees);
-router.post('/student/:studentId/leave', verifyToken, studentController.applyLeave);
+router.get('/student/:studentId/timetable', verifyToken, validateId('studentId'), studentController.getTimetable);
+router.get('/student/:studentId/fees', verifyToken, validateId('studentId'), studentController.getFees);
+router.post('/student/:studentId/leave', verifyToken, validateId('studentId'), studentController.applyLeave);
 router.get('/student/:studentId/leaves', verifyToken, studentController.getLeaves);
 
 // Library
@@ -173,30 +174,30 @@ router.get('/admin/dashboard', verifyToken, isAdmin, adminController.getDashboar
 // Students
 router.get('/admin/students', verifyToken, adminController.getAllStudents);
 router.post('/admin/students', verifyToken, isAdmin, adminController.addStudent);
-router.put('/admin/students/:studentId', verifyToken, isAdmin, adminController.updateStudent);
-router.delete('/admin/students/:studentId', verifyToken, isAdmin, adminController.deleteStudent);
-router.get('/admin/students/:studentId', verifyToken, adminController.getStudentDetails);
+router.put('/admin/students/:studentId', verifyToken, isAdmin, validateId('studentId'), adminController.updateStudent);
+router.delete('/admin/students/:studentId', verifyToken, isAdmin, validateId('studentId'), adminController.deleteStudent);
+router.get('/admin/students/:studentId', verifyToken, validateId('studentId'), adminController.getStudentDetails);
 
 // Teachers
 router.get('/admin/teachers', verifyToken, adminController.getAllTeachers);
 router.post('/admin/teachers', verifyToken, isAdmin, adminController.addTeacher);
-router.put('/admin/teachers/:teacherId', verifyToken, isAdmin, adminController.updateTeacher);
-router.delete('/admin/teachers/:teacherId', verifyToken, isAdmin, adminController.deleteTeacher);
-router.get('/admin/teachers/:teacherId', verifyToken, isAdmin, adminController.getTeacherDetails);
+router.put('/admin/teachers/:teacherId', verifyToken, isAdmin, validateId('teacherId'), adminController.updateTeacher);
+router.delete('/admin/teachers/:teacherId', verifyToken, isAdmin, validateId('teacherId'), adminController.deleteTeacher);
+router.get('/admin/teachers/:teacherId', verifyToken, isAdmin, validateId('teacherId'), adminController.getTeacherDetails);
 
 // Courses (public read, admin write)
 router.get('/courses', adminController.getAllCourses);
 router.get('/admin/courses', verifyToken, adminController.getAllCourses);
 router.post('/admin/courses', verifyToken, isAdmin, adminController.addCourse);
-router.put('/admin/courses/:courseId', verifyToken, isAdmin, adminController.updateCourse);
-router.delete('/admin/courses/:courseId', verifyToken, isAdmin, adminController.deleteCourse);
+router.put('/admin/courses/:courseId', verifyToken, isAdmin, validateId('courseId'), adminController.updateCourse);
+router.delete('/admin/courses/:courseId', verifyToken, isAdmin, validateId('courseId'), adminController.deleteCourse);
 
 // Subjects (public read, admin write)
 router.get('/subjects', adminController.getAllSubjects);
 router.get('/admin/subjects', verifyToken, adminController.getAllSubjects);
 router.post('/admin/subjects', verifyToken, isAdmin, adminController.addSubject);
 router.post('/subjects/add', verifyToken, isAdmin, adminController.addSubject);
-router.delete('/admin/subjects/:subjectId', verifyToken, isAdmin, adminController.deleteSubject);
+router.delete('/admin/subjects/:subjectId', verifyToken, isAdmin, validateId('subjectId'), adminController.deleteSubject);
 
 // Teacher ↔ Subject assignment
 router.post('/admin/assign-teacher', verifyToken, isAdmin, adminController.assignTeacherToSubject);
@@ -213,29 +214,29 @@ router.get('/admin/reports/enrollment', verifyToken, isAdmin, adminController.ge
 // Manual Reports
 router.post('/admin/manual-reports', verifyToken, isAdmin, adminController.createManualReport);
 router.get('/admin/manual-reports', verifyToken, isAdmin, adminController.getAllManualReports);
-router.put('/admin/manual-reports/:reportId', verifyToken, isAdmin, adminController.updateManualReport);
-router.delete('/admin/manual-reports/:reportId', verifyToken, isAdmin, adminController.deleteManualReport);
+router.put('/admin/manual-reports/:reportId', verifyToken, isAdmin, validateId('reportId'), adminController.updateManualReport);
+router.delete('/admin/manual-reports/:reportId', verifyToken, isAdmin, validateId('reportId'), adminController.deleteManualReport);
 
 // ================= TIMETABLE ROUTES =================
 router.post('/admin/timetable', verifyToken, isAdmin, adminController.addTimetable);
 router.get('/admin/timetable', verifyToken, isAdmin, adminController.getTimetable);
-router.delete('/admin/timetable/:id', verifyToken, isAdmin, adminController.deleteTimetable);
+router.delete('/admin/timetable/:id', verifyToken, isAdmin, validateId('id'), adminController.deleteTimetable);
 
 // ================= FEE ROUTES =================
 router.post('/admin/fees', verifyToken, isAdmin, adminController.addFee);
-router.put('/admin/fees/:id', verifyToken, isAdmin, adminController.updateFee);
+router.put('/admin/fees/:id', verifyToken, isAdmin, validateId('id'), adminController.updateFee);
 
 // ================= LIBRARY ROUTES =================
 router.post('/admin/library/books', verifyToken, isAdmin, adminController.addBook);
 router.get('/admin/library/books', verifyToken, isAdmin, adminController.getAllBooks);
 router.post('/admin/library/issue', verifyToken, isAdmin, adminController.issueBook);
 router.post('/admin/library/return', verifyToken, isAdmin, adminController.returnBook);
-router.delete('/admin/library/books/:id', verifyToken, isAdmin, adminController.deleteBook);
+router.delete('/admin/library/books/:id', verifyToken, isAdmin, validateId('id'), adminController.deleteBook);
 
 // Delete operations
-router.delete('/admin/assignments/:assignmentId', verifyToken, isAdmin, adminController.deleteAssignment);
-router.delete('/admin/notices/:noticeId', verifyToken, isAdmin, adminController.deleteNotice);
-router.delete('/admin/materials/:materialId', verifyToken, isAdmin, adminController.deleteMaterial);
+router.delete('/admin/assignments/:assignmentId', verifyToken, isAdmin, validateId('assignmentId'), adminController.deleteAssignment);
+router.delete('/admin/notices/:noticeId', verifyToken, isAdmin, validateId('noticeId'), adminController.deleteNotice);
+router.delete('/admin/materials/:materialId', verifyToken, isAdmin, validateId('materialId'), adminController.deleteMaterial);
 router.get('/admin/notices', verifyToken, isAdmin, adminController.getAllNotices);
 
 
@@ -252,9 +253,9 @@ router.post('/teacher/admin/materials', verifyToken, upload.single('file'), teac
 router.get('/teacher/admin/dashboard', verifyToken, teacherController.getTeacherDashboard);
 
 // Teacher student management
-router.get('/teacher/students/:studentId', verifyToken, adminController.getStudentDetails);
-router.put('/teacher/students/:studentId', verifyToken, isAdmin, adminController.updateStudent);
-router.delete('/teacher/students/:studentId', verifyToken, isAdmin, adminController.deleteStudent);
+router.get('/teacher/students/:studentId', verifyToken, validateId('studentId'), adminController.getStudentDetails);
+router.put('/teacher/students/:studentId', verifyToken, isAdmin, validateId('studentId'), adminController.updateStudent);
+router.delete('/teacher/students/:studentId', verifyToken, isAdmin, validateId('studentId'), adminController.deleteStudent);
 
 
 // ======================================================
