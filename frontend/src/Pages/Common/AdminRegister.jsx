@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { BASE_URL } from "../../constants/api";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../api/axiosInstance";
 import { toast } from "react-toastify";
 import collegeImage from "../../assets/dr-ambedkar-institute-of-technology-for-handicapped-kanpur.jpeg.jpg";
 import logo from "../../assets/logo.jpeg";
@@ -33,7 +32,7 @@ const AdminRegister = () => {
     }
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/admin/register`, {
+      const response = await api.post(`/api/admin/register`, {
         name: formData.name,
         email: formData.email,
         password: formData.password

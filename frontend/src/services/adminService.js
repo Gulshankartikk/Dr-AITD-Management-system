@@ -122,6 +122,12 @@ class AdminService {
     return response.data;
   }
 
+  // Fee Management
+  async getFees() {
+    const response = await api.get('/api/admin/fees');
+    return response.data;
+  }
+
   // Settings
   async getSettings() {
     const response = await api.get('/api/admin/settings');

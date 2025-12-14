@@ -250,8 +250,13 @@ router.get('/admin/timetable', verifyToken, isAdmin, adminController.getTimetabl
 router.delete('/admin/timetable/:id', verifyToken, isAdmin, validateId('id'), adminController.deleteTimetable);
 
 // ================= FEE ROUTES =================
+router.get('/admin/fees', verifyToken, isAdmin, adminController.getAllFees);
 router.post('/admin/fees', verifyToken, isAdmin, adminController.addFee);
 router.put('/admin/fees/:id', verifyToken, isAdmin, validateId('id'), adminController.updateFee);
+
+// ================= SETTINGS ROUTES =================
+router.get('/admin/settings', verifyToken, isAdmin, adminController.getSettings);
+router.put('/admin/settings', verifyToken, isAdmin, adminController.updateSettings);
 
 // ================= LIBRARY ROUTES =================
 router.post('/admin/library/books', verifyToken, isAdmin, adminController.addBook);

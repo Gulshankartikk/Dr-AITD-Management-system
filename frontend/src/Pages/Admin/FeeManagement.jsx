@@ -6,6 +6,9 @@ import Input from '../../components/ui/Input';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Button from '../../components/ui/Button';
 import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
+import { toast } from 'react-toastify';
+
+import adminService from '../../services/adminService';
 
 const FeeManagement = () => {
   const [feeRecords, setFeeRecords] = useState([]);
@@ -18,25 +21,52 @@ const FeeManagement = () => {
 
   const fetchFeeData = async () => {
     try {
-      // Mock data simulation
-      setTimeout(() => {
-        setFeeRecords([
-          { id: 1, student: 'Gulshan kumar', rollNo: 'CS001', course: 'Computer Science', amount: 50000, paid: 30000, due: 20000, status: 'Partial', lastPayment: '2024-01-15' },
-          { id: 2, student: 'Aditya kumar', rollNo: 'ME002', course: 'Mechanical Eng.', amount: 55000, paid: 55000, due: 0, status: 'Paid', lastPayment: '2024-01-10' },
-          { id: 3, student: 'Ankita maurya', rollNo: 'BA003', course: 'Business Admin', amount: 45000, paid: 0, due: 45000, status: 'Pending', lastPayment: null },
-          { id: 4, student: 'Abhishek Gond', rollNo: 'CS004', course: 'Computer Science', amount: 50000, paid: 15000, due: 35000, status: 'Partial', lastPayment: '2024-01-20' },
-          { id: 5, student: 'sandy singh', rollNo: 'ME005', course: 'Mechanical Eng.', amount: 55000, paid: 10000, due: 45000, status: 'Partial', lastPayment: '2024-01-05' }
-        ]);
-        setPaymentHistory([
-          { id: 1, student: 'parmar', amount: 15000, date: '2025-01-15', method: 'Online', receipt: 'RCP001' },
-          { id: 2, student: 'utkarsh', amount: 25000, date: '2025-01-10', method: 'Cash', receipt: 'RCP002' },
-          { id: 3, student: 'abhinav', amount: 15000, date: '2025-01-20', method: 'Cheque', receipt: 'RCP003' }
-        ]);
-        setLoading(false);
-      }, 500);
+      setLoading(true);
+      const data = await adminService.getFees();
 
+      if (data.success && data.fees) {
+        // Transform backend data to match frontend format
+        const transformedFees = data.fees.map(fee => ({
+          id: fee._id,
+          student: fee.studentId?.name || 'Unknown',
+          rollNo: fee.studentId?.rollNo || 'N/A',
+          course: fee.studentId?.courseId?.courseName || 'N/A',
+          amount: fee.totalAmount || 0,
+          paid: fee.paidAmount || 0,
+          due: fee.dueAmount || 0,
+          status: fee.status || (fee.dueAmount === 0 ? 'Paid' : fee.paidAmount > 0 ? 'Partial' : 'Pending'),
+          lastPayment: fee.transactions && fee.transactions.length > 0
+            ? fee.transactions[fee.transactions.length - 1].date
+            : null
+        }));
+
+        setFeeRecords(transformedFees);
+
+        // Extract payment history from transactions
+        const allTransactions = [];
+        data.fees.forEach(fee => {
+          if (fee.transactions && fee.transactions.length > 0) {
+            fee.transactions.forEach(transaction => {
+              allTransactions.push({
+                id: transaction._id || Math.random().toString(),
+                student: fee.studentId?.name || 'Unknown',
+                amount: transaction.amount,
+                date: transaction.date,
+                method: transaction.method || 'Cash',
+                receipt: transaction.receiptNo || 'N/A'
+              });
+            });
+          }
+        });
+        setPaymentHistory(allTransactions);
+      }
     } catch (err) {
       console.error("Error fetching fees:", err);
+      toast.error('Failed to load fee records');
+      // Set empty arrays on error
+      setFeeRecords([]);
+      setPaymentHistory([]);
+    } finally {
       setLoading(false);
     }
   };

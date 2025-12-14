@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
-import { BASE_URL } from "../../constants/api";
+import api from "../../api/axiosInstance";
 import {
   FaBell,
   FaClipboardList,
@@ -9,7 +8,6 @@ import {
   FaDownload
 } from "react-icons/fa";
 import { MdAssignment } from "react-icons/md";
-import Cookies from "js-cookie";
 import Card, { CardContent } from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 
@@ -32,14 +30,11 @@ const TeacherSummary = () => {
 
   const fetchTeacherData = async () => {
     try {
-      const token = Cookies.get("token");
-      const headers = { Authorization: `Bearer ${token}` };
-
       const [assignmentsRes, noticesRes, materialsRes, attendanceRes] = await Promise.all([
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/assignments`, { headers }),
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/notices`, { headers }),
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/materials`, { headers }),
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/attendance`, { headers }).catch(() => ({ data: { attendance: [] } }))
+        api.get(`/api/teacher/${teacherId}/assignments`),
+        api.get(`/api/teacher/${teacherId}/notices`),
+        api.get(`/api/teacher/${teacherId}/materials`),
+        api.get(`/api/teacher/${teacherId}/attendance`).catch(() => ({ data: { attendance: [] } }))
       ]);
 
       setData({

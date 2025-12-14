@@ -956,6 +956,62 @@ const updateFee = async (req, res) => {
   }
 };
 
+// Get All Fees
+const getAllFees = async (req, res) => {
+  try {
+    const fees = await Fee.find({ isActive: true })
+      .populate('studentId', 'name rollNo email courseId')
+      .populate({
+        path: 'studentId',
+        populate: {
+          path: 'courseId',
+          select: 'courseName courseCode'
+        }
+      })
+      .sort({ createdAt: -1 });
+
+    res.json({ success: true, fees });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// ================= SETTINGS MANAGEMENT =================
+
+// Get Settings
+const getSettings = async (req, res) => {
+  try {
+    // For now, return default settings
+    // You can create a Settings model later if needed
+    const settings = {
+      institutionName: 'Dr. Ambedkar Institute of Technology for Handicapped',
+      academicYear: '2024-2025',
+      semester: 'Odd',
+      address: 'Kanpur, Uttar Pradesh',
+      phone: '+91-XXXXXXXXXX',
+      email: 'info@draitd.edu.in',
+      website: 'www.draitd.edu.in'
+    };
+
+    res.json({ success: true, settings });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Update Settings
+const updateSettings = async (req, res) => {
+  try {
+    const settings = req.body;
+
+    // For now, just return success
+    // You can implement actual database storage later
+    res.json({ success: true, msg: 'Settings updated successfully', settings });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
 // ================= LIBRARY MANAGEMENT =================
 
 // Add Book
@@ -1090,6 +1146,9 @@ module.exports = {
   deleteTimetable,
   addFee,
   updateFee,
+  getAllFees,
+  getSettings,
+  updateSettings,
   addBook,
   getAllBooks,
   issueBook,

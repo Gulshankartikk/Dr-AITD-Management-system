@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import { BASE_URL } from "../../constants/api";
-import Cookies from "js-cookie";
+import api from "../../api/axiosInstance";
 import { toast } from "react-toastify";
 import { FaUpload, FaFileAlt } from "react-icons/fa";
 import Card, { CardContent } from "../../components/ui/Card";
@@ -34,12 +32,9 @@ const TeacherUpload = ({ teacherId }) => {
   // ============================= FETCH SUBJECTS & COURSES =============================
   const fetchSubjectsAndCourses = async () => {
     try {
-      const token = Cookies.get("token");
-      const headers = { Authorization: `Bearer ${token}` };
-
       const [subjectsRes, coursesRes] = await Promise.all([
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/subjects`, { headers }),
-        axios.get(`${BASE_URL}/api/teacher/${teacherId}/courses`, { headers }),
+        api.get(`/api/teacher/${teacherId}/subjects`),
+        api.get(`/api/teacher/${teacherId}/courses`),
       ]);
 
       setSubjects(subjectsRes.data.subjects || []);
@@ -89,7 +84,6 @@ const TeacherUpload = ({ teacherId }) => {
     setUploading(true);
 
     try {
-      const token = Cookies.get("token");
       const uploadData = new FormData();
 
       uploadData.append("title", formData.title);
@@ -108,9 +102,8 @@ const TeacherUpload = ({ teacherId }) => {
         notice: `/api/teacher/${teacherId}/notices`,
       };
 
-      await axios.post(`${BASE_URL}${endpoints[activeTab]}`, uploadData, {
+      await api.post(endpoints[activeTab], uploadData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
