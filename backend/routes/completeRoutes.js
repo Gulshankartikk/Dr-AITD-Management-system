@@ -269,7 +269,12 @@ router.delete('/admin/library/books/:id', verifyToken, isAdmin, validateId('id')
 router.delete('/admin/assignments/:assignmentId', verifyToken, isAdmin, validateId('assignmentId'), adminController.deleteAssignment);
 router.delete('/admin/notices/:noticeId', verifyToken, isAdmin, validateId('noticeId'), adminController.deleteNotice);
 router.delete('/admin/materials/:materialId', verifyToken, isAdmin, validateId('materialId'), adminController.deleteMaterial);
+
+// Get all operations
 router.get('/admin/notices', verifyToken, isAdmin, adminController.getAllNotices);
+router.get('/admin/assignments', verifyToken, isAdmin, adminController.getAllAssignments);
+router.get('/admin/materials', verifyToken, isAdmin, adminController.getAllMaterials);
+router.get('/admin/attendance', verifyToken, isAdmin, adminController.getAllAttendance);
 
 
 // Teacher student management

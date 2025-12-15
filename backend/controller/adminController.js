@@ -1098,6 +1098,7 @@ const deleteBook = async (req, res) => {
   }
 };
 
+
 // Get All Notices - Admin Only
 const getAllNotices = async (req, res) => {
   try {
@@ -1105,6 +1106,47 @@ const getAllNotices = async (req, res) => {
       .populate('courseId', 'courseName courseCode')
       .sort({ createdAt: -1 });
     res.json({ success: true, notices });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Get All Assignments - Admin Only
+const getAllAssignments = async (req, res) => {
+  try {
+    const assignments = await Assignments.find({ isActive: true })
+      .populate('subjectId', 'subjectName subjectCode')
+      .populate('teacherId', 'name')
+      .sort({ createdAt: -1 });
+    res.json({ success: true, assignments });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Get All Materials - Admin Only
+const getAllMaterials = async (req, res) => {
+  try {
+    const materials = await StudyMaterial.find({ isActive: true })
+      .populate('subjectId', 'subjectName subjectCode')
+      .populate('teacherId', 'name')
+      .sort({ createdAt: -1 });
+    res.json({ success: true, materials });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+// Get All Attendance - Admin Only
+const getAllAttendance = async (req, res) => {
+  try {
+    const attendance = await Attendance.find({})
+      .populate('studentId', 'name rollNo')
+      .populate('subjectId', 'subjectName subjectCode')
+      .populate('teacherId', 'name')
+      .sort({ date: -1 })
+      .limit(1000); // Limit to recent 1000 records for performance
+    res.json({ success: true, attendance });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
   }
@@ -1155,6 +1197,9 @@ module.exports = {
   returnBook,
   deleteBook,
   getAllNotices,
+  getAllAssignments,
+  getAllMaterials,
+  getAllAttendance,
   updateCourse,
   getAllCourses,
   getAllSubjects

@@ -27,14 +27,13 @@ const NotificationSummary = () => {
 
   const fetchAllData = async () => {
     try {
-      // Fetch all data
-      // TODO: Replace hardcoded teacher ID with dynamic data or admin routes
+      // Fetch all data from admin endpoints
       const [assignmentsRes, noticesRes, materialsRes, attendanceRes, teachersRes] = await Promise.all([
-        api.get('/api/teacher/6919d9542d2366a7429b117f/assignments'),
-        api.get('/api/teacher/6919d9542d2366a7429b117f/notices'),
-        api.get('/api/teacher/6919d9542d2366a7429b117f/materials'),
-        api.get('/api/teacher/6919d9542d2366a7429b117f/attendance'),
-        api.get('/api/admin/teachers') // Added to fetch teachers
+        api.get('/api/admin/assignments'),
+        api.get('/api/admin/notices'),
+        api.get('/api/admin/materials'),
+        api.get('/api/admin/attendance'),
+        api.get('/api/admin/teachers')
       ]);
 
       setData({

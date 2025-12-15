@@ -23,6 +23,7 @@ const StudentList = () => {
     if (selectedSubject) {
       fetchStudents();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSubject]);
 
   const fetchSubjects = async () => {
