@@ -2,17 +2,26 @@ const mongoose = require('mongoose');
 
 const validateId = (paramNames) => {
     return (req, res, next) => {
-        // If paramNames is a single string, convert to array
         const params = Array.isArray(paramNames) ? paramNames : [paramNames];
-
+        
         for (const param of params) {
-            if (req.params[param] && !mongoose.Types.ObjectId.isValid(req.params[param])) {
+            const id = req.params[param];
+            
+            if (!id) {
+                return res.status(400).json({
+                    success: false,
+                    msg: `${param} parameter is required`
+                });
+            }
+            
+            if (!mongoose.Types.ObjectId.isValid(id)) {
                 return res.status(400).json({
                     success: false,
                     msg: `Invalid ${param} format`
                 });
             }
         }
+        
         next();
     };
 };

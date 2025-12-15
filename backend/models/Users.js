@@ -73,9 +73,11 @@ const AdminSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     username: { type: String, unique: true, sparse: true },
     password: { type: String, required: true },
+    phone: { type: String },
     role: { type: String, default: 'admin' },
     otp: { type: String },
-    otpExpiry: { type: Date }
+    otpExpiry: { type: Date },
+    isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
 // Pre-save hooks

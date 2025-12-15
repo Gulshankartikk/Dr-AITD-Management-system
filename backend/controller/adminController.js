@@ -35,13 +35,6 @@ const adminLogin = async (req, res) => {
     });
 
     if (!admin) {
-      // Fallback for initial setup if no admin exists in DB
-      // Note: In production, you should seed the DB properly.
-      if (username === 'admin' && password === 'admin123') {
-        const token = jwt.sign({ id: 'admin', role: 'admin' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
-        res.cookie('token', token, { httpOnly: true });
-        return res.json({ success: true, token, admin: { id: 'admin', name: 'Administrator', role: 'admin' } });
-      }
       return res.status(404).json({ success: false, msg: 'Admin not found' });
     }
 
@@ -50,7 +43,7 @@ const adminLogin = async (req, res) => {
       return res.status(400).json({ success: false, msg: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
+    const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '24h' });
     res.cookie('token', token, { httpOnly: true });
 
     return res.json({ success: true, token, admin: { id: admin._id, name: admin.name, role: 'admin' } });

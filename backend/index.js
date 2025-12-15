@@ -29,15 +29,20 @@ app.use(
         'http://localhost:5174',
         'http://localhost:5175',
         'http://localhost:5176',
-        'http://localhost:4000',
         'http://127.0.0.1:5173',
-        'http://127.0.0.1:5174',
-        'http://127.0.0.1:4000',
+        'http://127.0.0.1:5174'
       ];
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app') || origin.endsWith('.netlify.app')) {
+      
+      // In development, allow no origin (for tools like Postman)
+      if (process.env.NODE_ENV === 'development' && !origin) {
+        return callback(null, true);
+      }
+      
+      // Check allowed origins
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else if (process.env.NODE_ENV === 'production' && 
+                 (origin?.endsWith('.vercel.app') || origin?.endsWith('.netlify.app') || origin?.endsWith('.render.com'))) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
@@ -56,12 +61,15 @@ app.get("/", (req, res) => {
 });
 
 // routes
-
 app.use("/api", require("./routes/completeRoutes"));
+
+// Global error handler
+const errorHandler = require('./middleware/errorHandler');
+app.use(errorHandler);
 
 // Fallback route for SPA
 app.get('*', (req, res) => {
-  res.json({ success: false, msg: 'API route not found' });
+  res.status(404).json({ success: false, msg: 'API route not found' });
 });
 
 app.listen(PORT, () => {

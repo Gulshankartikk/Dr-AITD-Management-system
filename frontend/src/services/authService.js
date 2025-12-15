@@ -41,14 +41,17 @@ class AuthService {
     return response.data;
   }
 
-  async updatePassword(currentPassword, newPassword, userId, role) {
-    // api instance already handles Authorization header
+  async updatePassword(currentPassword, newPassword, userId, role, token = null) {
     const endpoint = `/api/${role}/${userId}/change-password`;
+    
+    const config = token ? {
+      headers: { Authorization: `Bearer ${token}` }
+    } : {};
 
     const response = await api.post(endpoint, {
       oldPassword: currentPassword,
       newPassword
-    });
+    }, config);
     return response.data;
   }
 }

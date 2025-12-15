@@ -1,90 +1,101 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const { Teacher, Admin } = require('./models');
-const dotenv = require('dotenv');
+const { Admin, Teacher, Student, Course, Subject } = require('./models');
 
-dotenv.config();
-
-const seedAuthUsers = async () => {
+const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/college-erp');
-        console.log('MongoDB Connected');
-
-        // 1. Seed Admin
-        let admin = await Admin.findOne({ username: 'admin' });
-        if (!admin) {
-            await Admin.create({
-                name: 'Administrator',
-                email: 'admin@college.edu',
-                username: 'admin',
-                password: 'admin123',
-                role: 'admin'
-            });
-            console.log('Admin account created: admin / admin123');
-        } else {
-            // Ensure password is correct
-            admin.password = 'admin123';
-            await admin.save();
-            console.log('Admin password updated to default');
-        }
-
-        // 2. Seed Teacher
-        let teacher = await Teacher.findOne({ username: 'teacher' });
-        if (!teacher) {
-            await Teacher.create({
-                name: 'Demo Teacher',
-                email: 'teacher@college.edu',
-                username: 'teacher',
-                password: 'teacher123',
-                department: 'CSE',
-                designation: 'Professor'
-            });
-            console.log('Teacher account created: teacher / teacher123');
-        } else {
-            // Ensure password is correct
-            teacher.password = 'teacher123';
-            await teacher.save();
-            console.log('Teacher password updated to default');
-        }
-
-        // 3. Seed Course (Required for Student)
-        const { Student, Course } = require('./models');
-        let course = await Course.findOne({ courseCode: 'CSE-DEMO' });
-        if (!course) {
-            course = await Course.create({
-                courseName: "B.Tech Computer Science",
-                courseCode: "CSE-DEMO",
-                courseDuration: "4 Years"
-            });
-            console.log('Course created: CSE-DEMO');
-        }
-
-        // 4. Seed Student
-        let student = await Student.findOne({ rollNo: 'STU2025' });
-        if (!student) {
-            await Student.create({
-                name: 'Demo Student',
-                email: 'student@college.edu',
-                username: 'student',
-                password: 'student123',
-                rollNo: 'STU2025',
-                courseId: course._id,
-                semester: 5,
-                branch: 'CSE'
-            });
-            console.log('Student account created: STU2025 / student123');
-        } else {
-            student.password = 'student123';
-            student.courseId = course._id; // Ensure link
-            await student.save();
-            console.log('Student updated');
-        }
-
-        process.exit(0);
+        console.log('MongoDB Connected for seeding');
     } catch (error) {
-        console.error('Error seeding auth users:', error);
+        console.error('Database connection failed:', error);
         process.exit(1);
     }
 };
 
-seedAuthUsers();
+const seedData = async () => {
+    try {
+        // Clear existing data
+        await Admin.deleteMany({});
+        await Teacher.deleteMany({});
+        await Student.deleteMany({});
+        await Course.deleteMany({});
+        await Subject.deleteMany({});
+
+        // Create sample course
+        const course = new Course({
+            courseName: 'Computer Science Engineering',
+            courseCode: 'CSE',
+            courseDuration: '4 Years',
+            isActive: true
+        });
+        await course.save();
+
+        // Create sample subjects
+        const subjects = [
+            { subjectName: 'Data Structures', subjectCode: 'CS101', credits: 4, semester: 3, branch: 'CSE', courseId: course._id },
+            { subjectName: 'Database Management', subjectCode: 'CS102', credits: 3, semester: 4, branch: 'CSE', courseId: course._id },
+            { subjectName: 'Web Development', subjectCode: 'CS103', credits: 4, semester: 5, branch: 'CSE', courseId: course._id }
+        ];
+
+        const savedSubjects = await Subject.insertMany(subjects);
+
+        // Create Admin (password will be hashed by pre-save hook)
+        const admin = new Admin({
+            name: 'System Administrator',
+            username: 'admin',
+            email: 'admin@draitd.edu',
+            password: 'admin123',
+            phone: '9876543210',
+            isActive: true
+        });
+        await admin.save();
+
+        // Create Teacher (password will be hashed by pre-save hook)
+        const teacher = new Teacher({
+            name: 'Dr. John Smith',
+            username: 'teacher',
+            email: 'teacher@draitd.edu',
+            password: 'teacher123',
+            phone: '9876543211',
+            department: 'Computer Science',
+            designation: 'Professor',
+            subjects: [savedSubjects[0]._id, savedSubjects[1]._id],
+            isActive: true
+        });
+        await teacher.save();
+
+        // Create Student (password will be hashed by pre-save hook)
+        const student = new Student({
+            name: 'Alice Johnson',
+            rollNo: 'STU2025',
+            email: 'student@draitd.edu',
+            password: 'student123',
+            phone: '9876543212',
+            courseId: course._id,
+            subjects: savedSubjects.map(s => s._id),
+            isActive: true,
+            passwordChanged: false
+        });
+        await student.save();
+
+        console.log('✅ Database seeded successfully!');
+        console.log('\n📋 Default Login Credentials:');
+        console.log('👤 Admin: admin / admin123');
+        console.log('👨‍🏫 Teacher: teacher / teacher123');
+        console.log('👨‍🎓 Student: STU2025 / student123');
+        console.log('\n🌐 Access the application at: http://localhost:5173');
+
+    } catch (error) {
+        console.error('Seeding failed:', error);
+    } finally {
+        mongoose.connection.close();
+    }
+};
+
+const main = async () => {
+    await connectDB();
+    await seedData();
+};
+
+main();

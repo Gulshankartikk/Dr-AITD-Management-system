@@ -85,6 +85,13 @@ class AdminService {
 
   // Reports
   async generateReport(reportType, filters = {}) {
+    // Validate reportType against allowed values to prevent SSRF
+    const allowedReportTypes = ['fees', 'academic', 'enrollment', 'attendance'];
+    
+    if (!allowedReportTypes.includes(reportType)) {
+      throw new Error('Invalid report type');
+    }
+
     let url = `/api/admin/reports/${reportType}`;
 
     // Handle special case for attendance report

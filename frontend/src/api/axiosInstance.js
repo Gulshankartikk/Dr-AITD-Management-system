@@ -29,36 +29,41 @@ api.interceptors.request.use(
     }
 );
 
-// Response Interceptor: Handle Global Errors (like 401)
+// Response Interceptor: Handle Global Errors
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        // Assuming react-toastify is available since it was used in other files.
-
-        // ... existing code ...
-
-        if (error.response && error.response.status === 401) {
-            // Token expired or invalid
-            console.warn('Unauthorized access - token expired or invalid. Logging out...');
-
-            // Clear storage
-            localStorage.removeItem('token');
-            Cookies.remove('token');
-
-            // Show Session Expired Message
-            // We use a slight timeout to ensure the toast has a chance to be created before redirect (though full page reload wipes it unless persisted)
-            // But since we are doing window.location.href, the toast might not be seen if it's instant.
-            // A better approach for SPA is useNavigate, but we can't use hooks here.
-            // We'll rely on the Login page to maybe show a message if we redirect with a query param?
-            // Or just alert() for now to be "show as session expire". 
-            // Better: use toast but the redirect might be too fast. 
-            // Let's try redirecting with a query param ?sessionExpired=true
-
-            if (!window.location.pathname.includes('/login')) {
-                // alert("Session Expired. Please login again."); // Crude but effective "show"
-                window.location.href = '/login?sessionExpired=true';
+        if (error.response) {
+            const { status, data } = error.response;
+            const isLoginRequest = error.config?.url?.includes('/auth/login');
+            
+            if (status === 401 && !isLoginRequest) {
+                // Token expired or invalid (but not login failure)
+                console.warn('Unauthorized access - clearing tokens');
+                
+                // Clear all tokens
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                Cookies.remove('token');
+                
+                // Show error message
+                toast.error('Session expired. Please login again.');
+                
+                // Redirect to login if not already there
+                if (!window.location.pathname.includes('/login')) {
+                    setTimeout(() => {
+                        window.location.href = '/login?sessionExpired=true';
+                    }, 1000);
+                }
+            } else if (status === 403) {
+                toast.error('Access denied. Insufficient permissions.');
+            } else if (status >= 500) {
+                toast.error('Server error. Please try again later.');
             }
+        } else if (error.request) {
+            toast.error('Network error. Please check your connection.');
         }
+        
         return Promise.reject(error);
     }
 );

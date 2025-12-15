@@ -1,45 +1,46 @@
-const multer = require("multer");
-const path = require("path");
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-// Storage -----------------------------
+// Ensure uploads directory exists
+const uploadsDir = 'uploads';
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configure storage
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + unique + path.extname(file.originalname));
-  }
+    destination: function (req, file, cb) {
+        cb(null, uploadsDir);
+    },
+    filename: function (req, file, cb) {
+        // Generate unique filename with timestamp
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
 });
 
-// Allowed Extensions -------------------
-const allowedExtensions = [
-  ".jpeg", ".jpg", ".png", ".gif",
-  ".pdf", ".doc", ".docx",
-  ".ppt", ".pptx",
-  ".txt",
-  ".mp4", ".mkv", ".webm",
-  ".mp3", ".wav",
-  ".zip", ".rar"
-];
-
-// File Filter --------------------------
+// File filter
 const fileFilter = (req, file, cb) => {
-  const ext = path.extname(file.originalname).toLowerCase();
+    // Allow common file types
+    const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx|txt|ppt|pptx|xls|xlsx/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
 
-  if (!allowedExtensions.includes(ext)) {
-    req.fileValidationError = "Invalid file type";
-    return cb(null, false);
-  }
-
-  cb(null, true);
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb(new Error('Invalid file type. Only images, PDFs, and documents are allowed.'));
+    }
 };
 
-// Multer Instance ----------------------
+// Configure multer
 const upload = multer({
-  storage,
-  limits: { fileSize: 500 * 1024 * 1024 }, // 500 MB
-  fileFilter
+    storage: storage,
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB limit
+    },
+    fileFilter: fileFilter
 });
 
 module.exports = upload;

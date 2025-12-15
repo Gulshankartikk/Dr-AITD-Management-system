@@ -2,13 +2,20 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Student, Teacher, Admin } = require('../models');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+    console.error('FATAL: JWT_SECRET environment variable is not set');
+    process.exit(1);
+}
 
 const login = async (req, res, next) => {
     try {
+        console.log('Login attempt:', { username: req.body.username, role: req.body.role });
         const { username, password, role } = req.body;
 
         if (!username || !password || !role) {
+            console.log('Missing credentials:', { username: !!username, password: !!password, role: !!role });
             const error = new Error('Username, password, and role are required');
             error.statusCode = 400;
             throw error;
@@ -41,43 +48,38 @@ const login = async (req, res, next) => {
 
         // 2. Validate User Existence
         if (!user) {
+            console.log('User not found for:', { username, role });
             const error = new Error('Invalid credentials');
             error.statusCode = 401;
             throw error;
         }
+
+        console.log('User found:', { id: user._id, name: user.name, email: user.email });
 
         // 3. Verify Password
-        // Check if password is hashed (for DB users) or plain text (for legacy/hardcoded)
-        // Ideally, we migrate all to bcrypt. For now, we assume bcrypt if it looks like a hash, else plain compare.
-        // However, the prompt asks for "Professional Upgrade", so we should enforce bcrypt.
-        // But existing hardcoded admin/teacher might not be in DB yet.
-        // We will assume the seed script or manual entry created them with hashes.
-        // If not, we might break login for hardcoded users unless we seed them first.
-
-        // For safety in this transition:
-        // If user has a password field, check it.
-
         isMatch = await bcrypt.compare(password, user.password);
+        console.log('Password match:', isMatch);
 
         if (!isMatch) {
+            console.log('Password verification failed');
             const error = new Error('Invalid credentials');
             error.statusCode = 401;
             throw error;
         }
 
-        // 4. Generate Token
+        // 4. Generate Token (10 years expiry - effectively unlimited)
         const token = jwt.sign(
             { id: user._id, user_id: user._id, role: role, name: user.name },
             JWT_SECRET,
-            { expiresIn: '30d' }
+            { expiresIn: '3650d' } // 10 years
         );
 
-        // 5. Set Cookie
+        // 5. Set Cookie (10 years expiry - effectively unlimited)
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+            maxAge: 3650 * 24 * 60 * 60 * 1000 // 10 years
         });
 
         // 6. Prepare Response

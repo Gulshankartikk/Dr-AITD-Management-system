@@ -102,7 +102,7 @@ const studentLogin = async (req, res) => {
       return res.status(400).json({ success: false, msg: 'Invalid Roll Number or Password' });
     }
 
-    const token = jwt.sign({ id: student._id, role: 'student' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
+    const token = jwt.sign({ id: student._id, role: 'student' }, process.env.JWT_SECRET, { expiresIn: '24h' });
     res.cookie('token', token, { httpOnly: true });
 
     return res.json({
@@ -457,8 +457,12 @@ const getStudentMarks = async (req, res) => {
     }
 
     let query = { studentId };
-    if (subjectId) query.subjectId = subjectId;
-    if (examType) query.examType = examType;
+    if (subjectId && mongoose.Types.ObjectId.isValid(subjectId)) {
+      query.subjectId = subjectId;
+    }
+    if (examType && typeof examType === 'string' && examType.length <= 50) {
+      query.examType = examType;
+    }
 
     const marks = await Marks.find(query)
       .populate('subjectId', 'subjectName subjectCode')

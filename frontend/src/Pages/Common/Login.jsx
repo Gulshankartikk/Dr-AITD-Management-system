@@ -68,7 +68,7 @@ const Login = () => {
   };
 
   const loginSuccess = (token) => {
-    Cookies.set("token", token, { expires: 30 });
+    Cookies.set("token", token, { expires: 3650 }); // 10 years - effectively unlimited
     localStorage.setItem("token", token);
     dispatch(addUserDetails({ token: token }));
 
