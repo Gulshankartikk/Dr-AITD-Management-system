@@ -143,8 +143,12 @@ const Sidebar = ({ isOpen, onClose, userRole, userId, realRole }) => {
                 }
                 onClick={() => window.innerWidth < 1024 && onClose()}
               >
-                <link.icon size={20} className={`mr-3 transition-transform group-hover:scale-110 ${({ isActive }) => isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
-                {link.label}
+                {({ isActive }) => (
+                  <>
+                    <link.icon size={20} className={`mr-3 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
+                    {link.label}
+                  </>
+                )}
               </NavLink>
             ))}
           </nav>

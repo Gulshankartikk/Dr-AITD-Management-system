@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
@@ -6,18 +6,18 @@ const useAutoLogout = (timeout = 1800000) => { // 30 minutes = 1800000ms
   const navigate = useNavigate();
   const timeoutRef = useRef(null);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     Cookies.remove('token');
     localStorage.clear();
     sessionStorage.clear();
     window.history.pushState(null, '', window.location.href);
     navigate('/login', { replace: true });
-  };
+  }, [navigate]);
 
-  const resetTimer = () => {
+  const resetTimer = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(logout, timeout);
-  };
+  }, [logout, timeout]);
 
   useEffect(() => {
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
@@ -35,7 +35,7 @@ const useAutoLogout = (timeout = 1800000) => { // 30 minutes = 1800000ms
         window.removeEventListener(event, resetTimer);
       });
     };
-  }, [navigate, timeout]);
+  }, [resetTimer]);
 
   return logout;
 };
