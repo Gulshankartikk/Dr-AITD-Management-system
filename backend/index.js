@@ -33,6 +33,11 @@ app.use(
         'http://127.0.0.1:5174'
       ];
       
+      // Add production frontend URL if specified
+      if (process.env.FRONTEND_URL) {
+        allowedOrigins.push(process.env.FRONTEND_URL);
+      }
+      
       // In development, allow no origin (for tools like Postman)
       if (process.env.NODE_ENV === 'development' && !origin) {
         return callback(null, true);
@@ -45,12 +50,14 @@ app.use(
                  (origin?.endsWith('.vercel.app') || origin?.endsWith('.netlify.app') || origin?.endsWith('.render.com'))) {
         callback(null, true);
       } else {
+        console.warn(`CORS blocked origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,
   })
 );
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(cookieParser());
