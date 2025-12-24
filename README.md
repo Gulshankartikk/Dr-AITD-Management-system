@@ -551,4 +551,4 @@ copies or substantial portions of the Software.
 
 ---
 
-**Made with 💙 by the Dr AITD Development Team**
+**Made with 💙 by the Gulshan Kumar**
