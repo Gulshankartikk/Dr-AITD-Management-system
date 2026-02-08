@@ -3,7 +3,7 @@ const router = express.Router();
 
 // ================= MIDDLEWARES =================
 const { verifyToken, isAdmin, isTeacher } = require('../middleware/Auth');
-const upload = require('../middleware/upload');
+const { upload, handleCloudinaryUpload } = require('../middleware/upload');
 const errorHandler = require('../middleware/errorHandler');
 const validateId = require('../middleware/validateId');
 
@@ -58,7 +58,7 @@ router.post('/teacher/admin/attendance', verifyToken, (req, res, next) => {
   // Call the controller
   teacherController.markAttendance(req, res, next);
 });
-router.post('/teacher/admin/assignments', verifyToken, upload.single('file'), (req, res, next) => {
+router.post('/teacher/admin/assignments', verifyToken, upload.single('file'), handleCloudinaryUpload, (req, res, next) => {
   req.params.teacherId = 'admin';
   teacherController.addAssignment(req, res, next);
 });
@@ -66,7 +66,7 @@ router.post('/teacher/admin/notices', verifyToken, (req, res, next) => {
   req.params.teacherId = 'admin';
   teacherController.addNotice(req, res, next);
 });
-router.post('/teacher/admin/materials', verifyToken, upload.single('file'), (req, res, next) => {
+router.post('/teacher/admin/materials', verifyToken, upload.single('file'), handleCloudinaryUpload, (req, res, next) => {
   req.params.teacherId = 'admin';
   teacherController.addStudyMaterial(req, res, next);
 });
@@ -109,7 +109,7 @@ router.get('/teacher/:teacherId/attendance-report', verifyToken, teacherControll
 
 // Assignments
 router.get('/teacher/:teacherId/assignments', verifyToken, validateId('teacherId'), teacherController.getTeacherAssignments);
-router.post('/teacher/:teacherId/assignments', verifyToken, validateId('teacherId'), upload.single('file'), teacherController.addAssignment);
+router.post('/teacher/:teacherId/assignments', verifyToken, validateId('teacherId'), upload.single('file'), handleCloudinaryUpload, teacherController.addAssignment);
 
 // Marks
 router.post('/teacher/:teacherId/marks', verifyToken, teacherController.addMarks);
@@ -120,8 +120,8 @@ router.get('/teacher/:teacherId/subjects', verifyToken, teacherController.getTea
 router.get('/teacher/:teacherId/courses', verifyToken, teacherController.getTeacherCourses);
 
 // Notes + Materials + Notices
-router.post('/teacher/:teacherId/notes', verifyToken, upload.single('file'), teacherController.addNotes);
-router.post('/teacher/:teacherId/materials', verifyToken, upload.single('file'), teacherController.addStudyMaterial);
+router.post('/teacher/:teacherId/notes', verifyToken, upload.single('file'), handleCloudinaryUpload, teacherController.addNotes);
+router.post('/teacher/:teacherId/materials', verifyToken, upload.single('file'), handleCloudinaryUpload, teacherController.addStudyMaterial);
 router.post('/teacher/:teacherId/notices', verifyToken, teacherController.addNotice);
 
 router.get('/teacher/:teacherId/notes', verifyToken, teacherController.getTeacherNotes);
@@ -134,7 +134,7 @@ router.post('/teacher/:teacherId/leave', verifyToken, teacherController.applyLea
 router.get('/teacher/:teacherId/leaves', verifyToken, teacherController.getLeaves);
 
 // Learning Resources (NEW)
-router.post('/teacher/:teacherId/resources', verifyToken, upload.single('file'), teacherController.addResource);
+router.post('/teacher/:teacherId/resources', verifyToken, upload.single('file'), handleCloudinaryUpload, teacherController.addResource);
 router.get('/teacher/:teacherId/resources', verifyToken, teacherController.getResources);
 router.delete('/teacher/:teacherId/resources/:resourceId', verifyToken, teacherController.deleteResource);
 

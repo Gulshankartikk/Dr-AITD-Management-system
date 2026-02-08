@@ -30,24 +30,27 @@ app.use(
         'http://localhost:5175',
         'http://localhost:5176',
         'http://127.0.0.1:5173',
-        'http://127.0.0.1:5174'
+        'http://127.0.0.1:5174',
+        'http://127.0.0.1:5175'
       ];
-      
+
       // Add production frontend URL if specified
       if (process.env.FRONTEND_URL) {
         allowedOrigins.push(process.env.FRONTEND_URL);
       }
-      
-      // In development, allow no origin (for tools like Postman)
-      if (process.env.NODE_ENV === 'development' && !origin) {
+
+      // In development or if specifically allowed, permit requests with no origin 
+      // (like mobile apps or curl requests)
+      if (!origin) {
         return callback(null, true);
       }
-      
+
       // Check allowed origins
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else if (process.env.NODE_ENV === 'production' && 
-                 (origin?.endsWith('.vercel.app') || origin?.endsWith('.netlify.app') || origin?.endsWith('.render.com'))) {
+      const isAllowed = allowedOrigins.includes(origin) ||
+        (process.env.NODE_ENV === 'production' &&
+          (origin.endsWith('.vercel.app') || origin.endsWith('.netlify.app') || origin.endsWith('.render.com')));
+
+      if (isAllowed) {
         callback(null, true);
       } else {
         console.warn(`CORS blocked origin: ${origin}`);
@@ -55,6 +58,8 @@ app.use(
       }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
   })
 );
 
@@ -64,7 +69,15 @@ app.use(cookieParser());
 app.use('/uploads', express.static('uploads'));
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the server");
+  const mongoose = require('mongoose');
+  const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+  res.json({
+    success: true,
+    msg: "Welcome to Dr AITD Management system API",
+    status: "Healthy",
+    database: dbStatus,
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 // routes

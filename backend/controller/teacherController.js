@@ -56,6 +56,10 @@ const normalizeDateOnly = (d) => {
 
 const buildFileUrl = (req, file) => {
   if (!file) return null;
+  // If it's a Cloudinary file or already a full URL, return the path/url directly
+  if (file.isCloudinary || (file.path && file.path.startsWith('http'))) {
+    return file.path;
+  }
   return `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
 };
 

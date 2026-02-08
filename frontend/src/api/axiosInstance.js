@@ -11,6 +11,12 @@ const api = axios.create({
     },
 });
 
+// Check if BASE_URL is still a placeholder
+if (BASE_URL.includes('your-render-app-url')) {
+    console.error('FRONTEND ERROR: Your VITE_API_URL is still set to a placeholder! Please update it in your Netlify/Local environment variables.');
+    toast.error('System Configuration Error: API URL is not set correctly.', { autoClose: false });
+}
+
 // Request Interceptor: Attach Token
 api.interceptors.request.use(
     (config) => {
@@ -36,19 +42,19 @@ api.interceptors.response.use(
         if (error.response) {
             const { status, data } = error.response;
             const isLoginRequest = error.config?.url?.includes('/auth/login');
-            
+
             if (status === 401 && !isLoginRequest) {
                 // Token expired or invalid (but not login failure)
                 console.warn('Unauthorized access - clearing tokens');
-                
+
                 // Clear all tokens
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
                 Cookies.remove('token');
-                
+
                 // Show error message
                 toast.error('Session expired. Please login again.');
-                
+
                 // Redirect to login if not already there
                 if (!window.location.pathname.includes('/login')) {
                     setTimeout(() => {
@@ -63,7 +69,7 @@ api.interceptors.response.use(
         } else if (error.request) {
             toast.error('Network error. Please check your connection.');
         }
-        
+
         return Promise.reject(error);
     }
 );
