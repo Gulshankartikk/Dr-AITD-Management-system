@@ -61,6 +61,13 @@ npm start
 Access the application: Visit http://localhost:5173 for the frontend and http://localhost:4000 for the backend.
 
 🧑‍💻 Usage
+
+### Default Login Credentials
+After seeding the database in the backend, you can use the following test accounts:
+*   **Admin**: `admin` / `admin123`
+*   **Teacher**: `teacher` / `teacher123`
+*   **Student**: `STU2025` / `student123` (Roll: STU2025)
+
 Admin: Manage students, assign roles, and oversee academic records.
 Teacher: Manage attendance for students.
 Student: View attendance records and personal information.

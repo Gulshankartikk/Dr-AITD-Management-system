@@ -110,6 +110,23 @@ const addSubject = async (req, res) => {
     });
     await subject.save();
 
+    // SYNC WITH TEACHER: Push the subject representation into the Teacher's arrays
+    if (teacherId) {
+      await Teacher.findByIdAndUpdate(teacherId, {
+        $addToSet: { 
+          assignedSubjects: subject._id, 
+          ...(courseId && { assignedCourse: courseId }) 
+        }
+      });
+      
+      const assignment = new TeacherSubjectAssignment({
+        teacherId,
+        subjectId: subject._id,
+        courseId: courseId || null
+      });
+      await assignment.save();
+    }
+
     res.status(201).json({ success: true, msg: 'Subject added successfully', subject });
   } catch (error) {
     console.error('Add subject error:', error);

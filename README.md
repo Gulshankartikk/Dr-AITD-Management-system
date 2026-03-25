@@ -297,7 +297,6 @@ Dr AITD Management system/
 │
 ├── .gitignore
 ├── package.json                    # Root Package (Scripts)
-├── ERROR_SCAN_REPORT.md           # System Health Report
 └── README.md                       # This File
 ```
 
@@ -498,6 +497,11 @@ We welcome contributions! Please follow these steps:
 
 ## 📝 Changelog
 
+### Version 2.1.0 (2026-03-25)
+*   ✅ Conducted a full repository audit and removed unused dead components/hooks to optimize the application footprint.
+*   ✅ Validated and preserved all core MERN domain models and modules.
+*   ✅ Prepared structural blueprint for enterprise-grade MERN architectures.
+
 ### Version 2.0.0 (2025-12-13)
 *   ✅ Fixed course API endpoint mismatch
 *   ✅ Enhanced CORS configuration
@@ -519,7 +523,6 @@ We welcome contributions! Please follow these steps:
 
 For issues and questions:
 *   **Email**: support@draitd.edu
-*   **Documentation**: See `ERROR_SCAN_REPORT.md` for system health
 *   **Issues**: Create an issue on GitHub
 
 ---
