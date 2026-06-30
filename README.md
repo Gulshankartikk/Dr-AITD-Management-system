@@ -358,55 +358,91 @@ net start MongoDB
 
 ---
 
-## 🚀 Deployment
+## 🚀 Deployment & Hosting Guide
 
-### Render Deployment (Recommended)
+This project is set up for easy deployment: the **backend** is optimized for [Render](https://render.com), and the **frontend** can be deployed on either [Netlify](https://netlify.com) or Render.
 
-#### Option 1: Blueprint Deployment
-1. Push repository to GitHub
-2. Log in to [Render](https://render.com)
-3. Click **New +** → **Blueprint**
-4. Select your repository
-5. Configure environment variables:
-   - `MONGO_URI`: MongoDB Atlas connection string
-   - `JWT_SECRET`: Secure random string
-   - `VITE_API_URL`: Your backend URL
+---
 
-#### Option 2: Manual Setup
+### 🌐 Frontend Deployment (Netlify) - *Recommended*
 
-**Backend (Web Service)**
-*   **Root Directory**: `backend`
-*   **Build Command**: `npm install`
-*   **Start Command**: `node index.js`
-*   **Environment Variables**: 
-    - `MONGO_URI`
-    - `JWT_SECRET`
-    - `PORT` (auto-assigned by Render)
+We have configured `netlify.toml` in the root of the project to automate the frontend build and routing.
 
-**Frontend (Static Site)**
-*   **Root Directory**: `frontend`
-*   **Build Command**: `npm install && npm run build`
-*   **Publish Directory**: `dist`
-*   **Environment Variables**: 
-    - `VITE_API_URL` (Backend URL)
+> [!NOTE]
+> **Netlify Subdirectory Build Fix:**
+> The `netlify.toml` is configured with `base = "frontend"`. In Netlify, when `base` is specified, the build command runs inside that directory, and the `publish` directory is resolved relative to the base directory. The publish directory has been corrected to `dist` (resolving to `frontend/dist`), fixing the previous deployment failure.
 
-### Vercel Deployment (Frontend Only)
-```bash
-cd frontend
-npm install -g vercel
-vercel
-```
+#### Step-by-Step Netlify Setup:
+1. Log in to your [Netlify Dashboard](https://app.netlify.com).
+2. Click **Add new site** → **Import an existing project** and connect your GitHub repository.
+3. Netlify will automatically detect the `netlify.toml` and configure the settings:
+   - **Base directory**: `frontend`
+   - **Build command**: `npm run build`
+   - **Publish directory**: `dist`
+4. **Configure Environment Variables**:
+   - Go to **Site settings** → **Environment variables**
+   - Click **Add a variable** and set:
+     - `VITE_API_URL`: `https://your-backend-url.onrender.com` (Your deployed Render backend URL)
+5. Click **Deploy** (or trigger a new deploy if already connected).
 
-### Heroku Deployment
-```bash
-# Backend
-heroku create your-app-backend
-git subtree push --prefix backend heroku main
+---
 
-# Frontend
-heroku create your-app-frontend
-git subtree push --prefix frontend heroku main
-```
+### 🖥️ Backend Deployment (Render)
+
+#### Step-by-Step Render Setup:
+1. Log in to [Render](https://render.com) and click **New +** → **Web Service**.
+2. Connect your GitHub repository.
+3. Configure the Web Service settings:
+   - **Name**: `dr-aitd-backend`
+   - **Region**: Choose the region closest to your users.
+   - **Branch**: `main`
+   - **Root Directory**: `backend`
+   - **Runtime**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `node index.js`
+   - **Instance Type**: `Free`
+4. **Configure Environment Variables**:
+   - Click on the **Environment** tab and add:
+     - `NODE_ENV`: `production`
+     - `MONGO_URI`: Your MongoDB Atlas connection string (e.g., `mongodb+srv://<user>:<password>@cluster0.mongodb.net/college-erp`)
+     - `JWT_SECRET`: A secure random string (minimum 32 characters)
+     - `FRONTEND_URL`: `https://your-app-name.netlify.app` (Your Netlify frontend URL)
+5. Click **Create Web Service**. Once the build finishes, copy the generated service URL and update the `VITE_API_URL` variable in your Netlify settings.
+
+---
+
+### 📦 Option 2: Render Blueprint (Full Stack)
+
+You can also deploy the entire stack using Render's Blueprint.
+1. Ensure your repository has a `render.yaml` (or configure a blueprint manually).
+2. Go to Render → **New +** → **Blueprint**.
+3. Select your repository and fill in the required environment variables:
+   - `MONGO_URI`
+   - `JWT_SECRET`
+   - `VITE_API_URL` (Points to the backend service URL)
+
+---
+
+### 🔧 Troubleshooting Deployment Issues
+
+#### 1. "Network Error" on Login / Redirection to Login
+*   **Cause**: The frontend is unable to reach the backend.
+*   **Solution**: Double-check that `VITE_API_URL` in Netlify matches your Render backend URL exactly (including `https://` and without a trailing slash).
+
+#### 2. CORS Errors (Origin Blocked)
+*   **Cause**: The backend is blocking requests from the frontend origin.
+*   **Solution**: Ensure the `FRONTEND_URL` environment variable is set in your Render backend configuration and matches your Netlify URL (e.g., `https://your-site.netlify.app`).
+
+#### 3. MongoDB Connection Failures
+*   **Cause**: The database connection string is invalid or Render's IP is blocked.
+*   **Solution**:
+    1. Verify your `MONGO_URI` connection string.
+    2. In MongoDB Atlas, go to **Network Access** and ensure you have whitelisted `0.0.0.0/0` (allow access from anywhere) so Render's dynamic IPs can connect.
+
+#### 4. JWT Authentication Fails (401 Unauthorized)
+*   **Cause**: `JWT_SECRET` is missing, short, or mismatched.
+*   **Solution**: Ensure `JWT_SECRET` is defined in the backend environment variables on Render. Use a strong, random 32+ character string.
+
 
 ---
 

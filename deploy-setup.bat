@@ -16,7 +16,7 @@ if not exist ".git" (
 
 echo Adding deployment configuration files...
 git add netlify.toml
-git add DEPLOYMENT_GUIDE.md
+git add README.md
 git add backend/index.js
 git add backend/.env.example
 
@@ -24,7 +24,7 @@ echo Files staged for commit
 echo.
 
 echo Committing changes...
-git commit -m "feat: Add deployment configuration for Netlify and Render - Added netlify.toml for proper frontend deployment settings - Created comprehensive DEPLOYMENT_GUIDE.md with step-by-step instructions - Updated backend CORS to support FRONTEND_URL environment variable - Updated .env.example with FRONTEND_URL documentation - Fixed login issue by documenting environment variable setup"
+git commit -m "feat: Add deployment configuration for Netlify and Render - Added netlify.toml for proper frontend deployment settings - Updated README.md with comprehensive deployment instructions - Updated backend CORS to support FRONTEND_URL environment variable - Updated .env.example with FRONTEND_URL documentation - Fixed login issue by documenting environment variable setup"
 
 echo Changes committed
 echo.
