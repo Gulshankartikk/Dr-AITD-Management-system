@@ -14,7 +14,7 @@ import collegeImg from "../../assets/login_bg.png";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student");
+  const [role, setRole] = useState("admin"); // Default to admin for easier initial access
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -43,9 +43,9 @@ const Login = () => {
     setIsLoading(true);
     try {
       // UNIFIED AUTH ENDPOINT
-      const response = await authService.login({ username, password }, role);
+      const response = await authService.login({ username: username.trim(), password }, role);
 
-      const { token, user } = response; // Response now returns 'user' object
+      const { token, user } = response;
 
       // Check for forced password change (only for students)
       if (role === 'student' && user && user.passwordChanged === false) {
@@ -61,22 +61,24 @@ const Login = () => {
 
     } catch (err) {
       console.error("Login error:", err);
-      toast.error(err.response?.data?.message || "Invalid Credentials");
+      const errorMsg = err.response?.data?.message || err.response?.data?.msg || "Invalid Credentials. Check your username, password, and selected role tab.";
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }
   };
 
   const loginSuccess = (token) => {
-    Cookies.set("token", token, { expires: 3650 }); // 10 years - effectively unlimited
+    Cookies.set("token", token, { expires: 3650 }); // 10 years
     localStorage.setItem("token", token);
     dispatch(addUserDetails({ token: token }));
 
     let decodedToken = jwtDecode(token);
     localStorage.setItem("userId", decodedToken.id);
     localStorage.setItem("userRole", decodedToken.role);
+    localStorage.setItem("role", decodedToken.role);
 
-    toast.success(`Welcome back, ${decodedToken.role}!`);
+    toast.success(`Welcome back, ${decodedToken.name || decodedToken.role}!`);
 
     if (decodedToken.role === "admin") {
       window.location.href = "/admin/dashboard";
@@ -99,16 +101,14 @@ const Login = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      await authService.updatePassword(password, newPassword, tempStudentId, 'student', tempToken);
-
-      toast.success("Password updated successfully!");
-      setShowChangePassword(false);
-      loginSuccess(tempToken); // Proceed to login
+      await authService.updatePassword("student123", newPassword, tempStudentId, 'student', tempToken);
+      toast.success("Password changed successfully!");
+      loginSuccess(tempToken);
     } catch (err) {
       console.error("Password change error:", err);
-      toast.error(err.response?.data?.msg || "Failed to update password");
+      toast.error(err.response?.data?.message || err.response?.data?.msg || "Failed to update password");
     } finally {
       setIsLoading(false);
     }
@@ -172,7 +172,7 @@ const Login = () => {
           </Link>
         </div>
 
-        <div className="mb-8 mt-16 lg:mt-0">
+        <div className="mb-6 mt-16 lg:mt-0">
           <div className="flex items-center space-x-3 mb-6">
             <div className="bg-gradient-to-tr from-primary to-blue-600 p-3 rounded-xl shadow-lg shadow-primary/20">
               <GraduationCap className="h-8 w-8 text-white" />
@@ -183,12 +183,12 @@ const Login = () => {
             </div>
           </div>
           <h1 className="text-4xl font-bold text-secondary mb-3 tracking-tight font-heading">Welcome Back</h1>
-          <p className="text-text-secondary text-lg">Please sign in to continue to your dashboard.</p>
+          <p className="text-text-secondary text-base">Select your role and sign in to continue to your dashboard.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Role Selector */}
-          <div className="p-1.5 bg-gray-50 rounded-2xl mb-8 border border-gray-100">
+          <div className="p-1.5 bg-gray-50 rounded-2xl border border-gray-100">
             <div className="grid grid-cols-3 gap-2">
               {['student', 'teacher', 'admin'].map((r) => (
                 <button
@@ -207,11 +207,45 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="space-y-5">
+          {/* Quick Demo Autofill Credentials */}
+          <div className="p-3 bg-blue-50/70 border border-blue-100 rounded-xl text-xs text-blue-900 space-y-1.5">
+            <div className="flex items-center text-blue-800 font-semibold mb-1">
+              <Info size={14} className="mr-1.5 shrink-0" />
+              <span>Default Credentials (click to autofill):</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => { setRole('admin'); setUsername('admin'); setPassword('admin123'); }}
+                className={`py-1.5 px-2 rounded-lg text-left transition-all border ${role === 'admin' ? 'bg-white border-primary shadow-sm' : 'bg-white/80 border-blue-200 hover:bg-white'}`}
+              >
+                <div className="font-bold text-primary">Admin</div>
+                <div className="text-[10px] text-gray-500 truncate">admin / admin123</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => { setRole('teacher'); setUsername('teacher'); setPassword('teacher123'); }}
+                className={`py-1.5 px-2 rounded-lg text-left transition-all border ${role === 'teacher' ? 'bg-white border-primary shadow-sm' : 'bg-white/80 border-blue-200 hover:bg-white'}`}
+              >
+                <div className="font-bold text-primary">Teacher</div>
+                <div className="text-[10px] text-gray-500 truncate">teacher / teacher123</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => { setRole('student'); setUsername('STU2025'); setPassword('student123'); }}
+                className={`py-1.5 px-2 rounded-lg text-left transition-all border ${role === 'student' ? 'bg-white border-primary shadow-sm' : 'bg-white/80 border-blue-200 hover:bg-white'}`}
+              >
+                <div className="font-bold text-primary">Student</div>
+                <div className="text-[10px] text-gray-500 truncate">STU2025 / student123</div>
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-4">
             <Input
-              label={role === "student" ? "Email or Roll Number" : "Username / Email"}
+              label={role === "student" ? "Roll Number or Email" : "Username or Email"}
               type="text"
-              placeholder={role === "student" ? "e.g. 2023001" : "Enter your username"}
+              placeholder={role === "student" ? "e.g. STU2025 or student@draitd.edu" : "e.g. admin"}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -236,7 +270,7 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="flex justify-between items-center pt-2">
+          <div className="flex justify-between items-center pt-1">
             <div className="flex items-center">
               <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-text-secondary">Remember me</label>
@@ -254,20 +288,18 @@ const Login = () => {
             className="w-full py-3.5 text-lg font-bold"
             isLoading={isLoading}
           >
-            Sign in to Dashboard
+            Sign in as {role.charAt(0).toUpperCase() + role.slice(1)}
           </Button>
 
           {role === 'student' && (
-            <p className="text-center text-sm text-text-secondary mt-6">
-              Don't have an account?{' '}
+            <p className="text-center text-sm text-text-secondary mt-4">
+              Don&apos;t have an account?{' '}
               <Link to="/register" className="font-bold text-primary hover:text-primary-hover hover:underline">
                 Create an account
               </Link>
             </p>
           )}
         </form>
-
-
 
         <div className="mt-6 text-center">
           <p className="text-xs text-text-muted">© 2024 College ERP System. All rights reserved.</p>

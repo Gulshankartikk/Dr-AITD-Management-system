@@ -23,13 +23,16 @@ const { Course, Subject, Teacher, Student } = require('../models');
 router.post('/auth/login', authController.login);
 router.post('/auth/logout', authController.logout);
 
+// Registration Routes
+router.post('/admin/register', authController.adminRegister);
+router.post('/teacher/register', authController.teacherRegister);
+router.post('/student/register', studentController.studentRegister);
+
 // Legacy Login Routes (Redirect to unified logic or keep for backward compatibility if needed)
-// For now, we point them to the new controller to ensure DB auth works even if frontend isn't updated instantly
 router.post('/admin/login', (req, res, next) => { req.body.role = 'admin'; authController.login(req, res, next); });
 router.post('/teacher/login', (req, res, next) => { req.body.role = 'teacher'; authController.login(req, res, next); });
 router.post('/student/login', (req, res, next) => { req.body.role = 'student'; authController.login(req, res, next); });
 
-// Password Reset Routes
 // Password Reset Routes
 router.post('/student/forgetPassword', (req, res, next) => { req.body.role = 'student'; authController.forgotPassword(req, res, next); });
 router.post('/teacher/forgetPassword', (req, res, next) => { req.body.role = 'teacher'; authController.forgotPassword(req, res, next); });
@@ -48,14 +51,9 @@ router.post('/admin/resetPassword', (req, res, next) => { req.body.role = 'admin
 //                      TEACHER ROUTES
 // ======================================================
 
-// ======================================================
-//              ADMIN USING TEACHER FUNCTIONS
-//              (Must be before parameterized routes)
-// ======================================================
+// Admin using teacher functions
 router.post('/teacher/admin/attendance', verifyToken, (req, res, next) => {
-  // Set teacherId in params for the controller to use
   req.params.teacherId = req.body.teacherId || 'admin';
-  // Call the controller
   teacherController.markAttendance(req, res, next);
 });
 router.post('/teacher/admin/assignments', verifyToken, upload.single('file'), handleCloudinaryUpload, (req, res, next) => {
@@ -78,15 +76,28 @@ router.get('/teacher/admin/dashboard', verifyToken, (req, res, next) => {
 // Dashboard + subjects + courses
 router.get('/teacher/:teacherId/dashboard', verifyToken, validateId('teacherId'), teacherController.getTeacherDashboard);
 router.post('/teacher/:teacherId/change-password', verifyToken, teacherController.changePassword);
-router.put('/teacher/:teacherId/profile', verifyToken, isAdmin, async (req, res) => {
+router.put('/teacher/:teacherId/profile', verifyToken, validateId('teacherId'), async (req, res) => {
   try {
     const { teacherId } = req.params;
-    const { name, email, phone, department, designation } = req.body;
-    const { Teacher } = require('../models');
+    if (req.user.role !== 'admin' && req.user.id !== teacherId) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
+    const { name, email, phone, department, designation, qualifications, specialization, experience, researchInterests } = req.body;
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
+    if (department) updateData.department = department;
+    if (designation) updateData.designation = designation;
+    if (qualifications) updateData.qualifications = qualifications;
+    if (specialization) updateData.specialization = specialization;
+    if (experience !== undefined) updateData.experience = experience;
+    if (researchInterests) updateData.researchInterests = researchInterests;
 
     const updatedTeacher = await Teacher.findByIdAndUpdate(
       teacherId,
-      { name, email, phone, department, designation },
+      updateData,
       { new: true }
     );
 
@@ -133,7 +144,7 @@ router.get('/teacher/:teacherId/timetable', verifyToken, teacherController.getTi
 router.post('/teacher/:teacherId/leave', verifyToken, teacherController.applyLeave);
 router.get('/teacher/:teacherId/leaves', verifyToken, teacherController.getLeaves);
 
-// Learning Resources (NEW)
+// Learning Resources
 router.post('/teacher/:teacherId/resources', verifyToken, upload.single('file'), handleCloudinaryUpload, teacherController.addResource);
 router.get('/teacher/:teacherId/resources', verifyToken, teacherController.getResources);
 router.delete('/teacher/:teacherId/resources/:resourceId', verifyToken, teacherController.deleteResource);
@@ -142,20 +153,29 @@ router.delete('/teacher/:teacherId/resources/:resourceId', verifyToken, teacherC
 // ======================================================
 //                      STUDENT ROUTES
 // ======================================================
-router.post('/student/register', studentController.studentRegister);
 router.post('/student/:studentId/change-password', verifyToken, validateId('studentId'), studentController.changePassword);
 
 router.get('/student/:studentId/dashboard', verifyToken, validateId('studentId'), studentController.getStudentDashboard);
 router.get('/student/:studentId/profile', verifyToken, validateId('studentId'), studentController.getStudentProfile);
-router.put('/student/:studentId/profile', verifyToken, isAdmin, validateId('studentId'), async (req, res) => {
+router.put('/student/:studentId/profile', verifyToken, validateId('studentId'), async (req, res) => {
   try {
     const { studentId } = req.params;
-    const { name, email, phone } = req.body;
-    const { Student } = require('../models');
+    if (req.user.role !== 'admin' && req.user.id !== studentId) {
+      return res.status(403).json({ success: false, msg: 'Access denied' });
+    }
+    const { name, email, phone, hostelInfo, transportInfo, achievements } = req.body;
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
+    if (hostelInfo !== undefined) updateData.hostelInfo = hostelInfo;
+    if (transportInfo !== undefined) updateData.transportInfo = transportInfo;
+    if (achievements) updateData.achievements = achievements;
 
     const updatedStudent = await Student.findByIdAndUpdate(
       studentId,
-      { name, email, phone },
+      updateData,
       { new: true }
     );
 
@@ -226,7 +246,7 @@ router.post('/admin/subjects', verifyToken, isAdmin, adminController.addSubject)
 router.post('/subjects/add', verifyToken, isAdmin, adminController.addSubject);
 router.delete('/admin/subjects/:subjectId', verifyToken, isAdmin, validateId('subjectId'), adminController.deleteSubject);
 
-// Teacher ↔ Subject assignment
+// Teacher <-> Subject assignment
 router.post('/admin/assign-teacher', verifyToken, isAdmin, adminController.assignTeacherToSubject);
 router.post('/admin/remove-teacher', verifyToken, isAdmin, adminController.removeTeacherFromSubject);
 
@@ -275,13 +295,18 @@ router.get('/admin/notices', verifyToken, isAdmin, adminController.getAllNotices
 router.get('/admin/assignments', verifyToken, isAdmin, adminController.getAllAssignments);
 router.get('/admin/materials', verifyToken, isAdmin, adminController.getAllMaterials);
 router.get('/admin/attendance', verifyToken, isAdmin, adminController.getAllAttendance);
-
+router.get('/admin/marks', verifyToken, isAdmin, adminController.getAllMarks);
+router.get('/admin/exams', verifyToken, isAdmin, adminController.getAllMarks);
 
 // Teacher student management
 router.get('/teacher/students/:studentId', verifyToken, validateId('studentId'), adminController.getStudentDetails);
 router.put('/teacher/students/:studentId', verifyToken, isAdmin, validateId('studentId'), adminController.updateStudent);
 router.delete('/teacher/students/:studentId', verifyToken, isAdmin, validateId('studentId'), adminController.deleteStudent);
 
+// ======================================================
+//                     GEMINI AI ROUTES
+// ======================================================
+router.use('/ai', require('./aiRoutes'));
 
 // ======================================================
 // Error Handler (Must be last)

@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-
-import api from '../../api/axiosInstance';
-import { BASE_URL } from '../../constants/api';
-import { FaBell, FaCalendarAlt, FaPlus } from 'react-icons/fa';
-import Card, { CardContent } from '../../components/ui/Card';
+import { FaBell, FaPlus, FaFilter, FaCalendarAlt, FaMagic } from 'react-icons/fa';
 import Button from '../../components/ui/Button';
-import Select from '../../components/ui/Select';
 import Input from '../../components/ui/Input';
+import Select from '../../components/ui/Select';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import api from '../../api/axiosInstance';
+import aiService from '../../services/aiService';
+import { toast } from 'react-toastify';
 
 const TeacherNotices = () => {
-  const { id: teacherId } = useParams();
+  const { teacherId } = useParams();
   const [notices, setNotices] = useState([]);
   const [allNotices, setAllNotices] = useState([]);
+  const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [subjects, setSubjects] = useState([]);
   const [filterCourse, setFilterCourse] = useState('all');
+  const [isAiDrafting, setIsAiDrafting] = useState(false);
   const [formData, setFormData] = useState({
     courseId: '',
     title: '',
@@ -53,17 +53,41 @@ const TeacherNotices = () => {
     }
   }, [filterCourse, allNotices]);
 
+  const handleAiDraft = async () => {
+    if (!formData.title.trim()) {
+      toast.warning('Please enter a notice title first (e.g. Class Test Schedule)');
+      return;
+    }
+    setIsAiDrafting(true);
+    try {
+      const selectedSub = subjects.find(s => s.courseId?._id === formData.courseId);
+      const res = await aiService.generateNotice({
+        title: formData.title,
+        audience: selectedSub ? `${selectedSub.courseId?.courseName} - ${selectedSub.subjectName}` : 'Course Students',
+        keyPoints: formData.description || 'preparation guidelines and deadlines'
+      });
+      if (res.noticeText) {
+        setFormData(prev => ({ ...prev, description: res.noticeText }));
+        toast.success('✨ Notice drafted by Gemini AI!');
+      }
+    } catch (err) {
+      toast.error('Failed to draft notice with AI');
+    } finally {
+      setIsAiDrafting(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await api.post(`/api/teacher/${teacherId}/notices`, formData);
-      alert('Notice sent successfully!');
+      toast.success('Notice sent successfully!');
       setShowModal(false);
       setFormData({ courseId: '', title: '', description: '' });
       fetchData();
     } catch (error) {
       console.error('Error sending notice:', error);
-      alert('Failed to send notice');
+      toast.error('Failed to send notice');
     }
   };
 
@@ -78,55 +102,48 @@ const TeacherNotices = () => {
     .filter(Boolean);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="p-8 max-w-7xl mx-auto space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-secondary font-heading">My Notices</h1>
-          <p className="text-text-secondary">Manage and post notices for your classes</p>
+          <h1 className="text-3xl font-bold font-heading text-secondary">Notices & Announcements</h1>
+          <p className="text-text-secondary mt-1">Broadcast important information to your classes</p>
         </div>
-        <Button onClick={() => setShowModal(true)}>
-          <FaPlus className="mr-2" /> Create Notice
-        </Button>
+        <div className="flex gap-3">
+          <Button onClick={() => setShowModal(true)} className="flex items-center gap-2">
+            <FaPlus /> Create Notice
+          </Button>
+        </div>
       </div>
 
-      <Card className="border border-gray-200">
-        <CardContent className="p-6">
-          <div className="max-w-md">
-            <Select
-              label="Filter by Course"
-              value={filterCourse}
-              onChange={(e) => setFilterCourse(e.target.value)}
-            >
-              <option value="all">All Courses</option>
-              {uniqueCourses.map(course => (
-                <option key={course._id} value={course._id}>
-                  {course.courseName}
-                </option>
-              ))}
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-gray-200">
+        <FaFilter className="text-text-muted" />
+        <select
+          value={filterCourse}
+          onChange={(e) => setFilterCourse(e.target.value)}
+          className="border-none text-sm font-medium focus:ring-0 cursor-pointer text-text-secondary"
+        >
+          <option value="all">All Courses</option>
+          {uniqueCourses.map(course => (
+            <option key={course._id} value={course._id}>{course.courseName}</option>
+          ))}
+        </select>
+      </div>
 
-      <div className="grid grid-cols-1 gap-4">
-        {notices.length > 0 ? notices.map(notice => (
-          <Card key={notice._id} className="hover:shadow-md transition-shadow border border-gray-200">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h3 className="text-xl font-bold text-secondary font-heading">{notice.title}</h3>
-                  <p className="text-sm text-primary font-medium">
-                    Course: {notice.courseId?.courseName || 'All'}
-                  </p>
-                </div>
-                <span className="text-sm text-text-secondary flex items-center">
-                  <FaCalendarAlt className="mr-2" />
-                  {new Date(notice.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-              <p className="text-text-secondary">{notice.description}</p>
-            </CardContent>
-          </Card>
+      <div className="grid gap-4">
+        {notices.length > 0 ? notices.map((notice) => (
+          <div key={notice._id} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="font-bold text-lg text-secondary font-heading">{notice.title}</h3>
+              <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
+                {notice.courseId?.courseName || 'General'}
+              </span>
+            </div>
+            <p className="text-text-secondary mb-4 whitespace-pre-wrap text-sm leading-relaxed">{notice.description}</p>
+            <div className="flex items-center gap-2 text-xs text-text-muted">
+              <FaCalendarAlt />
+              <span>{new Date(notice.createdAt).toLocaleDateString()}</span>
+            </div>
+          </div>
         )) : (
           <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
             <FaBell className="mx-auto h-12 w-12 text-text-muted mb-4" />
@@ -137,7 +154,7 @@ const TeacherNotices = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-gray-200">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 border border-gray-200">
             <h2 className="text-xl font-bold mb-4 font-heading text-secondary">Create Notice</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <Select
@@ -158,16 +175,29 @@ const TeacherNotices = () => {
                 label="Title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="e.g. Mid-term Assessment Guidelines"
                 required
               />
 
               <div>
-                <label className="block text-sm font-medium text-text-secondary mb-1">Description</label>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-sm font-medium text-text-secondary">Description</label>
+                  <button
+                    type="button"
+                    onClick={handleAiDraft}
+                    disabled={isAiDrafting}
+                    className="text-xs font-semibold text-purple-700 hover:text-purple-900 flex items-center gap-1.5 bg-purple-50 hover:bg-purple-100 py-1 px-2.5 rounded-lg border border-purple-200 transition-all disabled:opacity-50"
+                  >
+                    <FaMagic className={isAiDrafting ? 'animate-spin' : ''} />
+                    <span>{isAiDrafting ? 'Drafting...' : '✨ Draft with Gemini AI'}</span>
+                  </button>
+                </div>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                  rows="3"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm leading-relaxed"
+                  rows="5"
+                  placeholder="Enter notice content, or type title above and click '✨ Draft with Gemini AI'..."
                   required
                 />
               </div>
@@ -177,7 +207,7 @@ const TeacherNotices = () => {
                   Cancel
                 </Button>
                 <Button type="submit" className="flex-1">
-                  Send
+                  Send Notice
                 </Button>
               </div>
             </form>

@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./components/layout/Sidebar";
 import Navbar from "./components/layout/Navbar";
+import Breadcrumbs from "./components/layout/Breadcrumbs";
 import Footer from "./components/Footer";
+import CampusAICopilot from "./components/ai/CampusAICopilot";
 import Cookies from 'js-cookie';
 import { useDispatch } from 'react-redux';
 import { addUserDetails } from './features/UserSlice';
@@ -12,11 +14,9 @@ const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Determine if we should show the full layout (Sidebar + Navbar)
-  // Hide on public pages: /, /login, /register, /unauthorized, /404
-  // Also hide on Landing Page if it's the root
+  // Hide on public pages: /, /login, /register, /unauthorized, /achievers, password reset pages
   const publicPaths = ['/', '/login', '/register', '/unauthorized', '/achievers'];
-  // Check if current path is exactly one of the public paths or starts with /landing (if we had one)
-  const isPublicPage = publicPaths.includes(location.pathname);
+  const isPublicPage = publicPaths.includes(location.pathname) || location.pathname.includes('forgetPassword');
 
   // Close sidebar on route change (mobile)
   React.useEffect(() => {
@@ -50,11 +50,9 @@ const Layout = () => {
       } else if (location.pathname.startsWith('/admin')) {
         setViewRole('admin');
       } else {
-        // Default to admin view if on other pages (e.g. home)
         setViewRole('admin');
       }
     } else {
-      // For non-admins, viewRole MUST always match userRole
       setViewRole(userRole);
     }
   }, [location.pathname, userRole]);
@@ -69,11 +67,16 @@ const Layout = () => {
   }, [dispatch]);
 
   if (isPublicPage) {
-    return <Outlet />;
+    return (
+      <>
+        <Outlet />
+        <CampusAICopilot />
+      </>
+    );
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden font-sans text-gray-900">
+    <div className="flex h-screen bg-gray-50 overflow-hidden font-sans text-gray-900 relative">
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -90,13 +93,17 @@ const Layout = () => {
           setViewRole={setViewRole}
         />
 
-        <main className="flex-1 overflow-y-auto bg-gray-50/50">
-          <div className="min-h-full p-4 lg:p-8">
+        <main className="flex-1 overflow-y-auto bg-gray-50/50 flex flex-col justify-between">
+          <div className="p-4 lg:p-8 flex-1">
+            <Breadcrumbs />
             <Outlet />
           </div>
-          <Footer />
+          <Footer mode="compact" />
         </main>
       </div>
+
+      {/* Universal Floating Gemini AI Assistant */}
+      <CampusAICopilot />
     </div>
   );
 };

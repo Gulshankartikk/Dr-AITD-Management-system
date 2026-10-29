@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api/axiosInstance';
-import { FaTrophy } from 'react-icons/fa';
+import aiService from '../../services/aiService';
+import { FaTrophy, FaMagic, FaSpinner, FaLightbulb, FaGraduationCap } from 'react-icons/fa';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
 import Badge from '../../components/ui/Badge';
@@ -17,6 +18,11 @@ const StudentMarks = () => {
         subjectId: '',
         examType: ''
     });
+
+    // Gemini AI Advisor State
+    const [aiAdvice, setAiAdvice] = useState('');
+    const [aiLoading, setAiLoading] = useState(false);
+    const [showAiAdvisor, setShowAiAdvisor] = useState(false);
 
     const examTypes = [
         { value: 'Mid Term', label: 'Mid Term' },
@@ -76,14 +82,96 @@ const StudentMarks = () => {
         return { grade: 'F', color: 'danger' };
     };
 
+    // Overall Average
+    const avgPercentage = marks.length > 0
+        ? (marks.reduce((acc, curr) => acc + (curr.totalMarks > 0 ? (curr.marks / curr.totalMarks) * 100 : 0), 0) / marks.length).toFixed(1)
+        : null;
+
+    // Generate AI Academic Advice
+    const handleGenerateStudyPlan = async () => {
+        setShowAiAdvisor(true);
+        setAiLoading(true);
+        try {
+            const res = await aiService.generateStudyPlan({
+                attendanceRate: 'Regular Academic Session',
+                marks: marks.map(m => ({
+                    subject: m.subjectId?.subjectName,
+                    marks: `${m.marks}/${m.totalMarks} (${m.examType})`
+                })),
+                subjects: subjects.map(s => s.subjectName)
+            });
+
+            setAiAdvice(res.studyPlan || 'Study plan generated.');
+        } catch (err) {
+            console.error('Failed to generate study plan:', err);
+            setAiAdvice('Unable to generate AI study plan. Please verify connection and try again.');
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
     return (
-        <div className="space-y-6 p-6">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="space-y-6 p-6 max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-secondary font-heading">My Results</h1>
-                    <p className="text-text-secondary">View your academic performance and grades</p>
+                    <h1 className="text-2xl font-bold text-secondary font-heading">My Results & Analytics</h1>
+                    <p className="text-text-secondary">View your academic performance and AI study guidance</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    {avgPercentage && (
+                        <div className="bg-primary/10 border border-primary/20 text-primary px-3 py-1.5 rounded-lg text-sm font-semibold">
+                            Overall Avg: {avgPercentage}%
+                        </div>
+                    )}
+                    <button
+                        onClick={handleGenerateStudyPlan}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm font-semibold shadow-md transition-all"
+                    >
+                        <FaMagic />
+                        <span>✨ AI Academic Advisor</span>
+                    </button>
                 </div>
             </div>
+
+            {/* AI Advisor Panel */}
+            {showAiAdvisor && (
+                <Card className="border border-indigo-200 bg-gradient-to-r from-indigo-50/50 via-purple-50/30 to-pink-50/30 overflow-hidden shadow-sm animate-fade-in">
+                    <CardHeader className="border-b border-indigo-100 flex flex-row items-center justify-between pb-3">
+                        <CardTitle className="text-base text-indigo-900 font-bold flex items-center gap-2">
+                            <FaGraduationCap className="text-indigo-600 text-lg" />
+                            <span>Gemini AI Academic Advisor & Revision Plan</span>
+                        </CardTitle>
+                        <button
+                            onClick={() => setShowAiAdvisor(false)}
+                            className="text-xs text-gray-500 hover:text-gray-700"
+                        >
+                            Hide
+                        </button>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                        {aiLoading ? (
+                            <div className="py-8 flex flex-col items-center justify-center gap-2 text-indigo-700">
+                                <FaSpinner className="animate-spin text-2xl" />
+                                <p className="text-xs font-medium">Gemini is analyzing your marks and constructing a tailored study plan...</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="prose prose-sm max-w-none text-xs sm:text-sm text-gray-800 whitespace-pre-line leading-relaxed bg-white/80 p-4 rounded-xl border border-indigo-100">
+                                    {aiAdvice}
+                                </div>
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={handleGenerateStudyPlan}
+                                        className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1"
+                                    >
+                                        <FaLightbulb /> Re-analyze with Gemini
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Filters */}
             <Card className="border border-gray-200">

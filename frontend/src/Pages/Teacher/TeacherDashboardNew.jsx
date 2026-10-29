@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axiosInstance';
 import {
-  FaUsers, FaChalkboardTeacher, FaTasks, FaClipboardCheck,
+  FaUsers, FaChalkboardTeacher, FaTasks,
   FaBook, FaUpload, FaClipboardList, FaFileUpload, FaPaperPlane,
-  FaEdit, FaChartBar, FaDownload, FaBell, FaCalendarAlt, FaArrowRight
+  FaEdit, FaChartBar, FaDownload, FaBell, FaCalendarAlt,
+  FaMagic, FaRobot
 } from 'react-icons/fa';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
-import Table, { TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
 
 const TeacherDashboardNew = () => {
   const { id } = useParams();
@@ -66,6 +66,10 @@ const TeacherDashboardNew = () => {
     { title: 'Notices Posted', value: notices.length.toString(), icon: FaBell, color: 'text-secondary', bg: 'bg-secondary/10' }
   ];
 
+  const handleOpenCopilot = (tab = 'chat') => {
+    window.dispatchEvent(new CustomEvent('open-ai-copilot', { detail: { tab } }));
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -89,6 +93,45 @@ const TeacherDashboardNew = () => {
               Upload Material
             </Button>
           </Link>
+        </div>
+      </div>
+
+      {/* Gemini AI Faculty Assistant Suite */}
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 rounded-2xl p-6 text-white shadow-md border border-indigo-500/20">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <FaMagic className="text-indigo-400 text-lg" />
+              <h2 className="text-lg font-bold font-heading">Gemini AI Faculty Assistant</h2>
+              <span className="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 px-2 py-0.5 rounded-full font-bold">Gemini 2.5 Active</span>
+            </div>
+            <p className="text-white/70 text-xs sm:text-sm max-w-xl">
+              Accelerate course preparation: instantly draft circulars, generate structured quizzes and assignments with complete grading rubrics, and answer pedagogical queries.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 w-full md:w-auto">
+            <button
+              onClick={() => handleOpenCopilot('chat')}
+              className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-2 backdrop-blur-sm border border-white/20 transition-all"
+            >
+              <FaRobot className="text-indigo-300" />
+              <span>Ask Copilot</span>
+            </button>
+            <Link
+              to={`/teacher/${id}/assignments`}
+              className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
+            >
+              <FaTasks />
+              <span>✨ AI Assignment Builder</span>
+            </Link>
+            <Link
+              to={`/teacher/${id}/notices`}
+              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
+            >
+              <FaPaperPlane />
+              <span>✨ AI Notice Drafter</span>
+            </Link>
+          </div>
         </div>
       </div>
 

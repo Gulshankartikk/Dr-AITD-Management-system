@@ -1,7 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-
-import { BASE_URL } from "../constants/api";
+import api from "../api/axiosInstance";
 
 let init = {
   attendance: {
@@ -19,19 +17,17 @@ let init = {
 export const fetchAttendance = createAsyncThunk(
   "Student/fetchAttendance",
   async (studentId) => {
-    let res = await axios.get(`${BASE_URL}/api/student/${studentId}/attendance`);
-
-    return res;
+    let res = await api.get(`/api/student/${studentId}/attendance`);
+    return res.data;
   }
 );
 
 export const fetchStudentDetails = createAsyncThunk(
   "Student/fetchStudentDetails",
   async (studentId) => {
-    let res = await axios.get(
-      `${BASE_URL}/api/student/${studentId}/profile`
+    let res = await api.get(
+      `/api/student/${studentId}/profile`
     );
-
     return res.data;
   }
 );
@@ -54,8 +50,8 @@ let Student = createSlice({
         state.attendance.status = "loading";
       })
       .addCase(fetchStudentDetails.fulfilled, (state, action) => {
-        (state.studentDetails.data = action.payload),
-          (state.studentDetails.status = "idle");
+        state.studentDetails.data = action.payload;
+        state.studentDetails.status = "idle";
       })
       .addCase(fetchStudentDetails.rejected, (state, action) => {
         state.studentDetails.error = action.error.message;

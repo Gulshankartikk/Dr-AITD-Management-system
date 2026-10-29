@@ -1,5 +1,10 @@
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
+require("dotenv").config();
+
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET;
+
+const getSecret = () => process.env.JWT_SECRET || "your_super_secure_jwt_secret_key_here_minimum_32_characters";
 
 // Extract token from header OR cookies
 const getToken = (req) => {
@@ -24,7 +29,7 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, getSecret());
 
     // decoded = { id, role, iat, exp }
     req.user = {

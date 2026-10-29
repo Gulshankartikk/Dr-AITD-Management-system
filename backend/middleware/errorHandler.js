@@ -1,6 +1,8 @@
 const errorHandler = (err, req, res, next) => {
     console.error('Error:', err.message);
-    console.error('Stack:', err.stack);
+    if (process.env.NODE_ENV !== 'production' && err.stack) {
+        console.error('Stack:', err.stack);
+    }
 
     // Default error
     let error = { ...err };
@@ -35,9 +37,12 @@ const errorHandler = (err, req, res, next) => {
         error = { message, statusCode: 401 };
     }
 
+    const finalMessage = error.message || err.message || 'Server Error';
+
     res.status(error.statusCode || err.statusCode || 500).json({
         success: false,
-        msg: error.message || 'Server Error'
+        msg: finalMessage,
+        message: finalMessage
     });
 };
 

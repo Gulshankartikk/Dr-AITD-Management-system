@@ -1,10 +1,8 @@
 import {
-  buildCreateSlice,
   createAsyncThunk,
   createSlice,
 } from "@reduxjs/toolkit";
-import { BASE_URL } from "../constants/api";
-import axios from "axios";
+import api from "../api/axiosInstance";
 
 let init = {
   data: null,
@@ -15,8 +13,8 @@ let init = {
 export const fetchCourses = createAsyncThunk(
   "Courses/fetchCourses",
   async () => {
-    let res = await axios.get(`${BASE_URL}/courses`);
-    return res.data.data;
+    let res = await api.get('/api/courses');
+    return res.data.courses || res.data.data || [];
   }
 );
 
@@ -31,7 +29,8 @@ let Courses = createSlice({
         state.status = "idle";
       })
       .addCase(fetchCourses.rejected, (state, action) => {
-        (state.error = action.error.message), (state.status = "idle");
+        state.error = action.error.message;
+        state.status = "idle";
       })
       .addCase(fetchCourses.pending, (state) => {
         state.status = "loading";

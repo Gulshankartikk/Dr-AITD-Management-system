@@ -62,10 +62,23 @@ const NotificationSchema = new mongoose.Schema({
     entityType: { type: String }
 }, { timestamps: true });
 
+// Settings Schema
+const SettingsSchema = new mongoose.Schema({
+    institutionName: { type: String, default: 'Dr. Ambedkar Institute of Technology for Divyangjan' },
+    academicYear: { type: String, default: '2025-2026' },
+    semester: { type: String, default: 'Even' },
+    address: { type: String, default: 'Awadhpuri, GT Road, Kanpur, Uttar Pradesh - 208024' },
+    phone: { type: String, default: '+91-512-2583221' },
+    email: { type: String, default: 'info@draitd.edu.in' },
+    website: { type: String, default: 'https://draitd.edu.in' },
+    isActive: { type: Boolean, default: true }
+}, { timestamps: true });
+
 const Notices = mongoose.model('Notice', NoticeSchema);
 const Leave = mongoose.model('Leave', LeaveSchema);
 const Fee = mongoose.model('Fee', FeeSchema);
 const Report = mongoose.model('Report', ReportSchema);
 const Notification = mongoose.model('Notification', NotificationSchema);
+const Settings = mongoose.model('Settings', SettingsSchema);
 
-module.exports = { Notices, Leave, Fee, Report, Notification };
+module.exports = { Notices, Leave, Fee, Report, Notification, Settings };

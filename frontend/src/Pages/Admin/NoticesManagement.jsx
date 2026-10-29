@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FaBell, FaPlus, FaRemoveFormat, FaTrash, FaEye, FaTimes } from 'react-icons/fa';
+import { FaBell, FaPlus, FaTrash, FaEye, FaTimes, FaMagic } from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
 import { toast } from 'react-toastify';
 import api from '../../api/axiosInstance';
+import aiService from '../../services/aiService';
 import Button from '../../components/ui/Button';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Input from '../../components/ui/Input';
@@ -16,12 +17,13 @@ const NoticesManagement = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedNotice, setSelectedNotice] = useState(null);
+  const [isAiDrafting, setIsAiDrafting] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     courseId: '',
-    description: '' // Backend expects description, frontend used content
+    description: ''
   });
 
   useEffect(() => {
@@ -32,8 +34,8 @@ const NoticesManagement = () => {
     setLoading(true);
     try {
       const [noticesRes, coursesRes] = await Promise.all([
-        api.get('/admin/notices'),
-        api.get('/admin/courses')
+        api.get('/api/admin/notices'),
+        api.get('/api/admin/courses')
       ]);
 
       setNotices(noticesRes.data.notices || []);
@@ -46,6 +48,30 @@ const NoticesManagement = () => {
     }
   };
 
+  const handleAiDraftNotice = async () => {
+    if (!formData.title.trim()) {
+      toast.warning('Please enter a notice title first (e.g. Mid-term Exam Schedule)');
+      return;
+    }
+    setIsAiDrafting(true);
+    try {
+      const selectedCourse = courses.find(c => c._id === formData.courseId);
+      const res = await aiService.generateNotice({
+        title: formData.title,
+        audience: selectedCourse ? selectedCourse.courseName : 'All Students & Faculty',
+        keyPoints: formData.description || 'relevant academic regulations and deadlines'
+      });
+      if (res.noticeText) {
+        setFormData(prev => ({ ...prev, description: res.noticeText }));
+        toast.success('✨ Notice drafted by Gemini AI!');
+      }
+    } catch (err) {
+      toast.error('Failed to draft notice with AI');
+    } finally {
+      setIsAiDrafting(false);
+    }
+  };
+
   const handleCreate = async () => {
     if (!formData.title || !formData.description || !formData.courseId) {
       toast.error('Please fill all required fields');
@@ -54,7 +80,7 @@ const NoticesManagement = () => {
 
     try {
       // Using the teacher/admin route which maps to teacherController.addNotice
-      await api.post('/teacher/admin/notices', {
+      await api.post('/api/teacher/admin/notices', {
         ...formData,
         teacherId: 'admin'
       });
@@ -73,7 +99,7 @@ const NoticesManagement = () => {
     if (!window.confirm('Are you sure you want to delete this notice?')) return;
 
     try {
-      await api.delete(`/admin/notices/${id}`);
+      await api.delete(`/api/admin/notices/${id}`);
       toast.success('Notice deleted successfully');
       fetchInitialData();
     } catch (error) {
@@ -191,13 +217,24 @@ const NoticesManagement = () => {
                   </Select>
 
                   <div>
-                    <label className="block text-sm font-medium text-text-secondary mb-2">Description</label>
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="block text-sm font-medium text-text-secondary">Description / Content</label>
+                      <button
+                        type="button"
+                        onClick={handleAiDraftNotice}
+                        disabled={isAiDrafting}
+                        className="text-xs font-semibold text-purple-700 hover:text-purple-900 flex items-center gap-1.5 bg-purple-50 hover:bg-purple-100 py-1 px-3 rounded-lg border border-purple-200 transition-all disabled:opacity-50"
+                      >
+                        <FaMagic className={isAiDrafting ? 'animate-spin' : ''} />
+                        <span>{isAiDrafting ? 'Drafting...' : '✨ Draft with Gemini AI'}</span>
+                      </button>
+                    </div>
                     <textarea
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      rows="4"
-                      placeholder="Enter notice content..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                      rows="6"
+                      placeholder="Enter notice content, or enter Title above and click '✨ Draft with Gemini AI'..."
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-sm leading-relaxed"
                     />
                   </div>
                 </div>

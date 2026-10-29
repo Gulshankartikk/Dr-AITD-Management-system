@@ -78,7 +78,7 @@ const StudentProfile = () => {
 
   const handleSaveProfile = async () => {
     try {
-      await api.put(`/student/${studentId}/profile`, editData);
+      await api.put(`/api/student/${studentId}/profile`, editData);
       setStudent({ ...student, ...editData });
       setIsEditing(false);
       toast.success('Profile updated successfully!');

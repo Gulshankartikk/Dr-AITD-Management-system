@@ -12,7 +12,7 @@ echo Done.
 
 echo.
 echo [Step 2] Starting Backend Server...
-echo        - Listening on Port 4000
+echo        - Listening on Port 5000
 echo        - CORS enabled for Vercel & Localhost
 start "Backend Server" cmd /k "cd backend && npm start"
 
@@ -27,7 +27,7 @@ echo.
 echo ===================================================
 echo SUCCESS! Servers are running.
 echo.
-echo Backend:  http://localhost:4000
+echo Backend:  http://localhost:5000
 echo Frontend: http://localhost:5173 (Your Local App)
 echo.
 echo NOTE: To fix the "Network Error" on Vercel, you MUST

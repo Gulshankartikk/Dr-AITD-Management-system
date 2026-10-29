@@ -4,7 +4,8 @@ import api from '../../api/axiosInstance';
 import {
   FaUsers, FaChalkboardTeacher, FaBook, FaClipboardList, FaRupeeSign,
   FaBell, FaCalendarAlt, FaChartBar, FaCog, FaFileAlt, FaBookOpen,
-  FaClipboardCheck, FaMoneyBillWave, FaUserPlus, FaCheckCircle, FaClock
+  FaClipboardCheck, FaMoneyBillWave, FaUserPlus, FaCheckCircle, FaClock,
+  FaMagic, FaRobot
 } from 'react-icons/fa';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
@@ -28,6 +29,10 @@ const AdminDashboardNew = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOpenCopilot = (tab = 'chat') => {
+    window.dispatchEvent(new CustomEvent('open-ai-copilot', { detail: { tab } }));
   };
 
   // Derived data from backend
@@ -138,60 +143,26 @@ const AdminDashboardNew = () => {
       color: 'text-primary',
       borderColor: 'border-primary',
       bg: 'bg-primary/10',
-      items: ['View Reports', 'Modify Records', 'Analytics', 'Monthly Reports'],
+      items: ['Daily Attendance', 'Attendance Reports', 'Absence Alerts', 'Leave Requests'],
       link: '/admin/attendance'
     },
     {
-      title: 'Exam Management',
+      title: 'Examination Cell',
       icon: FaClipboardCheck,
       color: 'text-secondary',
       borderColor: 'border-secondary',
       bg: 'bg-secondary/10',
-      items: ['Schedule Exams', 'Seating Plan', 'Result Publishing', 'Marks Entry'],
+      items: ['Exam Schedules', 'Admit Cards', 'Grade Entry', 'Report Cards'],
       link: '/admin/exams'
-    },
-    {
-      title: 'Library Management',
-      icon: FaBookOpen,
-      color: 'text-primary',
-      borderColor: 'border-primary',
-      bg: 'bg-primary/10',
-      items: ['Add Books', 'Issue/Return', 'Fine Tracking', 'Reports'],
-      link: '/admin/library'
-    },
-    {
-      title: 'Timetable',
-      icon: FaCalendarAlt,
-      color: 'text-secondary',
-      borderColor: 'border-secondary',
-      bg: 'bg-secondary/10',
-      items: ['Create Timetable', 'Assign Teachers', 'Conflict Detection', 'Lab Schedules'],
-      link: '/admin/timetable'
     }
   ];
 
-  const recentActivities = [
-    { action: 'New student enrolled', user: 'Rahul Kumar', time: '10 mins ago', type: 'student' },
-    { action: 'Fee payment received', user: 'Priya Sharma', time: '25 mins ago', type: 'fee' },
-    { action: 'Leave approved', user: 'Dr. Amit Singh', time: '1 hour ago', type: 'leave' },
-    { action: 'Assignment created', user: 'Prof. Sneha Patel', time: '2 hours ago', type: 'assignment' },
-    { action: 'Exam schedule published', user: 'Admin', time: '3 hours ago', type: 'exam' }
-  ];
-
   const pendingApprovals = [
-    { type: 'Leave Request', count: 5, color: 'bg-primary' },
-    { type: 'Document Requests', count: 12, color: 'bg-secondary' },
-    { type: 'Fee Concessions', count: 3, color: 'bg-primary' },
-    { type: 'Student Complaints', count: 7, color: 'bg-secondary' }
+    { type: 'Student Admissions', count: 12, color: 'bg-primary' },
+    { type: 'Teacher Leave Requests', count: 5, color: 'bg-secondary' },
+    { type: 'Fee Concession Requests', count: 8, color: 'bg-primary' },
+    { type: 'Certificate Requests', count: 15, color: 'bg-secondary' }
   ];
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -205,6 +176,45 @@ const AdminDashboardNew = () => {
           <span className="text-sm font-medium text-text-secondary">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </span>
+        </div>
+      </div>
+
+      {/* Gemini AI Institutional Suite */}
+      <div className="bg-gradient-to-r from-slate-900 via-purple-950 to-indigo-900 rounded-2xl p-6 text-white shadow-md border border-purple-500/20">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <FaMagic className="text-purple-400 text-lg" />
+              <h2 className="text-lg font-bold font-heading">Gemini AI Institutional Operations Suite</h2>
+              <span className="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-400/30 px-2 py-0.5 rounded-full font-bold">Gemini 2.5 Active</span>
+            </div>
+            <p className="text-white/70 text-xs sm:text-sm max-w-xl">
+              Power campus administration: automatically generate official circulars, extract executive insights from fee & academic reports, and interact with the AI Campus Copilot.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 w-full md:w-auto">
+            <button
+              onClick={() => handleOpenCopilot('chat')}
+              className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-2 backdrop-blur-sm border border-white/20 transition-all"
+            >
+              <FaRobot className="text-purple-300" />
+              <span>Ask Copilot</span>
+            </button>
+            <Link
+              to="/admin/notices"
+              className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
+            >
+              <FaBell />
+              <span>✨ AI Circular Drafter</span>
+            </Link>
+            <Link
+              to="/admin/reports"
+              className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
+            >
+              <FaChartBar />
+              <span>✨ AI Executive Insights</span>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -378,7 +388,7 @@ const AdminDashboardNew = () => {
           {/* Quick Stats */}
           <Card className="bg-gradient-to-br from-secondary to-primary text-white border-none shadow-lg">
             <CardContent>
-              <h3 className="font-bold text-lg mb-4 font-heading">Today's Overview</h3>
+              <h3 className="font-bold text-lg mb-4 font-heading">Today&apos;s Overview</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-white/80">Present Students</span>

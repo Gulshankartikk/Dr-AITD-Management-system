@@ -1,112 +1,129 @@
 import React from 'react';
-import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube, FaTwitter, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaGraduationCap } from 'react-icons/fa';
 
-const Footer = () => {
+const Footer = ({ mode = 'compact' }) => {
+  const currentYear = new Date().getFullYear();
+
+  if (mode === 'compact') {
+    return (
+      <footer className="py-4 px-6 border-t border-gray-200 bg-white text-xs text-text-muted">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+          <div className="flex items-center gap-2">
+            <FaGraduationCap className="text-primary" />
+            <span>
+              © {currentYear} Dr. Ambedkar Institute of Technology for Divyangjan (AITD), Kanpur.
+            </span>
+          </div>
+          <div className="flex items-center gap-4 font-medium">
+            <Link to="/achievers" className="hover:text-primary transition-colors">Hall of Fame</Link>
+            <span className="text-gray-300">|</span>
+            <span className="text-emerald-600 font-semibold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              ERP Online v2.5
+            </span>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  // Full Footer for Public Landing Page
   return (
     <footer className="font-sans bg-secondary text-white">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
 
           {/* About Section */}
-          <div>
-            <h3 className="text-xl font-bold mb-4 text-primary">About A.I.T.D.</h3>
-            <p className="text-sm leading-relaxed mb-4 text-gray-300">
-              Dr. Ambedkar Institute of Technology for Divyangjan (A.I.T.D.) was established in 1997 at Kanpur, U.P., India by Government of Uttar Pradesh under World Bank assisted project.
-              A.I.T.D. imparts technical education through B.Tech. and Diploma courses. The entire facility is barrier-free, where normal and disabled students study together.
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-primary font-bold text-lg font-heading">
+              <FaGraduationCap className="text-2xl" />
+              <span>Dr. AITD, Kanpur</span>
+            </div>
+            <p className="text-xs leading-relaxed text-gray-300">
+              Dr. Ambedkar Institute of Technology for Divyangjan (A.I.T.D.) was established in 1997 at Kanpur, Uttar Pradesh, India by Government of Uttar Pradesh under a World Bank assisted project.
+              Imparting technical education through B.Tech and Diploma programs in a dedicated barrier-free academic environment.
             </p>
-            <div className="w-16 h-1 bg-primary/50 rounded-full"></div>
           </div>
 
-          {/* Quick Resources */}
+          {/* Quick ERP Links */}
           <div>
-            <h3 className="text-xl font-bold mb-4 text-primary">Quick Resources</h3>
-            <ul className="space-y-2">
-              {[
-                { label: 'Download Prospectus', icon: '📄' },
-                { label: 'Academic Calendar', icon: '📅' },
-                { label: 'Attendance Portal', icon: '✅' },
-                { label: 'Exam Results', icon: '📊' },
-                { label: 'Scholarship Info', icon: '🎓' },
-              ].map((item, index) => (
-                <li key={index}>
-                  <a href="#" className="text-sm font-medium transition-colors text-gray-300 hover:text-primary flex items-center gap-2">
-                    <span>{item.icon}</span> {item.label}
-                  </a>
-                </li>
-              ))}
+            <h3 className="text-sm font-bold uppercase tracking-wider mb-4 text-primary font-heading">
+              ERP Portals
+            </h3>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <Link to="/login" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                  <span>→</span> Student Portal Login
+                </Link>
+              </li>
+              <li>
+                <Link to="/login" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                  <span>→</span> Faculty Portal Login
+                </Link>
+              </li>
+              <li>
+                <Link to="/login" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                  <span>→</span> Administrative Portal Login
+                </Link>
+              </li>
+              <li>
+                <Link to="/register" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                  <span>→</span> Student Online Registration
+                </Link>
+              </li>
+              <li>
+                <Link to="/achievers" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                  <span>→</span> Student Achievers (Hall of Fame)
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Contact Information */}
           <div>
-            <h3 className="text-xl font-bold mb-4 text-primary">Contact Us</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start space-x-3">
+            <h3 className="text-sm font-bold uppercase tracking-wider mb-4 text-primary font-heading">
+              Campus Location
+            </h3>
+            <ul className="space-y-3 text-xs text-gray-300">
+              <li className="flex items-start space-x-2.5">
                 <FaMapMarkerAlt className="mt-1 text-primary flex-shrink-0" />
-                <span className="text-sm font-medium text-gray-300">
+                <span>
                   Awadhpuri, Khyora, Lakhanpur, Kanpur - 208024, Uttar Pradesh, India
                 </span>
               </li>
-              <li className="flex items-center space-x-3">
+              <li className="flex items-center space-x-2.5">
                 <FaPhone className="text-primary flex-shrink-0" />
-                <span className="text-sm font-medium text-gray-300">
-                  +91 1234567890
-                </span>
+                <span>Office: +91 512 258 0122</span>
               </li>
-              <li className="flex items-center space-x-3">
-                <FaPhone className="text-primary flex-shrink-0" />
-                <span className="text-sm font-medium text-gray-300">
-                  +91 8726321083
-                </span>
-              </li>
-              <li className="flex items-center space-x-3">
+              <li className="flex items-center space-x-2.5">
                 <FaEnvelope className="text-primary flex-shrink-0" />
-                <span className="text-sm font-medium text-gray-300">
-                  admin@college.edu
-                </span>
-              </li>
-              <li className="flex items-center space-x-3">
-                <FaEnvelope className="text-primary flex-shrink-0" />
-                <span className="text-sm font-medium text-gray-300">
-                  admissions@college.edu
-                </span>
+                <span>info@draitd.edu</span>
               </li>
             </ul>
           </div>
 
-          {/* Social Media Links */}
+          {/* Academic Wings */}
           <div>
-            <h3 className="text-xl font-bold mb-4 text-primary">Connect With Us</h3>
-            <p className="text-sm mb-4 font-medium text-gray-300">
-              Follow us on social media for updates and news
+            <h3 className="text-sm font-bold uppercase tracking-wider mb-4 text-primary font-heading">
+              Academic Divisions
+            </h3>
+            <p className="text-xs text-gray-300 leading-relaxed mb-3">
+              Approved by AICTE New Delhi and affiliated with Dr. A.P.J. Abdul Kalam Technical University (AKTU), Lucknow.
             </p>
-            <div className="flex space-x-4">
-              {[FaFacebook, FaInstagram, FaLinkedin, FaYoutube, FaTwitter].map((Icon, index) => (
-                <a
-                  key={index}
-                  href="#"
-                  className="p-3 rounded-full transition-all transform hover:scale-110 shadow-lg bg-primary hover:bg-primary-hover text-white"
-                >
-                  <Icon className="text-lg" />
-                </a>
-              ))}
+            <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300">
+              <span className="font-semibold text-white block mb-1">Barrier-Free Campus</span>
+              Empowering diverse learners with assistive technologies and modern engineering laboratories.
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 mt-8 border-t border-gray-700">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm font-semibold text-gray-400 text-center md:text-left">
-              © 2025 Dr AITD Management system. All Rights Reserved.
-            </p>
-            <div className="flex flex-wrap justify-center gap-6">
-              {['Privacy Policy', 'Terms of Service', 'Sitemap'].map((item) => (
-                <a key={item} href="#" className="text-sm font-medium transition-colors text-gray-400 hover:text-primary">
-                  {item}
-                </a>
-              ))}
-            </div>
+        <div className="pt-6 mt-6 border-t border-gray-700/60 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-gray-400">
+          <p>© {currentYear} Dr. Ambedkar Institute of Technology for Divyangjan. All Rights Reserved.</p>
+          <div className="flex gap-4">
+            <Link to="/achievers" className="hover:text-white transition-colors">Hall of Fame</Link>
+            <Link to="/login" className="hover:text-white transition-colors">ERP Sign In</Link>
           </div>
         </div>
       </div>

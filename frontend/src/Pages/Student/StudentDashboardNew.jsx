@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api/axiosInstance';
 import {
-  User, FileText, Bell, CheckCircle, Clock, CreditCard
+  User, FileText, Bell, CheckCircle, Clock, CreditCard, Sparkles, Bot, GraduationCap
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Card from '../../components/ui/Card';
@@ -82,6 +82,10 @@ const StudentDashboardNew = () => {
   const pendingFees = fees.filter(f => f.status === 'Pending' || f.status === 'Overdue');
   const hasPendingFees = pendingFees.length > 0;
 
+  const handleOpenAICopilot = (tab = 'chat') => {
+    window.dispatchEvent(new CustomEvent('open-ai-copilot', { detail: { tab } }));
+  };
+
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
@@ -107,6 +111,45 @@ const StudentDashboardNew = () => {
               <p className="text-white/80 text-sm">Phone</p>
               <p className="font-semibold text-lg">{student?.phone || 'N/A'}</p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Gemini AI Campus Assistant Banner */}
+      <div className="bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 rounded-2xl p-6 text-white shadow-md border border-indigo-500/20">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="text-yellow-400" size={20} />
+              <h2 className="text-lg font-bold font-heading">Dr. AITD Gemini AI Campus Copilot</h2>
+              <span className="text-[10px] bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 px-2 py-0.5 rounded-full font-bold">Gemini 2.5 Active</span>
+            </div>
+            <p className="text-white/70 text-xs sm:text-sm max-w-xl">
+              Your 24/7 AI academic study buddy: instantly clarify difficult topics, prepare for upcoming exams, draft leave letters, or formulate custom study schedules.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 w-full md:w-auto">
+            <button
+              onClick={() => handleOpenAICopilot('chat')}
+              className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-2 backdrop-blur-sm border border-white/20 transition-all"
+            >
+              <Bot size={14} className="text-yellow-300" />
+              <span>Ask Copilot</span>
+            </button>
+            <button
+              onClick={() => navigate(`/student/${studentId}/notes`)}
+              className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
+            >
+              <Sparkles size={14} />
+              <span>✨ Explain Notes</span>
+            </button>
+            <button
+              onClick={() => navigate(`/student/${studentId}/marks`)}
+              className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
+            >
+              <GraduationCap size={14} />
+              <span>✨ AI Study Plan</span>
+            </button>
           </div>
         </div>
       </div>

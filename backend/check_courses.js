@@ -1,6 +1,9 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+require('dotenv').config();
+
 const mongoose = require('mongoose');
 const { Course } = require('./models');
-require('dotenv').config();
 
 const checkCourses = async () => {
     try {

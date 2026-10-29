@@ -481,44 +481,56 @@ const getComprehensiveAttendanceReport = async (req, res) => {
   try {
     const { courseId, subjectId, startDate, endDate, studentId } = req.query;
 
-    // Build query
     let query = {};
-    if (courseId) query.course = courseId;
-    if (subjectId) query.subject = subjectId;
-    if (studentId) query.student = studentId;
+    if (subjectId) query.subjectId = subjectId;
+    if (studentId) query.studentId = studentId;
     if (startDate && endDate) {
       query.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
     }
 
-    // Get attendance records
+    if (courseId) {
+      const courseStudents = await Student.find({ courseId }).select('_id');
+      const studentIds = courseStudents.map(s => s._id);
+      query.studentId = { $in: studentIds };
+    }
+
     const attendance = await Attendance.find(query)
-      .populate('student', 'name rollNo email')
-      .populate('subject', 'subject_name subject_code')
-      .populate('course', 'courseName courseCode')
-      .populate('teacher', 'name')
-      .sort({ date: -1, 'student.name': 1 });
+      .populate({
+        path: 'studentId',
+        select: 'name rollNo email courseId branch semester',
+        populate: { path: 'courseId', select: 'courseName courseCode' }
+      })
+      .populate({
+        path: 'subjectId',
+        select: 'subjectName subjectCode courseId',
+        populate: { path: 'courseId', select: 'courseName courseCode' }
+      })
+      .populate('teacherId', 'name email')
+      .sort({ date: -1 });
 
-    // Get all courses and subjects for filters
     const allCourses = await Course.find({ isActive: true }, 'courseName courseCode');
-    const allSubjects = await Subject.find({}, 'subject_name subject_code');
+    const allSubjects = await Subject.find({ isActive: true }, 'subjectName subjectCode');
 
-    // Calculate statistics
     const studentStats = {};
     const subjectStats = {};
     const courseStats = {};
 
     attendance.forEach(record => {
-      if (!record.student || !record.subject || !record.course) return;
+      const student = record.studentId;
+      const subject = record.subjectId;
+      if (!student) return;
 
-      const studentId = record.student._id.toString();
-      const subjectId = record.subject._id.toString();
-      const courseId = record.course._id.toString();
+      const sId = student._id.toString();
+      const subId = subject ? subject._id.toString() : 'general';
+      const course = student.courseId || (subject ? subject.courseId : null);
+      const cId = course ? course._id.toString() : 'general';
+      const isPresent = record.status === 'Present' || record.isPresent === true;
 
       // Student statistics
-      if (!studentStats[studentId]) {
-        studentStats[studentId] = {
-          student: record.student,
-          course: record.course,
+      if (!studentStats[sId]) {
+        studentStats[sId] = {
+          student: student,
+          course: course,
           totalClasses: 0,
           presentClasses: 0,
           absentClasses: 0,
@@ -526,95 +538,96 @@ const getComprehensiveAttendanceReport = async (req, res) => {
         };
       }
 
-      studentStats[studentId].totalClasses++;
-      if (record.isPresent) {
-        studentStats[studentId].presentClasses++;
+      studentStats[sId].totalClasses++;
+      if (isPresent) {
+        studentStats[sId].presentClasses++;
       } else {
-        studentStats[studentId].absentClasses++;
+        studentStats[sId].absentClasses++;
       }
 
       // Subject-wise student stats
-      if (!studentStats[studentId].subjects[subjectId]) {
-        studentStats[studentId].subjects[subjectId] = {
-          subject: record.subject,
-          total: 0,
-          present: 0,
-          absent: 0
-        };
-      }
+      if (subject) {
+        if (!studentStats[sId].subjects[subId]) {
+          studentStats[sId].subjects[subId] = {
+            subject: subject,
+            total: 0,
+            present: 0,
+            absent: 0
+          };
+        }
 
-      studentStats[studentId].subjects[subjectId].total++;
-      if (record.isPresent) {
-        studentStats[studentId].subjects[subjectId].present++;
-      } else {
-        studentStats[studentId].subjects[subjectId].absent++;
-      }
+        studentStats[sId].subjects[subId].total++;
+        if (isPresent) {
+          studentStats[sId].subjects[subId].present++;
+        } else {
+          studentStats[sId].subjects[subId].absent++;
+        }
 
-      // Subject statistics
-      if (!subjectStats[subjectId]) {
-        subjectStats[subjectId] = {
-          subject: record.subject,
-          totalClasses: 0,
-          totalStudents: new Set(),
-          presentCount: 0,
-          absentCount: 0
-        };
-      }
+        if (!subjectStats[subId]) {
+          subjectStats[subId] = {
+            subject: subject,
+            totalClasses: 0,
+            totalStudents: new Set(),
+            presentCount: 0,
+            absentCount: 0
+          };
+        }
 
-      subjectStats[subjectId].totalClasses++;
-      subjectStats[subjectId].totalStudents.add(studentId);
-      if (record.isPresent) {
-        subjectStats[subjectId].presentCount++;
-      } else {
-        subjectStats[subjectId].absentCount++;
+        subjectStats[subId].totalClasses++;
+        subjectStats[subId].totalStudents.add(sId);
+        if (isPresent) {
+          subjectStats[subId].presentCount++;
+        } else {
+          subjectStats[subId].absentCount++;
+        }
       }
 
       // Course statistics
-      if (!courseStats[courseId]) {
-        courseStats[courseId] = {
-          course: record.course,
-          totalClasses: 0,
-          totalStudents: new Set(),
-          presentCount: 0,
-          absentCount: 0
-        };
-      }
+      if (course) {
+        if (!courseStats[cId]) {
+          courseStats[cId] = {
+            course: course,
+            totalClasses: 0,
+            totalStudents: new Set(),
+            presentCount: 0,
+            absentCount: 0
+          };
+        }
 
-      courseStats[courseId].totalClasses++;
-      courseStats[courseId].totalStudents.add(studentId);
-      if (record.isPresent) {
-        courseStats[courseId].presentCount++;
-      } else {
-        courseStats[courseId].absentCount++;
+        courseStats[cId].totalClasses++;
+        courseStats[cId].totalStudents.add(sId);
+        if (isPresent) {
+          courseStats[cId].presentCount++;
+        } else {
+          courseStats[cId].absentCount++;
+        }
       }
     });
 
-    // Calculate percentages
-    Object.keys(studentStats).forEach(studentId => {
-      const stats = studentStats[studentId];
+    Object.keys(studentStats).forEach(sId => {
+      const stats = studentStats[sId];
       stats.attendancePercentage = stats.totalClasses > 0 ?
-        ((stats.presentClasses / stats.totalClasses) * 100).toFixed(2) : 0;
+        ((stats.presentClasses / stats.totalClasses) * 100).toFixed(2) : '0.00';
 
-      Object.keys(stats.subjects).forEach(subjectId => {
-        const subjectStats = stats.subjects[subjectId];
-        subjectStats.percentage = subjectStats.total > 0 ?
-          ((subjectStats.present / subjectStats.total) * 100).toFixed(2) : 0;
+      Object.keys(stats.subjects).forEach(subId => {
+        const subStats = stats.subjects[subId];
+        subStats.percentage = subStats.total > 0 ?
+          ((subStats.present / subStats.total) * 100).toFixed(2) : '0.00';
       });
     });
 
-    // Convert sets to counts and calculate percentages for subject and course stats
-    Object.keys(subjectStats).forEach(subjectId => {
-      const stats = subjectStats[subjectId];
+    Object.keys(subjectStats).forEach(subId => {
+      const stats = subjectStats[subId];
       stats.totalStudents = stats.totalStudents.size;
       stats.attendancePercentage = stats.totalClasses > 0 ?
-        ((stats.presentCount / (stats.presentCount + stats.absentCount)) * 100).toFixed(2) : 0;
+        ((stats.presentCount / (stats.presentCount + stats.absentCount)) * 100).toFixed(2) : '0.00';
     });
 
-    Object.keys(courseStats).forEach(courseId => {
-      const stats = courseStats[courseId];
+    Object.keys(courseStats).forEach(cId => {
+      const stats = courseStats[cId];
       stats.totalStudents = stats.totalStudents.size;
       stats.attendancePercentage = stats.totalClasses > 0 ?
-        ((stats.presentCount / (stats.presentCount + stats.absentCount)) * 100).toFixed(2) : 0;
+        ((stats.presentCount / (stats.presentCount + stats.absentCount)) * 100).toFixed(2) : '0.00';
     });
 
     res.json({
@@ -879,6 +892,32 @@ const addTimetable = async (req, res) => {
   try {
     const { courseId, semester, day, timeSlot, subjectId, teacherId, roomNo } = req.body;
 
+    if (!courseId || !semester || !day || !timeSlot || !subjectId || !teacherId) {
+      return res.status(400).json({ success: false, msg: 'Missing required timetable fields' });
+    }
+
+    const conflictQuery = {
+      isActive: true,
+      day,
+      timeSlot,
+      $or: [{ teacherId }]
+    };
+    if (roomNo && roomNo.trim() !== '') {
+      conflictQuery.$or.push({ roomNo: roomNo.trim() });
+    }
+
+    const conflict = await Timetable.findOne(conflictQuery)
+      .populate('teacherId', 'name')
+      .populate('subjectId', 'subjectName');
+
+    if (conflict) {
+      const isTeacherConflict = conflict.teacherId && conflict.teacherId._id?.toString() === teacherId.toString();
+      const conflictMsg = isTeacherConflict
+        ? `Faculty ${conflict.teacherId?.name || 'assigned'} is already scheduled for another class on ${day} at ${timeSlot}`
+        : `Room ${roomNo} is already occupied on ${day} at ${timeSlot}`;
+      return res.status(409).json({ success: false, msg: conflictMsg });
+    }
+
     const timetable = new Timetable({
       courseId, semester, day, timeSlot, subjectId, teacherId, roomNo
     });
@@ -991,18 +1030,21 @@ const getAllFees = async (req, res) => {
 // Get Settings
 const getSettings = async (req, res) => {
   try {
-    // For now, return default settings
-    // You can create a Settings model later if needed
-    const settings = {
-      institutionName: 'Dr. Ambedkar Institute of Technology for Handicapped',
-      academicYear: '2024-2025',
-      semester: 'Odd',
-      address: 'Kanpur, Uttar Pradesh',
-      phone: '+91-XXXXXXXXXX',
-      email: 'info@draitd.edu.in',
-      website: 'www.draitd.edu.in'
-    };
-
+    let settings = null;
+    if (Settings) {
+      settings = await Settings.findOne({ isActive: true });
+    }
+    if (!settings) {
+      settings = {
+        institutionName: 'Dr. Ambedkar Institute of Technology for Divyangjan',
+        academicYear: '2025-2026',
+        semester: 'Even',
+        address: 'Awadhpuri, GT Road, Kanpur, Uttar Pradesh - 208024',
+        phone: '+91-512-2583221',
+        email: 'info@draitd.edu.in',
+        website: 'https://draitd.edu.in'
+      };
+    }
     res.json({ success: true, settings });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -1012,10 +1054,17 @@ const getSettings = async (req, res) => {
 // Update Settings
 const updateSettings = async (req, res) => {
   try {
-    const settings = req.body;
-
-    // For now, just return success
-    // You can implement actual database storage later
+    const payload = req.body;
+    let settings = null;
+    if (Settings) {
+      settings = await Settings.findOneAndUpdate(
+        { isActive: true },
+        { ...payload, isActive: true },
+        { new: true, upsert: true }
+      );
+    } else {
+      settings = payload;
+    }
     res.json({ success: true, msg: 'Settings updated successfully', settings });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -1148,6 +1197,28 @@ const getAllMaterials = async (req, res) => {
 };
 
 // Get All Attendance - Admin Only
+// Get All Marks - Admin Only
+const getAllMarks = async (req, res) => {
+  try {
+    const marks = await Marks.find({})
+      .populate({
+        path: 'studentId',
+        select: 'name rollNo email courseId branch semester',
+        populate: { path: 'courseId', select: 'courseName courseCode' }
+      })
+      .populate({
+        path: 'subjectId',
+        select: 'subjectName subjectCode courseId credits',
+        populate: { path: 'courseId', select: 'courseName courseCode' }
+      })
+      .populate('teacherId', 'name email')
+      .sort({ createdAt: -1 });
+    res.json({ success: true, marks });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
 const getAllAttendance = async (req, res) => {
   try {
     const attendance = await Attendance.find({})
@@ -1210,6 +1281,7 @@ module.exports = {
   getAllAssignments,
   getAllMaterials,
   getAllAttendance,
+  getAllMarks,
   updateCourse,
   getAllCourses,
   getAllSubjects

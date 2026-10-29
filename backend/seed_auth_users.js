@@ -1,4 +1,7 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 require('dotenv').config();
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const { Admin, Teacher, Student, Course, Subject } = require('./models');

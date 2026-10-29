@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import api from "../../api/axiosInstance";
+import aiService from "../../services/aiService";
 import { toast } from "react-toastify";
-import { FaUpload, FaFileAlt } from "react-icons/fa";
+import { FaUpload, FaFileAlt, FaMagic, FaSpinner } from "react-icons/fa";
 import Card, { CardContent } from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
@@ -11,6 +12,7 @@ const TeacherUpload = ({ teacherId }) => {
   const [activeTab, setActiveTab] = useState("assignment");
   const [subjects, setSubjects] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [aiGenerating, setAiGenerating] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -53,6 +55,58 @@ const TeacherUpload = ({ teacherId }) => {
 
   const handleFileChange = (e) => {
     setFormData((p) => ({ ...p, file: e.target.files[0] }));
+  };
+
+  // Gemini AI Assistant for Description & Objectives
+  const handleAIAssist = async () => {
+    if (!formData.title.trim()) {
+      toast.warning("Please enter a title first so Gemini AI knows what to draft!");
+      return;
+    }
+
+    setAiGenerating(true);
+    try {
+      const selectedSubject = subjects.find((s) => s._id === formData.subjectId)?.subjectName || "Computer Science";
+
+      if (activeTab === "assignment") {
+        const res = await aiService.generateAssignment({
+          topic: formData.title,
+          subject: selectedSubject,
+          difficulty: "Intermediate",
+          maxMarks: 50,
+        });
+        if (res.success && res.assignment) {
+          setFormData((p) => ({ ...p, description: res.assignment }));
+          toast.success("✨ Assignment description & rubric generated!");
+        }
+      } else if (activeTab === "notice") {
+        const res = await aiService.generateNotice({
+          title: formData.title,
+          audience: "Class Students",
+          keyPoints: formData.description || "Class updates and academic schedule",
+          tone: "Formal",
+        });
+        if (res.success && res.noticeText) {
+          setFormData((p) => ({ ...p, description: res.noticeText }));
+          toast.success("✨ Notice circular generated!");
+        }
+      } else {
+        // Notes / Materials
+        const res = await aiService.explainTopic(formData.title, selectedSubject, "standard");
+        if (res.success && res.explanation) {
+          setFormData((p) => ({
+            ...p,
+            description: `Learning Objectives & Concept Breakdown:\n\n${res.explanation}`,
+          }));
+          toast.success("✨ Study note overview generated!");
+        }
+      }
+    } catch (err) {
+      console.error("AI Assistance failed:", err);
+      toast.error("AI assistance failed. Please try again.");
+    } finally {
+      setAiGenerating(false);
+    }
   };
 
   // ============================= VALIDATION PER TAB =============================
@@ -103,14 +157,12 @@ const TeacherUpload = ({ teacherId }) => {
       };
 
       await api.post(endpoints[activeTab], uploadData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      toast.success(`${activeTab} uploaded successfully!`);
+      toast.success(`${activeTab.toUpperCase()} uploaded successfully!`);
 
-      // Reset Form
+      // Reset form
       setFormData({
         title: "",
         description: "",
@@ -120,11 +172,12 @@ const TeacherUpload = ({ teacherId }) => {
         file: null,
       });
 
-      if (fileInputRef.current) fileInputRef.current.value = "";
-
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (err) {
       console.error("Upload error:", err);
-      toast.error("Failed to upload");
+      toast.error(err.response?.data?.msg || `Failed to upload ${activeTab}`);
     } finally {
       setUploading(false);
     }
@@ -143,7 +196,12 @@ const TeacherUpload = ({ teacherId }) => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-secondary font-heading">Upload Content</h1>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-secondary font-heading">Upload Content</h1>
+          <p className="text-text-secondary text-sm">Upload learning resources with optional Gemini AI assistance</p>
+        </div>
+      </div>
 
       {/* TABS */}
       <div className="flex flex-wrap gap-4 mb-6">
@@ -159,19 +217,13 @@ const TeacherUpload = ({ teacherId }) => {
           <form onSubmit={handleSubmit} className="space-y-6">
 
             {/* TITLE */}
-            <Input label="Title *" name="title" value={formData.title} onChange={handleInputChange} />
-
-            {/* DESCRIPTION */}
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">Description</label>
-              <textarea
-                name="description"
-                rows="3"
-                value={formData.description}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-              />
-            </div>
+            <Input
+              label="Title *"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              placeholder={`e.g. ${activeTab === 'assignment' ? 'Lab Exercise 4: Graph Traversals' : activeTab === 'notice' ? 'Mid-term Lab Evaluation Schedule' : 'Unit 2: Dynamic Memory Allocation'}`}
+            />
 
             {/* SUBJECT SELECT (not for notice) */}
             {activeTab !== "notice" && (
@@ -216,6 +268,41 @@ const TeacherUpload = ({ teacherId }) => {
                 </SelectContent>
               </Select>
             )}
+
+            {/* DESCRIPTION WITH AI ASSIST BUTTON */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-medium text-text-secondary">
+                  Description / Instructions / Learning Outcomes
+                </label>
+                <button
+                  type="button"
+                  disabled={aiGenerating}
+                  onClick={handleAIAssist}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition-colors disabled:opacity-50"
+                >
+                  {aiGenerating ? (
+                    <>
+                      <FaSpinner className="animate-spin text-indigo-500" />
+                      <span>Gemini Drafting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaMagic className="text-indigo-500" />
+                      <span>✨ AI Auto-Draft</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <textarea
+                name="description"
+                rows="4"
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Enter description or click ✨ AI Auto-Draft to generate based on title..."
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-mono text-xs leading-relaxed"
+              />
+            </div>
 
             {/* DEADLINE (assignment only) */}
             {activeTab === "assignment" && (

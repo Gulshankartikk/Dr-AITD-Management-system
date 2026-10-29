@@ -105,7 +105,7 @@ cd backend
 
 Create a `.env` file in `backend/` directory:
 ```env
-PORT=4000
+PORT=5000
 MONGO_URI=mongodb://127.0.0.1:27017/college-erp
 JWT_SECRET=your_secure_secret_key_here
 EMAIL_USER=your_email@gmail.com
@@ -117,21 +117,33 @@ NODE_ENV=development
 
 Create a `.env.local` file in `frontend/` directory:
 ```env
-VITE_API_URL=http://localhost:4000
+VITE_API_URL=http://localhost:5000
 ```
 
-### 5. Database Seeding (Required for First Run)
+### 5. Enterprise Demo Data Seeding & Testing
 
-Initialize the database with default accounts and sample data:
+The system features an automated, idempotent demo seeder providing interconnected academic records:
 ```bash
-cd backend
-node seed_auth_users.js
+# Seed or update full interconnected demo dataset (Courses, Faculty, Students, Timetables, Fees, Library, Marks)
+npm run seed:demo
+
+# Inspect current collection counts across the database
+npm run seed:inspect
+
+# Safely purge only demo-tagged records without touching production or manual data
+npm run seed:clean
+
+# Run the full automated QA & functional test suite (71 tests)
+npm test
 ```
 
-**Default Credentials:**
-*   **Admin**: `admin` / `admin123`
-*   **Teacher**: `teacher` / `teacher123`
-*   **Student**: `STU2025` / `student123` (Roll No: STU2025)
+**Verified Test Credentials:**
+*   **System Admin**: `admin` / `admin123`
+*   **Faculty (CSE)**: `prof_sunita` / `teacher123`
+*   **Faculty (IT)**: `dr_priyanshu` / `teacher123`
+*   **Faculty (General)**: `teacher` / `teacher123`
+*   **Student (CSE)**: `STU2025` / `student123` (Roll No: `STU2025`)
+*   **Student (IT)**: `26it001` / `student123` (Roll No: `26IT001`)
 
 ---
 
@@ -151,7 +163,7 @@ This runs both backend and frontend simultaneously.
 cd backend
 npm start
 ```
-Backend will run on `http://localhost:4000`
+Backend will run on `http://localhost:5000`
 
 **Terminal 2 - Frontend:**
 ```bash
@@ -162,8 +174,8 @@ Frontend will run on `http://localhost:5173`
 
 ### Accessing the Application
 *   **Frontend**: `http://localhost:5173`
-*   **Backend API**: `http://localhost:4000/api`
-*   **API Health Check**: `http://localhost:4000/`
+*   **Backend API**: `http://localhost:5000/api`
+*   **API Health Check**: `http://localhost:5000/`
 
 ---
 
@@ -171,7 +183,7 @@ Frontend will run on `http://localhost:5173`
 
 ### Base URL
 ```
-http://localhost:4000/api
+http://localhost:5000/api
 ```
 
 ### Authentication Endpoints
@@ -532,6 +544,17 @@ We welcome contributions! Please follow these steps:
 ---
 
 ## 📝 Changelog
+
+### Version 3.0.0 (2026-10-30) - Complete Professional College ERP Upgrade
+*   🏛️ **Institutional Identity**: Integrated official Dr. Ambedkar Institute of Technology for Divyangjan (AITD), Kanpur branding across the platform.
+*   🧭 **Sticky Top Navbar**: Modern header featuring role indicator badge, quick search modal (`⌘K`), interactive notification dropdown with live campus circulars, and profile dropdown with verified sign-out.
+*   📑 **Enterprise ERP Sidebar**: Reorganized into 9 standard ERP categories (Overview, Academic Management, Student Management, Faculty & Staff, Attendance, Examinations, Fees & Finance, Library, Administration) with collapsible sections and route highlighting.
+*   🍞 **Dynamic Breadcrumbs**: Context-aware path navigation on internal pages mapping dynamic route segments to friendly section names.
+*   ⚖️ **Dual-Mode Footer**: Clean single-line dashboard footer on authenticated views and comprehensive institutional footer on public pages with verified Kanpur address and support contacts.
+*   🚫 **Duplicate Header & Button Overlap Elimination**: Removed stacked `AdminHeader` occurrences across 15 admin modules and converted `BackButton` to inline positioning.
+*   🤖 **Gemini 2.5 AI Integration**: AI-powered features for all three roles: Campus AI Copilot, quiz generator, leave application drafter, notice generator, and study plan assistant.
+*   🌱 **Enriched AutoSeed**: Realistic mock academic records across courses, subjects, timetables, attendance, exam marks, fees, library books, and notes.
+*   🧪 **Automated Integration Test Suite**: `npm test` runs comprehensive validation of models, encryption, JWT tokens, AI service, and Express route table with 100% pass rate.
 
 ### Version 2.1.0 (2026-03-25)
 *   ✅ Conducted a full repository audit and removed unused dead components/hooks to optimize the application footprint.

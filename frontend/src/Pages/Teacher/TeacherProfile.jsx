@@ -90,7 +90,7 @@ const TeacherProfile = () => {
 
   const handleSaveProfile = async () => {
     try {
-      await api.put(`/teacher/${teacherId}/profile`, editData);
+      await api.put(`/api/teacher/${teacherId}/profile`, editData);
       setTeacher({ ...teacher, ...editData });
       setIsEditing(false);
       toast.success('Profile updated successfully!');

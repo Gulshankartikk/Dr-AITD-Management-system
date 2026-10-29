@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaPlus, FaCalendarCheck, FaClock } from 'react-icons/fa';
+import { FaPlus, FaCalendarCheck, FaClock, FaMagic } from 'react-icons/fa';
 import Card, { CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select, { SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';
 import Modal from '../../components/ui/Modal';
 import api from '../../api/axiosInstance';
+import aiService from '../../services/aiService';
 import { toast } from 'react-toastify';
 import Badge from '../../components/ui/Badge';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -17,6 +18,7 @@ const StudentLeave = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [formData, setFormData] = useState({
     leaveType: 'Sick Leave',
     startDate: '',
@@ -46,6 +48,26 @@ const StudentLeave = () => {
       toast.error('Failed to load leave history');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAiDraftLeave = async () => {
+    setIsAiGenerating(true);
+    try {
+      const res = await aiService.generateLeave({
+        leaveType: formData.leaveType,
+        startDate: formData.startDate || 'Upcoming dates',
+        endDate: formData.endDate || 'Upcoming dates',
+        reason: formData.reason || 'medical rest / family obligation'
+      });
+      if (res.application) {
+        setFormData(prev => ({ ...prev, reason: res.application }));
+        toast.success('✨ Leave application drafted by Gemini AI!');
+      }
+    } catch (err) {
+      toast.error('Failed to draft leave application with AI');
+    } finally {
+      setIsAiGenerating(false);
     }
   };
 
@@ -88,41 +110,44 @@ const StudentLeave = () => {
         <div className="grid gap-6">
           {leaves.map((leave) => (
             <Card key={leave._id} className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-bold text-secondary">{leave.leaveType}</h3>
-                    <Badge variant={
-                      leave.status === 'Approved' ? 'success' :
-                        leave.status === 'Rejected' ? 'danger' : 'warning'
-                    }>
-                      {leave.status}
-                    </Badge>
-                  </div>
-                  <p className="text-text-secondary mb-2">{leave.reason}</p>
-                  <div className="flex items-center gap-4 text-sm text-text-muted">
-                    <div className="flex items-center gap-1">
-                      <FaCalendarCheck />
-                      <span>
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <span className="font-semibold text-lg text-secondary">{leave.leaveType}</span>
+                      <Badge variant={
+                        leave.status === 'Approved' ? 'success' :
+                          leave.status === 'Rejected' ? 'danger' : 'warning'
+                      }>
+                        {leave.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-text-secondary">
+                      <span className="flex items-center gap-1">
+                        <FaCalendarCheck className="text-primary" />
                         {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
                       </span>
+                      <span className="flex items-center gap-1">
+                        <FaClock className="text-primary" />
+                        Applied: {new Date(leave.appliedDate || leave.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <FaClock />
-                      <span>Applied on {new Date(leave.createdAt).toLocaleDateString()}</span>
-                    </div>
+                    <p className="text-text-secondary text-sm mt-2 whitespace-pre-wrap">{leave.reason}</p>
                   </div>
+                  {leave.remarks && (
+                    <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-sm max-w-xs">
+                      <span className="font-medium text-secondary block mb-1">Remarks:</span>
+                      <p className="text-text-secondary">{leave.remarks}</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
           ))}
-
           {leaves.length === 0 && (
-            <Card className="border border-dashed border-gray-300">
-              <CardContent className="p-12 text-center">
-                <p className="text-text-muted text-lg">No leave requests found</p>
-              </CardContent>
-            </Card>
+            <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+              <p className="text-text-secondary">No leave applications found</p>
+            </div>
           )}
         </div>
       </div>
@@ -168,14 +193,25 @@ const StudentLeave = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Reason</label>
+            <div className="flex justify-between items-center mb-1">
+              <label className="block text-sm font-medium text-secondary">Reason / Application</label>
+              <button
+                type="button"
+                onClick={handleAiDraftLeave}
+                disabled={isAiGenerating}
+                className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 py-1 px-2.5 rounded-lg border border-indigo-200 transition-all disabled:opacity-50"
+              >
+                <FaMagic className={isAiGenerating ? 'animate-spin' : ''} />
+                <span>{isAiGenerating ? 'Drafting...' : '✨ Draft with Gemini AI'}</span>
+              </button>
+            </div>
             <textarea
               value={formData.reason}
               onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-              rows="3"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm leading-relaxed"
+              rows="5"
               required
-              placeholder="Please provide a reason for your leave..."
+              placeholder="Provide a brief reason, or click '✨ Draft with Gemini AI' to generate a formal letter..."
             />
           </div>
           <div className="flex justify-end gap-3 mt-6">

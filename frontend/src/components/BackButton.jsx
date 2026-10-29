@@ -2,21 +2,18 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 
-const BackButton = ({ className = '', targetRoute }) => {
+const BackButton = ({ className = '', targetRoute, label = 'Back' }) => {
   const navigate = useNavigate();
 
-
   return (
-    <div className={`fixed top-4 left-4 z-30 ${className}`}>
+    <div className={`inline-block mb-4 ${className}`}>
       <button
-        onClick={() => targetRoute ? navigate(targetRoute) : navigate(-1)}
-        className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all transform hover:scale-105 shadow-lg"
-        style={{ backgroundColor: '#2d545e', color: 'white' }}
-        onMouseEnter={(e) => e.target.style.backgroundColor = '#e1b382'}
-        onMouseLeave={(e) => e.target.style.backgroundColor = '#2d545e'}
+        onClick={() => (targetRoute ? navigate(targetRoute) : navigate(-1))}
+        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-gray-200 text-secondary hover:bg-gray-100 hover:text-primary shadow-xs transition-colors"
+        title="Return to previous page"
       >
-        <FaArrowLeft />
-        <span className="font-semibold">Back</span>
+        <FaArrowLeft className="text-gray-400 text-xs" />
+        <span>{label}</span>
       </button>
     </div>
   );

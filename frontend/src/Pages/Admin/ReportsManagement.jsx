@@ -1,8 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { FaFileAlt, FaDownload, FaChartBar, FaCalendarAlt, FaUsers, FaRupeeSign, FaSpinner, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import {
+  FaFileAlt,
+  FaDownload,
+  FaChartBar,
+  FaCalendarAlt,
+  FaUsers,
+  FaRupeeSign,
+  FaSpinner,
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaMagic,
+  FaRobot,
+  FaLightbulb
+} from 'react-icons/fa';
 import AdminHeader from '../../components/AdminHeader';
 import BackButton from '../../components/BackButton';
 import api from '../../api/axiosInstance';
+import aiService from '../../services/aiService';
 import { toast } from 'react-toastify';
 import Button from '../../components/ui/Button';
 import Select from '../../components/ui/Select';
@@ -15,6 +30,13 @@ const ReportsManagement = () => {
   const [manualReports, setManualReports] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingReport, setEditingReport] = useState(null);
+
+  // Gemini AI Insights State
+  const [aiInsights, setAiInsights] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
+  const [draftingCustomReport, setDraftingCustomReport] = useState(false);
+
   const [formData, setFormData] = useState({
     title: '',
     type: 'Administrative',
@@ -47,11 +69,15 @@ const ReportsManagement = () => {
     setLoading(true);
     setSelectedReport(type);
     setReportData(null);
+    setAiInsights('');
+    setShowInsights(false);
+
     try {
       const response = await api.get(type.endpoint);
 
       if (response.data.success) {
-        setReportData(response.data.data);
+        const data = response.data.data;
+        setReportData(data);
         toast.success(`${type.name} generated successfully`);
       }
     } catch (error) {
@@ -59,6 +85,50 @@ const ReportsManagement = () => {
       toast.error('Failed to generate report');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Generate Gemini AI Executive Insights
+  const handleGenerateAIInsights = async () => {
+    if (!reportData) return;
+    setShowInsights(true);
+    setAiLoading(true);
+
+    try {
+      const res = await aiService.getReportSummary(selectedReport?.name || 'College Operations', reportData);
+      setAiInsights(res.summary || 'Insights generated.');
+    } catch (err) {
+      console.error('Failed to generate AI insights:', err);
+      setAiInsights('Unable to generate AI analysis. Please verify your connection.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // AI draft for custom report
+  const handleAIDraftCustomReport = async () => {
+    if (!formData.title.trim()) {
+      toast.warning('Please enter a report title first!');
+      return;
+    }
+
+    setDraftingCustomReport(true);
+    try {
+      const res = await aiService.explainTopic(
+        `Official Institutional Administrative Report titled: "${formData.title}" (Type: ${formData.type}). Summarize background, observations, and recommendations for Dr. AITD administration.`,
+        'College Administration',
+        'in-depth'
+      );
+
+      if (res.success && res.explanation) {
+        setFormData(p => ({ ...p, content: res.explanation }));
+        toast.success('✨ Report drafted with Gemini AI!');
+      }
+    } catch (err) {
+      console.error('Draft error:', err);
+      toast.error('AI drafting failed.');
+    } finally {
+      setDraftingCustomReport(false);
     }
   };
 
@@ -98,24 +168,39 @@ const ReportsManagement = () => {
   const downloadCSV = () => {
     if (!reportData) return;
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += JSON.stringify(reportData, null, 2);
+
+    if (selectedReport.id === 'fees') {
+      csvContent += "Course ID,Collected,Due\n";
+      Object.entries(reportData.courseWiseStats).forEach(([courseId, stats]) => {
+        csvContent += `${courseId},${stats.collected},${stats.due}\n`;
+      });
+    } else if (selectedReport.id === 'academic') {
+      csvContent += "Subject,Average Marks,Highest Marks,Total Records\n";
+      Object.entries(reportData.subjectStats).forEach(([subject, stats]) => {
+        csvContent += `${subject},${stats.average},${stats.highest},${stats.count}\n`;
+      });
+    } else if (selectedReport.id === 'enrollment') {
+      csvContent += "Category,Key,Count\n";
+      Object.entries(reportData.courseDistribution).forEach(([course, count]) => {
+        csvContent += `Course,${course},${count}\n`;
+      });
+      Object.entries(reportData.yearDistribution).forEach(([year, count]) => {
+        csvContent += `Year,${year},${count}\n`;
+      });
+    } else {
+      csvContent += JSON.stringify(reportData);
+    }
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${selectedReport.id}_report.json`);
+    link.setAttribute("download", `${selectedReport.id}_report_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
 
   const renderReportContent = () => {
-    if (loading) {
-      return (
-        <div className="flex justify-center items-center py-12">
-          <FaSpinner className="animate-spin text-4xl text-primary" />
-        </div>
-      );
-    }
-
     if (!reportData) return null;
 
     switch (selectedReport.id) {
@@ -248,7 +333,7 @@ const ReportsManagement = () => {
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold text-secondary font-heading">Reports Management</h1>
-              <p className="text-text-secondary mt-2">Generate and manage institutional reports</p>
+              <p className="text-text-secondary mt-1">Generate institutional reports and synthesize AI executive insights</p>
             </div>
           </div>
 
@@ -257,13 +342,14 @@ const ReportsManagement = () => {
             {reportTypes.map((report) => (
               <div
                 key={report.id}
-                className={`bg-white p-6 rounded-lg shadow-md cursor-pointer transition-all hover:shadow-lg border-2 ${selectedReport?.id === report.id ? `border-${report.color}-500` : 'border-transparent'
-                  }`}
+                className={`bg-white p-6 rounded-lg shadow-md cursor-pointer transition-all hover:shadow-lg border-2 ${
+                  selectedReport?.id === report.id ? `border-primary` : 'border-transparent'
+                }`}
                 onClick={() => generateReport(report)}
               >
                 <div className="flex items-center mb-4">
-                  <div className={`p-3 rounded-full bg-${report.color}-100 mr-4`}>
-                    <report.icon className={`text-2xl text-${report.color}-500`} />
+                  <div className={`p-3 rounded-full bg-primary/10 mr-4 text-primary`}>
+                    <report.icon className="text-2xl" />
                   </div>
                   <h3 className="font-bold text-secondary">{report.name}</h3>
                 </div>
@@ -277,27 +363,86 @@ const ReportsManagement = () => {
           {/* Report Content Area */}
           {selectedReport && (
             <div className="bg-white rounded-lg shadow-md p-6 mb-8 animate-fade-in border border-gray-200">
-              <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-gray-200 pb-4">
                 <h2 className="text-xl font-bold text-secondary font-heading">{selectedReport.name}</h2>
-                {reportData && (
-                  <button
-                    onClick={downloadCSV}
-                    className="flex items-center space-x-2 text-primary hover:text-primary/80 font-medium"
-                  >
-                    <FaDownload />
-                    <span>Download Data</span>
-                  </button>
-                )}
+                <div className="flex items-center gap-3">
+                  {reportData && (
+                    <button
+                      onClick={handleGenerateAIInsights}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-semibold shadow-sm transition-all"
+                    >
+                      <FaMagic />
+                      <span>✨ AI Executive Insights</span>
+                    </button>
+                  )}
+                  {reportData && (
+                    <button
+                      onClick={downloadCSV}
+                      className="flex items-center space-x-2 text-primary hover:text-primary/80 font-medium text-sm"
+                    >
+                      <FaDownload />
+                      <span>Download Data</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
-              {renderReportContent()}
+              {/* AI Insights Card */}
+              {showInsights && (
+                <div className="mb-6 p-5 rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50/60 via-purple-50/40 to-pink-50/40">
+                  <div className="flex items-center justify-between mb-3 border-b border-indigo-100 pb-2">
+                    <div className="flex items-center gap-2 text-indigo-900 font-bold text-sm">
+                      <FaRobot className="text-indigo-600 text-base" />
+                      <span>Gemini AI Strategic Insights & Observations</span>
+                      <span className="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded-full font-bold ml-1">Live Gemini 2.5</span>
+                    </div>
+                    <button
+                      onClick={() => setShowInsights(false)}
+                      className="text-xs text-gray-400 hover:text-gray-600"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                  {aiLoading ? (
+                    <div className="py-6 flex items-center justify-center gap-2 text-indigo-700">
+                      <FaSpinner className="animate-spin" />
+                      <span className="text-xs font-medium">Gemini is analyzing institutional data patterns...</span>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="prose prose-sm max-w-none text-xs sm:text-sm text-gray-800 whitespace-pre-line leading-relaxed">
+                        {aiInsights}
+                      </div>
+                      <div className="mt-3 flex justify-end">
+                        <button
+                          onClick={handleGenerateAIInsights}
+                          className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1"
+                        >
+                          <FaLightbulb /> Refresh Analysis
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {loading ? (
+                <div className="py-12 flex justify-center">
+                  <FaSpinner className="animate-spin text-3xl text-primary" />
+                </div>
+              ) : (
+                renderReportContent()
+              )}
             </div>
           )}
 
           {/* Manual Reports Section */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
             <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-secondary font-heading">Custom Reports</h2>
+              <div>
+                <h2 className="text-xl font-bold text-secondary font-heading">Custom Administrative Reports</h2>
+                <p className="text-xs text-text-secondary">Draft and archive internal institutional memos</p>
+              </div>
               <Button
                 onClick={() => {
                   setEditingReport(null);
@@ -368,53 +513,79 @@ const ReportsManagement = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-secondary/50 overflow-y-auto h-full w-full z-50 backdrop-blur-sm flex items-center justify-center">
-          <div className="relative p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-medium text-secondary mb-4 font-heading">
-                {editingReport ? 'Edit Report' : 'Add Custom Report'}
+        <div className="fixed inset-0 bg-secondary/50 overflow-y-auto h-full w-full z-50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="relative p-6 border max-w-xl w-full shadow-2xl rounded-xl bg-white border-gray-200">
+            <div>
+              <h3 className="text-lg font-bold text-secondary mb-1 font-heading">
+                {editingReport ? 'Edit Custom Report' : 'Add Custom Report'}
               </h3>
+              <p className="text-xs text-text-secondary mb-4">Write report or draft with Gemini AI</p>
+
               <form onSubmit={handleManualSubmit} className="space-y-4">
                 <Input
-                  label="Title"
+                  label="Title *"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="e.g. Annual Academic Audit & Infrastructure Review"
                   required
                 />
 
-                <Select
-                  label="Type"
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                >
-                  <option value="Administrative">Administrative</option>
-                  <option value="Academic">Academic</option>
-                  <option value="Financial">Financial</option>
-                  <option value="Other">Other</option>
-                </Select>
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">Type</label>
+                  <select
+                    value={formData.type}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm"
+                  >
+                    <option value="Administrative">Administrative</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Financial">Financial</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-1">Content</label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-sm font-medium text-text-secondary">Content *</label>
+                    <button
+                      type="button"
+                      disabled={draftingCustomReport}
+                      onClick={handleAIDraftCustomReport}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition-colors disabled:opacity-50"
+                    >
+                      {draftingCustomReport ? (
+                        <>
+                          <FaSpinner className="animate-spin text-indigo-500" />
+                          <span>Gemini Drafting...</span>
+                        </>
+                      ) : (
+                        <>
+                          <FaMagic className="text-indigo-500" />
+                          <span>✨ AI Auto-Draft</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <textarea
                     value={formData.content}
                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-primary focus:border-primary transition-all duration-200"
-                    rows="4"
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-xs font-mono focus:ring-primary focus:border-primary transition-all duration-200"
+                    rows="6"
+                    placeholder="Enter report content or click ✨ AI Auto-Draft to generate based on title..."
                     required
                   />
                 </div>
-                <div className="flex justify-end space-x-3 pt-4">
+
+                <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     type="button"
                     onClick={() => setShowModal(false)}
                   >
                     Cancel
                   </Button>
-                  <Button
-                    type="submit"
-                  >
-                    {editingReport ? 'Update' : 'Create'}
+                  <Button type="submit">
+                    {editingReport ? 'Update Report' : 'Save Report'}
                   </Button>
                 </div>
               </form>

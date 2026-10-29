@@ -12,11 +12,11 @@ const SettingsManagement = () => {
   const [activeTab, setActiveTab] = useState('general');
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({
-    institutionName: 'Dr AITD Management System',
-    academicYear: '2023-2024',
-    address: '123 Education Street, Knowledge City, State - 123456',
-    email: 'admin@college.edu',
-    phone: '+91 34 567 8900'
+    institutionName: 'Dr. Ambedkar Institute of Technology for Divyangjan (AITD), Kanpur',
+    academicYear: '2025-2026',
+    address: 'Awadhpuri, Khyora, Lakhanpur, Kanpur - 208024, Uttar Pradesh',
+    email: 'admin@draitd.edu',
+    phone: '+91 512 258 0122'
   });
 
   useEffect(() => {
@@ -31,7 +31,6 @@ const SettingsManagement = () => {
       }
     } catch (error) {
       console.error('Error fetching settings:', error);
-      // Fallback to defaults or show error if critical
     }
   };
 
@@ -72,9 +71,9 @@ const SettingsManagement = () => {
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-3xl font-bold text-secondary font-heading">System Settings</h1>
-              <p className="text-text-secondary">Configure system preferences and settings</p>
+              <p className="text-text-secondary">Configure institutional parameters and access controls</p>
             </div>
-            <Button className="flex items-center space-x-2" onClick={handleSave}>
+            <Button className="flex items-center space-x-2" onClick={handleSave} isLoading={loading}>
               <FaSave />
               <span>Save Changes</span>
             </Button>
@@ -89,10 +88,11 @@ const SettingsManagement = () => {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${activeTab === tab.id
-                        ? 'bg-primary text-white'
-                        : 'text-text-secondary hover:bg-gray-100'
-                        }`}
+                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
+                        activeTab === tab.id
+                          ? 'bg-primary text-white'
+                          : 'text-text-secondary hover:bg-gray-100'
+                      }`}
                     >
                       <tab.icon />
                       <span>{tab.name}</span>
@@ -107,7 +107,7 @@ const SettingsManagement = () => {
               <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                 {activeTab === 'general' && (
                   <div>
-                    <h2 className="text-xl font-bold text-secondary mb-6 font-heading">General Settings</h2>
+                    <h2 className="text-xl font-bold text-secondary mb-6 font-heading">General Institutional Profile</h2>
                     <div className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Input
@@ -124,18 +124,18 @@ const SettingsManagement = () => {
                             <SelectValue placeholder="Select Year" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="2023-2024">2023-2024</SelectItem>
-                            <SelectItem value="2024-2025">2024-2025</SelectItem>
+                            <SelectItem value="2025-2026">2025-2026</SelectItem>
+                            <SelectItem value="2026-2027">2026-2027</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-text-secondary mb-2">Institution Address</label>
+                        <label className="block text-sm font-medium text-text-secondary mb-2">Campus Address</label>
                         <textarea
                           rows="3"
                           value={settings.address}
                           onChange={(e) => handleChange('address', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 text-sm"
                         />
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -162,60 +162,42 @@ const SettingsManagement = () => {
                     <div className="space-y-6">
                       <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
                         <div>
-                          <h3 className="font-medium text-secondary">Allow Student Registration</h3>
-                          <p className="text-sm text-text-muted">Enable students to register themselves</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
-                      </div>
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <div>
-                          <h3 className="font-medium text-secondary">Require Email Verification</h3>
-                          <p className="text-sm text-text-muted">Users must verify email before access</p>
+                          <h3 className="font-medium text-secondary">Allow Student Self-Registration</h3>
+                          <p className="text-sm text-text-muted">Permit eligible students to register online</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                           <input type="checkbox" className="sr-only peer" defaultChecked />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                         </label>
                       </div>
-                      <Select label="Default User Role" defaultValue="Student">
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Student">Student</SelectItem>
-                          <SelectItem value="Teacher">Teacher</SelectItem>
-                          <SelectItem value="Staff">Staff</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div>
+                          <h3 className="font-medium text-secondary">Require Email Verification</h3>
+                          <p className="text-sm text-text-muted">Users must verify email via OTP</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" className="sr-only peer" defaultChecked />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'security' && (
                   <div>
-                    <h2 className="text-xl font-bold text-secondary mb-6 font-heading">Security Settings</h2>
+                    <h2 className="text-xl font-bold text-secondary mb-6 font-heading">Security Policies</h2>
                     <div className="space-y-6">
                       <div>
-                        <label className="block text-sm font-medium text-text-secondary mb-2">Password Policy</label>
+                        <label className="block text-sm font-medium text-text-secondary mb-2">Password Standards</label>
                         <div className="space-y-3">
                           <div className="flex items-center">
                             <input type="checkbox" defaultChecked className="mr-3 text-primary focus:ring-primary rounded" />
-                            <span className="text-sm text-text-secondary">Minimum 8 characters</span>
+                            <span className="text-sm text-text-secondary">Minimum 8 characters length</span>
                           </div>
                           <div className="flex items-center">
                             <input type="checkbox" defaultChecked className="mr-3 text-primary focus:ring-primary rounded" />
-                            <span className="text-sm text-text-secondary">Require uppercase letters</span>
-                          </div>
-                          <div className="flex items-center">
-                            <input type="checkbox" defaultChecked className="mr-3 text-primary focus:ring-primary rounded" />
-                            <span className="text-sm text-text-secondary">Require numbers</span>
-                          </div>
-                          <div className="flex items-center">
-                            <input type="checkbox" className="mr-3 text-primary focus:ring-primary rounded" />
-                            <span className="text-sm text-text-secondary">Require special characters</span>
+                            <span className="text-sm text-text-secondary">Enforce strong hashing (bcrypt salt 10 rounds)</span>
                           </div>
                         </div>
                       </div>
@@ -224,94 +206,45 @@ const SettingsManagement = () => {
                         type="number"
                         defaultValue="30"
                       />
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <div>
-                          <h3 className="font-medium text-secondary">Two-Factor Authentication</h3>
-                          <p className="text-sm text-text-muted">Require 2FA for admin accounts</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
-                      </div>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'notifications' && (
                   <div>
-                    <h2 className="text-xl font-bold text-secondary mb-6 font-heading">Notification Settings</h2>
+                    <h2 className="text-xl font-bold text-secondary mb-6 font-heading">Notification Preferences</h2>
                     <div className="space-y-6">
                       <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
                         <div>
-                          <h3 className="font-medium text-secondary">Email Notifications</h3>
-                          <p className="text-sm text-text-muted">Send notifications via email</p>
+                          <h3 className="font-medium text-secondary">Broadcast Circulars</h3>
+                          <p className="text-sm text-text-muted">Publish notices instantly to Student & Faculty portals</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                           <input type="checkbox" className="sr-only peer" defaultChecked />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                         </label>
                       </div>
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <div>
-                          <h3 className="font-medium text-secondary">SMS Notifications</h3>
-                          <p className="text-sm text-text-muted">Send notifications via SMS</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
-                      </div>
-                      <Input
-                        label="SMTP Server"
-                        type="text"
-                        placeholder="smtp.gmail.com"
-                      />
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'system' && (
                   <div>
-                    <h2 className="text-xl font-bold text-secondary mb-6 font-heading">System Settings</h2>
-                    <div className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Select label="Database Backup Frequency" defaultValue="Daily">
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Frequency" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Daily">Daily</SelectItem>
-                            <SelectItem value="Weekly">Weekly</SelectItem>
-                            <SelectItem value="Monthly">Monthly</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          label="Log Retention (days)"
-                          type="number"
-                          defaultValue="30"
-                        />
-                      </div>
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <div>
-                          <h3 className="font-medium text-secondary">Maintenance Mode</h3>
-                          <p className="text-sm text-text-muted">Enable maintenance mode for system updates</p>
+                    <h2 className="text-xl font-bold text-secondary mb-6 font-heading">System Diagnostics</h2>
+                    <div className="space-y-4">
+                      <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 text-xs space-y-2 text-text-secondary">
+                        <div className="flex justify-between">
+                          <span className="font-semibold text-secondary">Database:</span>
+                          <span className="text-success font-bold">MongoDB Active</span>
                         </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
-                      </div>
-                      <div className="space-y-3">
-                        <Button className="w-full">
-                          Backup Database Now
-                        </Button>
-                        <Button className="w-full bg-warning hover:bg-warning/90 text-white border-none">
-                          Clear System Cache
-                        </Button>
-                        <Button className="w-full bg-danger hover:bg-danger/90 text-white border-none">
-                          Reset System Settings
-                        </Button>
+                        <div className="flex justify-between">
+                          <span className="font-semibold text-secondary">API Version:</span>
+                          <span>Dr-AITD ERP v2.5.0</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-semibold text-secondary">AI Service:</span>
+                          <span className="text-primary font-bold">Google Gemini 2.5 Flash</span>
+                        </div>
                       </div>
                     </div>
                   </div>
