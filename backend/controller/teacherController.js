@@ -90,8 +90,15 @@ const teacherLogin = async (req, res) => {
       return res.status(400).json({ success: false, msg: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: teacher._id, role: 'teacher' }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '24h' });
-    res.cookie('token', token, { httpOnly: true });
+    const secret = process.env.JWT_SECRET || 'your_super_secure_jwt_secret_key_here_minimum_32_characters';
+    const expiresIn = process.env.JWT_EXPIRES_IN || '3650d';
+    const token = jwt.sign({ id: teacher._id, role: 'teacher', name: teacher.name }, secret, { expiresIn });
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3650 * 24 * 60 * 60 * 1000 // 10 years
+    });
 
     return res.json({
       success: true,

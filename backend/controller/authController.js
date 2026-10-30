@@ -124,11 +124,12 @@ const login = async (req, res, next) => {
             throw error;
         }
 
-        // 4. Generate Token (10 years expiry - effectively unlimited)
+        // 4. Generate Token (Long-lived expiry - configurable via JWT_EXPIRES_IN)
+        const tokenExpiresIn = process.env.JWT_EXPIRES_IN || '3650d';
         const token = jwt.sign(
             { id: user._id, user_id: user._id, role: cleanRole, name: user.name },
             getJwtSecret(),
-            { expiresIn: '3650d' } // 10 years
+            { expiresIn: tokenExpiresIn }
         );
 
         // 5. Set Cookie (10 years expiry - effectively unlimited)

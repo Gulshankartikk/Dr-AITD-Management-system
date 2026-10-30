@@ -37,6 +37,12 @@ const errorHandler = (err, req, res, next) => {
         error = { message, statusCode: 401 };
     }
 
+    // Mongoose buffering timeout (MongoDB disconnected)
+    if (err.name === 'MongooseError' && err.message && err.message.includes('buffering timed out')) {
+        const message = 'Database query timed out because MongoDB is not connected. Please verify MongoDB is running.';
+        error = { message, statusCode: 503 };
+    }
+
     const finalMessage = error.message || err.message || 'Server Error';
 
     res.status(error.statusCode || err.statusCode || 500).json({

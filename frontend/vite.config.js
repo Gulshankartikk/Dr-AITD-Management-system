@@ -16,5 +16,18 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-redux': ['@reduxjs/toolkit', 'react-redux'],
+          'vendor-icons': ['lucide-react', 'react-icons'],
+          'vendor-utils': ['axios', 'js-cookie', 'jwt-decode', 'react-toastify']
+        }
+      }
+    }
   }
 })

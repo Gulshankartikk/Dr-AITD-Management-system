@@ -62,9 +62,11 @@ api.interceptors.response.use(
                     }, 1000);
                 }
             } else if (status === 403) {
-                toast.error('Access denied. Insufficient permissions.');
+                toast.error(data?.msg || 'Access denied. Insufficient permissions.');
+            } else if (status === 503) {
+                toast.error(data?.msg || 'Database unavailable. Please ensure MongoDB is running.');
             } else if (status >= 500) {
-                toast.error('Server error. Please try again later.');
+                toast.error(data?.msg || data?.message || 'Server error. Please try again later.');
             }
         } else if (error.request) {
             toast.error('Network error. Please check your connection.');

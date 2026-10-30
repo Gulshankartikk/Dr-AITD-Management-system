@@ -12,9 +12,6 @@ const db = require("./database/db");
 // variables
 const PORT = parseInt(process.env.PORT, 10) || 5000;
 
-// Connecting database
-db();
-
 // Ensure uploads directory exists
 const uploadsDir = path.resolve(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -91,6 +88,20 @@ app.get("/", (req, res) => {
 app.get('/courses', (req, res) => res.redirect(307, '/api/courses'));
 app.get('/subjects', (req, res) => res.redirect(307, '/api/subjects'));
 
+// Fast-fail middleware: if MongoDB is disconnected, return immediate 503 instead of 10s buffer timeout
+const mongoose = require('mongoose');
+app.use('/api', (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      success: false,
+      msg: "Database service is temporarily unavailable. Please make sure MongoDB is running.",
+      error: "DATABASE_UNAVAILABLE",
+      database: "Disconnected"
+    });
+  }
+  next();
+});
+
 // routes
 app.use("/api", require("./routes/completeRoutes"));
 
@@ -120,4 +131,9 @@ const startServer = (portToTry, attempt = 1) => {
   });
 };
 
-startServer(PORT);
+const initServer = async () => {
+  await db();
+  startServer(PORT);
+};
+
+initServer();

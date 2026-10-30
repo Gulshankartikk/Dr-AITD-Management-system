@@ -1,7 +1,7 @@
-// Persistent Session Manager - 2 Minutes Inactivity Logout
+// Persistent Session Manager - Long-Lived Session
 class SessionManager {
   constructor() {
-    this.INACTIVITY_TIMEOUT = 2 * 60 * 1000; // 2 minutes
+    this.INACTIVITY_TIMEOUT = 30 * 24 * 60 * 60 * 1000; // 30 days
     this.ACTIVITY_KEY = 'lastActivity';
     this.timer = null;
   }

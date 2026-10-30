@@ -5,12 +5,16 @@ echo ========================================
 echo.
 
 echo Checking if MongoDB is running...
-sc query MongoDB >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Starting MongoDB service...
-    net start MongoDB
+sc query MongoDB | findstr /i "RUNNING" >nul 2>&1
+if %errorlevel% equ 0 (
+    echo MongoDB service is running.
 ) else (
-    echo MongoDB is already running.
+    echo Attempting to start MongoDB service...
+    net start MongoDB 2>nul
+    if %errorlevel% neq 0 (
+        echo [NOTE] If MongoDB does not start automatically, please start it manually
+        echo or run this script as Administrator.
+    )
 )
 
 echo.

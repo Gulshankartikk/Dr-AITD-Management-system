@@ -102,8 +102,15 @@ const studentLogin = async (req, res) => {
       return res.status(400).json({ success: false, msg: 'Invalid Roll Number or Password' });
     }
 
-    const token = jwt.sign({ id: student._id, role: 'student' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    res.cookie('token', token, { httpOnly: true });
+    const secret = process.env.JWT_SECRET || 'your_super_secure_jwt_secret_key_here_minimum_32_characters';
+    const expiresIn = process.env.JWT_EXPIRES_IN || '3650d';
+    const token = jwt.sign({ id: student._id, role: 'student', name: student.name }, secret, { expiresIn });
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3650 * 24 * 60 * 60 * 1000 // 10 years
+    });
 
     return res.json({
       success: true,
