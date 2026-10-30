@@ -25,12 +25,21 @@ const Layout = () => {
 
   const [viewRole, setViewRole] = useState(null);
 
-  // Get user details from token
+  // Get user details from token safely
   const getUserDetails = () => {
     const token = Cookies.get('token') || localStorage.getItem('token');
     if (!token) return { role: null, userId: null };
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const base64Url = token.split('.')[1];
+      if (!base64Url) return { role: null, userId: null };
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const payload = JSON.parse(jsonPayload);
       return { role: payload.role, userId: payload.id || payload.user_id };
     } catch (e) {
       return { role: null, userId: null };
@@ -60,7 +69,7 @@ const Layout = () => {
   // Redux Hydration for Session Restore
   const dispatch = useDispatch();
   React.useEffect(() => {
-    const token = Cookies.get('token');
+    const token = Cookies.get('token') || localStorage.getItem('token');
     if (token) {
       dispatch(addUserDetails({ token }));
     }

@@ -69,24 +69,28 @@ const Login = () => {
   };
 
   const loginSuccess = (token) => {
-    Cookies.set("token", token, { expires: 3650 }); // 10 years
+    Cookies.set("token", token, { expires: 3650, path: '/' }); // 10 years
     localStorage.setItem("token", token);
     dispatch(addUserDetails({ token: token }));
 
     let decodedToken = jwtDecode(token);
-    localStorage.setItem("userId", decodedToken.id);
-    localStorage.setItem("userRole", decodedToken.role);
-    localStorage.setItem("role", decodedToken.role);
+    const userId = decodedToken.id || decodedToken.user_id;
+    const userRole = decodedToken.role;
 
-    toast.success(`Welcome back, ${decodedToken.name || decodedToken.role}!`);
+    localStorage.setItem("userId", userId);
+    localStorage.setItem("userRole", userRole);
+    localStorage.setItem("role", userRole);
 
-    if (decodedToken.role === "admin") {
-      window.location.href = "/admin/dashboard";
+    toast.success(`Welcome back, ${decodedToken.name || userRole}!`);
+
+    if (userRole === "admin") {
+      navigate("/admin/dashboard", { replace: true });
+    } else if (userRole === "student") {
+      navigate(`/student/${userId}/dashboard`, { replace: true });
+    } else if (userRole === "teacher") {
+      navigate(`/teacher/${userId}/dashboard`, { replace: true });
     } else {
-      const path = role === "student"
-        ? `/student/${decodedToken.id}/dashboard`
-        : `/teacher/${decodedToken.id}/dashboard`;
-      navigate(path);
+      navigate("/", { replace: true });
     }
   };
 

@@ -1,7 +1,6 @@
 // Persistent Session Manager - Long-Lived Session
 class SessionManager {
   constructor() {
-    this.INACTIVITY_TIMEOUT = 30 * 24 * 60 * 60 * 1000; // 30 days
     this.ACTIVITY_KEY = 'lastActivity';
     this.timer = null;
   }
@@ -10,38 +9,16 @@ class SessionManager {
   setSession(token) {
     localStorage.setItem('token', token);
     this.updateActivity();
-    this.startActivityMonitoring();
   }
 
   // Update last activity time
   updateActivity() {
     localStorage.setItem(this.ACTIVITY_KEY, Date.now().toString());
-    this.resetTimer();
   }
 
   // Check if session exists (no expiry check for navigation)
   isSessionValid() {
     return !!localStorage.getItem('token');
-  }
-
-  // Start monitoring user activity
-  startActivityMonitoring() {
-    // Track user interactions
-    ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(event => {
-      document.addEventListener(event, () => this.updateActivity(), true);
-    });
-    
-    this.resetTimer();
-  }
-
-  // Reset inactivity timer
-  resetTimer() {
-    if (this.timer) clearTimeout(this.timer);
-    
-    this.timer = setTimeout(() => {
-      this.logout();
-      window.location.href = '/login';
-    }, this.INACTIVITY_TIMEOUT);
   }
 
   // Manual logout only

@@ -15,13 +15,17 @@ let user = createSlice({
     addUserDetails: (state, action) => {
       const { token } = action.payload;
       if (token) {
-        const decodedToken = jwtDecode(token);
-        const { id, user_id, name, role } = decodedToken;
+        try {
+          const decodedToken = jwtDecode(token);
+          const { id, user_id, name, role } = decodedToken;
 
-        state.id = id;
-        state.user_id = user_id;
-        state.name = name;
-        state.role = role;
+          state.id = id || user_id || "";
+          state.user_id = user_id || id || "";
+          state.name = name || "";
+          state.role = role || "";
+        } catch (err) {
+          console.warn("Failed to decode token in UserSlice:", err.message);
+        }
       }
     },
     logoutUser: (state) => {

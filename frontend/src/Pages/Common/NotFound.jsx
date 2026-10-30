@@ -12,10 +12,20 @@ const NotFound = () => {
     const token = Cookies.get('token') || localStorage.getItem('token');
     if (!token) return { label: 'Go to Home', path: '/' };
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (payload.role === 'admin') return { label: 'Return to Admin Dashboard', path: '/admin/dashboard' };
-      if (payload.role === 'teacher') return { label: 'Return to Faculty Dashboard', path: `/teacher/${payload.id || payload.user_id}/dashboard` };
-      if (payload.role === 'student') return { label: 'Return to Student Dashboard', path: `/student/${payload.id || payload.user_id}/dashboard` };
+      const base64Url = token.split('.')[1];
+      if (base64Url) {
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
+        const payload = JSON.parse(jsonPayload);
+        if (payload.role === 'admin') return { label: 'Return to Admin Dashboard', path: '/admin/dashboard' };
+        if (payload.role === 'teacher') return { label: 'Return to Faculty Dashboard', path: `/teacher/${payload.id || payload.user_id}/dashboard` };
+        if (payload.role === 'student') return { label: 'Return to Student Dashboard', path: `/student/${payload.id || payload.user_id}/dashboard` };
+      }
     } catch (e) {
       // Ignore parse failure
     }
